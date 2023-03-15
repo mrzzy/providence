@@ -7,5 +7,5 @@ description  = "Simplygo source for Providence"
 
 [dependencies]
 clap = { version = "4.1.8", features = ["derive"] }
-reqwest = "0.11.14"
+reqwest = { version = "0.11.14", features = ["blocking"] }
 scraper = "0.15.0"
