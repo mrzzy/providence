@@ -1,0 +1,8 @@
+[package]
+name = "simplygo-scrape"
+version = "0.1.0"
+edition = "2021"
+description  = "Scrapes public transport trip data from Simplygo"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
