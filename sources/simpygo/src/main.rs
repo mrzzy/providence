@@ -6,8 +6,8 @@
 use std::collections::HashMap;
 
 use reqwest::{
-    blocking::{Client, Response},
-    header::HeaderMap,
+    blocking::{Client, Response, RequestBuilder},
+    header::{HeaderMap, self}, Request,
 };
 use scraper::{Html, Selector};
 
@@ -70,16 +70,12 @@ struct CSRF {
     form: String,
 }
 impl CSRF {
-    /// Get CSRF tokens by scraping the response from requesting the SimplyGo homepage
-    fn get(http: &Client) -> Self {
-        let response = http
-            .get(SIMPLYGO_URL)
-            .send()
-            .expect("Failed to GET Simplygo homepage.");
+    /// Derive CSRF by scraping give SimplyGo homepage resposne
+    fn from(homepage: &Response) -> Self {
         Self {
-            cookie: extract_csrf_cookie(&response.headers()).to_owned(),
+            cookie: extract_csrf_cookie(&homepage.headers()).to_owned(),
             form: extract_csrf_form(
-                &response
+                &homepage
                     .text()
                     .expect("Could not parse SimplyGo homepage as text."),
             ),
@@ -87,25 +83,35 @@ impl CSRF {
     }
 }
 
-/// Represents a SimplyGo session.
+
+// Defines an authenticated session on Simplygo
 struct Session {
+    id: String,
+    auth: String,
+}
+
+/// SimplyGo client
+struct Client {
     http: Client,
     csrf: CSRF,
-    auth: Option<String>,
+    session: Option<Session>,
 }
-impl Session {
+impl Client {
     pub fn new() -> Self {
         let http = Client::new();
-        let csrf = CSRF::get(&http);
+        let csrf = CSRF::from(http
+            .get(SIMPLYGO_URL)
+            .send()
+            .expect("Failed to GET Simplygo homepage."));
         Self {
             http,
             csrf,
-            auth: None,
+            session: None,
         }
     }
 }
 
 fn main() {
-    let simplygo = Session::new();
+    let simplygo = Client::new();
     println!("{:?}", simplygo.csrf);
 }
