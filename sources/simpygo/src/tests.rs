@@ -14,6 +14,49 @@ const CSRF_TOKEN: &str = "_CSRF-TOKEN";
 const SESSION_ID: &str = "_session_id";
 const AUTH_TOKEN: &str = "_auth_token";
 
+/// Parse Cookies from Cookie http header values.
+fn parse_cookies(headers: &HeaderMap) -> HashMap<&str, &str> {
+    headers
+        .get("Cookie")
+        .unwrap()
+        .to_str()
+        .unwrap()
+        .split(";")
+        .map(|cookie| cookie.trim())
+        // split cookie key & value
+        .filter_map(|cookie| {
+            let parts: Vec<_> = cookie.split("=").collect();
+            parts.get(0).zip(parts.get(1)).map(|(&k, &v)| (k, v))
+        })
+        .collect()
+}
+
+#[test]
+fn parse_set_cookies_test() {
+    // header, value, expected
+    let test_cases = [
+        ("no-semicolon", "value", "value"),
+        ("semicolon", "value;", "value"),
+        (
+            "semicolon-attributes",
+            "value; SameSite=Lax Secure HttpOnly",
+            "value",
+        ),
+        ("duplicate", "value1", "value2"),
+        ("duplicate", "value2", "value2"),
+    ];
+
+    let mut headers = HeaderMap::new();
+    for (key, value, _) in test_cases {
+        headers.append(SET_COOKIE, format!("{}={}", key, value).parse().unwrap());
+    }
+    let set_cookies = parse_set_cookies(&headers);
+
+    for (key, _, expected) in test_cases {
+        assert_eq!(expected, set_cookies[key]);
+    }
+}
+
 #[test]
 fn extract_csrf_cookie_test() {
     let mut headers = HeaderMap::new();
@@ -57,10 +100,13 @@ fn simplygo_request_test() {
                 None
             },
         };
-        let request = simplygo.request(Method::GET, "/test", HashMap::new());
+        let request = simplygo
+            .request(Method::GET, "/test", HashMap::new())
+            .build()
+            .unwrap();
 
         // parse cookies from 'Cookie' http header
-        let cookies = parse_cookies(request.headers().get("Cookie").unwrap().to_str().unwrap());
+        let cookies = parse_cookies(request.headers());
         // parse url encoded form data in request body
         let body = from_utf8(request.body().unwrap().as_bytes().unwrap()).unwrap();
         let form_data: HashMap<_, _> = body

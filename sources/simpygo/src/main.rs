@@ -6,8 +6,8 @@
 use std::collections::HashMap;
 
 use reqwest::{
-    blocking::{Client, Request, Response},
-    header::{HeaderMap, COOKIE},
+    blocking::{Client, RequestBuilder, Response},
+    header::{HeaderMap, COOKIE, SET_COOKIE},
     Method,
 };
 use scraper::{Html, Selector};
@@ -21,30 +21,39 @@ const AUTH_TOKEN_KEY: &str = "AuthToken";
 #[cfg(test)]
 mod tests;
 
-fn parse_cookies(cookies: &str) -> HashMap<&str, &str> {
-    // split up multple cookies
-    cookies
-        .split(";")
-        .map(|cookie| cookie.trim())
-        // split cookie key & value
-        .filter_map(|cookie| {
-            let parts: Vec<_> = cookie.split("=").collect();
-            parts.get(0).zip(parts.get(1)).map(|(&k, &v)| (k, v))
+// Parse Cookies from Set-Cookies headers in the given http headers
+fn parse_set_cookies<'a>(headers: &'a HeaderMap) -> HashMap<&'a str, &'a str> {
+    headers
+        .get_all(SET_COOKIE)
+        .into_iter()
+        .map(|header| {
+            header
+                .to_str()
+                .expect("Failed to parse Set-Cookie HTTP header")
+        })
+        // split key value
+        .map(|set_cookie| {
+            set_cookie
+                .split_once("=")
+                .expect("Expected Set-Cookie key & value to separated by '='")
+        })
+        // trim attributes after ';' from value.
+        .map(|(k, value)| {
+            (
+                k,
+                match value.find(';') {
+                    Some(position) => &value[..position],
+                    None => value,
+                },
+            )
         })
         .collect()
 }
 
 /// Extract the value of the CSRF cookie from given SimplyGo homepage response headers
 fn extract_csrf_cookie(headers: &HeaderMap) -> &str {
-    // parse cookies from Set-Cookie http header
-    let cookies_text = headers
-        .get("Set-Cookie")
-        .expect("Missing 'Set-Cookie' header in Simplygo homepage response.")
-        .to_str()
-        .expect("Could not parse value of 'Set-Cookie' header.");
-
     // get value of csrf cookie
-    parse_cookies(cookies_text)
+    parse_set_cookies(headers)
         .get(CSRF_KEY)
         .map(|&v| v)
         .expect("Expected cookie with CSRF token is missing.")
@@ -117,24 +126,24 @@ impl SimplyGo {
         }
     }
 
-    // Make a HTTP request with the given method & URL path to SimplyGo
+    // Make a HTTP request builder with the given method & URL path to SimplyGo
     // Attaches CSRF & session tokens (if present) to the request.
     // Returns the Response on success, Error on failure.
-    fn request(
-        self,
+    fn request<'a>(
+        &'a self,
         method: Method,
         url_path: &str,
-        mut form_data: HashMap<String, String>,
-    ) -> Request {
+        mut form_data: HashMap<&str, &'a str>,
+    ) -> RequestBuilder {
         // insert csrf token into form data
-        form_data.insert(CSRF_KEY.to_owned(), self.csrf.form);
+        form_data.insert(CSRF_KEY, &self.csrf.form);
 
         let cookies = [
             // pass csrf token as cookie
-            vec![(CSRF_KEY, self.csrf.cookie)],
+            vec![(CSRF_KEY, &self.csrf.cookie)],
             // pass auth & session id as cookies
-            self.session.map_or(vec![], |session| {
-                vec![(AUTH_TOKEN_KEY, session.auth), (SESSION_ID_KEY, session.id)]
+            self.session.as_ref().map_or(vec![], |session| {
+                vec![(AUTH_TOKEN_KEY, &session.auth), (SESSION_ID_KEY, &session.id)]
             }),
         ]
         .concat();
@@ -152,9 +161,24 @@ impl SimplyGo {
                     .join("; "),
             )
             .form(&form_data)
-            .build()
-            .expect("Failed to build SimplyGo request.")
     }
+
+    // // Login on SimplyGo with the given credentials.
+    // // Username is typically a mobile number.
+    // // Returns an authenciated version of this client.
+    // fn login(&self, username: &str, password: &str) -> Self {
+    //     let response = self
+    //         .request(
+    //             Method::POST,
+    //             "/Account/Complete",
+    //             HashMap::from([("Username", username), ("Password", password)]),
+    //         )
+    //         .send()
+    //         .expect("Failed to authenicate on Simplygo with username & password.");
+    //     //
+    //     // let cookies = parse_set_cookies(response.headers())
+    //     // cookies.get(SESSION_ID_KEY)
+    // }
 }
 
 fn main() {
