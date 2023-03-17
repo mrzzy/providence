@@ -40,37 +40,45 @@ fn extract_csrf_form_test() {
 }
 
 #[test]
-fn simlygo_request_test() {
-    let simplygo = SimplyGo {
-        http: Client::new(),
-        csrf: CSRF {
-            cookie: CSRF_TOKEN.to_owned(),
-            form: CSRF_TOKEN.to_owned(),
-        },
-        session: Some(Session {
-            id: SESSION_ID.to_owned(),
-            auth: AUTH_TOKEN.to_owned(),
-        }),
-    };
-    let request = simplygo.request(Method::GET, "/test", HashMap::new());
+fn simplygo_request_test() {
+    for has_session in [true, false] {
+        let simplygo = SimplyGo {
+            http: Client::new(),
+            csrf: CSRF {
+                cookie: CSRF_TOKEN.to_owned(),
+                form: CSRF_TOKEN.to_owned(),
+            },
+            session: if has_session {
+                Some(Session {
+                    id: SESSION_ID.to_owned(),
+                    auth: AUTH_TOKEN.to_owned(),
+                })
+            } else {
+                None
+            },
+        };
+        let request = simplygo.request(Method::GET, "/test", HashMap::new());
 
-    // parse cookies from 'Cookie' http header
-    let cookies = parse_cookies(request.headers().get("Cookie").unwrap().to_str().unwrap());
-    // parse url encoded form data in request body
-    let body = from_utf8(request.body().unwrap().as_bytes().unwrap()).unwrap();
-    let form_data: HashMap<_, _> = body
-        .split('&')
-        .map(|entry| entry.split('=').collect::<Vec<_>>())
-        .map(|key_value| (key_value[0], key_value[1]))
-        .collect();
+        // parse cookies from 'Cookie' http header
+        let cookies = parse_cookies(request.headers().get("Cookie").unwrap().to_str().unwrap());
+        // parse url encoded form data in request body
+        let body = from_utf8(request.body().unwrap().as_bytes().unwrap()).unwrap();
+        let form_data: HashMap<_, _> = body
+            .split('&')
+            .map(|entry| entry.split('=').collect::<Vec<_>>())
+            .map(|key_value| (key_value[0], key_value[1]))
+            .collect();
 
-    // test: http method & url
-    assert_eq!(format!("{}/test", SIMPLYGO_URL), request.url().as_str());
-    assert_eq!(Method::GET, request.method());
-    // test: csrf tokens are attached in form data & cookies
-    assert_eq!(CSRF_TOKEN, form_data[CSRF_KEY]);
-    assert_eq!(CSRF_TOKEN, cookies[CSRF_KEY]);
-    // test: session id & auth token attached in cookies
-    assert_eq!(SESSION_ID, cookies[SESSION_ID_KEY]);
-    assert_eq!(AUTH_TOKEN, cookies[AUTH_TOKEN_KEY]);
+        // test: http method & url
+        assert_eq!(format!("{}/test", SIMPLYGO_URL), request.url().as_str());
+        assert_eq!(Method::GET, request.method());
+        // test: csrf tokens are attached in form data & cookies
+        assert_eq!(CSRF_TOKEN, form_data[CSRF_KEY]);
+        assert_eq!(CSRF_TOKEN, cookies[CSRF_KEY]);
+        if has_session {
+            // test: session id & auth token attached in cookies
+            assert_eq!(SESSION_ID, cookies[SESSION_ID_KEY]);
+            assert_eq!(AUTH_TOKEN, cookies[AUTH_TOKEN_KEY]);
+        }
+    }
 }
