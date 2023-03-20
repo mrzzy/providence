@@ -96,16 +96,42 @@ impl CSRF {
                 &homepage
                     .text()
                     .expect("Could not parse SimplyGo homepage as text."),
-            ),
+            )
+            .to_owned(),
         }
     }
 }
 
-// Defines an authenticated session on Simplygo
+/// Defines an authenticated session on SimplyGo
 #[derive(Debug)]
 struct Session {
     id: String,
     auth: String,
+}
+
+/// Represents a Bank Card registered on SimplyGo
+#[derive(Debug, PartialEq)]
+struct Card {
+    id: String,
+    name: String,
+}
+
+/// Parse the Bank Cards from the given /Cards/Transactions page html
+fn parse_cards(html: &str) -> Vec<Card> {
+    let document = Html::parse_document(html);
+    document
+        .select(
+            &Selector::parse("select#Card_Token[name=\"Card_Token\"] > optgroup > option").unwrap(),
+        )
+        .map(|option| Card {
+            id: option
+                .value()
+                .attr("value")
+                .expect("Missing 'value' attribute in <option> element.")
+                .to_owned(),
+            name: option.inner_html().to_owned(),
+        })
+        .collect()
 }
 
 /// SimplyGo client
@@ -130,15 +156,10 @@ impl SimplyGo {
         }
     }
 
-    // Make a HTTP request builder with the given method & URL path to SimplyGo
-    // Attaches CSRF & session tokens (if present) to the request.
-    // Returns the Response on success, Error on failure.
-    fn request(
-        &self,
-        method: Method,
-        url_path: &str,
-        form_data: HashMap<&str, &str>,
-    ) -> RequestBuilder {
+    /// Make a HTTP request builder with the given method & URL path to SimplyGo
+    /// Attaches CSRF & session tokens (if present) to the request.
+    /// Returns the Response on success, Error on failure.
+    fn request(&self, method: Method, url_path: &str) -> RequestBuilder {
         let cookies = [
             // pass csrf token as cookie
             vec![(CSRF_KEY, &self.csrf.cookie)],
@@ -152,15 +173,6 @@ impl SimplyGo {
         ]
         .concat();
 
-        // embed form data into form
-        let login_form = form_data
-            .into_iter()
-            .fold(Form::new(), |form, (key, value)| {
-                form.text(key.to_owned(), value.to_owned())
-            })
-            // insert csrf token into form data
-            .text(CSRF_KEY, self.csrf.form.clone());
-
         self.http
             .request(method, format!("{}{}", SIMPLYGO_URL, url_path))
             // build cookies header by expressing cookies in the format:
@@ -173,14 +185,34 @@ impl SimplyGo {
                     .collect::<Vec<_>>()
                     .join("; "),
             )
-            .multipart(login_form)
     }
-    // Login on SimplyGo with the given credentials.
-    // Username is typically a mobile number.
-    // Returns an authenciated version of this client.
+
+    /// Make a HTTP request with form data with the given method & URL path to SimplyGo.
+    /// Similar to `request()`, but passes form data as multipart encoded parts.
+    fn request_form(
+        &self,
+        method: Method,
+        url_path: &str,
+        form_data: HashMap<&str, &str>,
+    ) -> RequestBuilder {
+        // embed form data into multipart form text fields
+        let login_form = form_data
+            .into_iter()
+            .fold(Form::new(), |form, (key, value)| {
+                form.text(key.to_owned(), value.to_owned())
+            })
+            // insert csrf token into form data
+            .text(CSRF_KEY, self.csrf.form.clone());
+
+        self.request(method, url_path).multipart(login_form)
+    }
+
+    /// Login on SimplyGo with the given credentials.
+    /// Username is typically a mobile number.
+    /// Returns an authenciated version of this client.
     pub fn login(self, username: &str, password: &str) -> Self {
         let response = self
-            .request(
+            .request_form(
                 Method::POST,
                 "/Account/Complete",
                 HashMap::from([("Username", username), ("Password", password)]),
@@ -203,4 +235,16 @@ impl SimplyGo {
             ..self
         }
     }
+
+    //// Obtain the ids of SimplyGo registered bank from /Cards/Transactions page
+    // pub fn card_ids(&self) -> &[&str] {
+    //     parse_card_ids(
+    //         &self
+    //             .request(Method::GET, "/Cards/Transactions")
+    //             .send()
+    //             .expect("Failed to get SimplyGo's /Cards/Transactions page.")
+    //             .text()
+    //             .expect("Could not decode SimplyGo's /Cards/Transactions page as HTML."),
+    //     )
+    // }
 }

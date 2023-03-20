@@ -100,10 +100,7 @@ fn simplygo_request_test() {
                 None
             },
         };
-        let request = simplygo
-            .request(Method::GET, "/test", HashMap::new())
-            .build()
-            .unwrap();
+        let request = simplygo.request(Method::GET, "/test").build().unwrap();
 
         // parse cookies from 'Cookie' http header
         let headers = request.headers();
@@ -119,4 +116,29 @@ fn simplygo_request_test() {
             assert_eq!(AUTH_TOKEN, cookies[AUTH_TOKEN_KEY]);
         }
     }
+}
+
+#[test]
+fn parse_cards_test() {
+    let html = read_to_string(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/resources/simplygo_card_transactions.html"
+    ))
+    .unwrap();
+    assert!(parse_cards(&html)
+        .into_iter()
+        .zip(
+            vec![
+                Card {
+                    id: "card-id-1".to_owned(),
+                    name: "Visa".to_owned()
+                },
+                Card {
+                    id: "card-id-2".to_owned(),
+                    name: "Mastercard".to_owned()
+                },
+            ]
+            .into_iter()
+        )
+        .all(|(actual, expected)| actual == expected))
 }
