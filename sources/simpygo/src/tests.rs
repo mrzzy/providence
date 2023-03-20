@@ -3,16 +3,17 @@
  * SimplyGo Source
  * Unit Tests
 */
+use std::collections::HashMap;
 
-use std::fs::read_to_string;
+use reqwest::{blocking::Client, header::HeaderMap};
 
-use reqwest::{blocking::Client, header::SET_COOKIE};
+use crate::csrf::{CSRF, CSRF_KEY};
 
 use super::*;
 
-const CSRF_TOKEN: &str = "_CSRF-TOKEN";
 const SESSION_ID: &str = "_session_id";
 const AUTH_TOKEN: &str = "_auth_token";
+const CSRF_TOKEN: &str = "_CSRF-TOKEN";
 
 /// Parse Cookies from Cookie http header values.
 fn parse_cookies(headers: &HeaderMap) -> HashMap<&str, &str> {
@@ -30,58 +31,6 @@ fn parse_cookies(headers: &HeaderMap) -> HashMap<&str, &str> {
         })
         .collect()
 }
-
-#[test]
-fn parse_set_cookies_test() {
-    // header, value, expected
-    let test_cases = [
-        ("no-semicolon", "value", "value"),
-        ("semicolon", "value;", "value"),
-        (
-            "semicolon-attributes",
-            "value; SameSite=Lax Secure HttpOnly",
-            "value",
-        ),
-        ("duplicate", "value1", "value2"),
-        ("duplicate", "value2", "value2"),
-    ];
-
-    let mut headers = HeaderMap::new();
-    for (key, value, _) in test_cases {
-        headers.append(SET_COOKIE, format!("{}={}", key, value).parse().unwrap());
-    }
-    let set_cookies = parse_set_cookies(&headers);
-
-    for (key, _, expected) in test_cases {
-        assert_eq!(expected, set_cookies[key]);
-    }
-}
-
-#[test]
-fn extract_csrf_cookie_test() {
-    let mut headers = HeaderMap::new();
-    headers.insert(
-        SET_COOKIE,
-        format!(
-            "__RequestVerificationToken={}; path=/; secure; HttpOnly",
-            CSRF_TOKEN
-        )
-        .parse()
-        .unwrap(),
-    );
-    assert_eq!(CSRF_TOKEN, extract_csrf_cookie(&headers));
-}
-
-#[test]
-fn extract_csrf_form_test() {
-    let html = read_to_string(concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/resources/simplygo_homepage.html"
-    ))
-    .unwrap();
-    assert_eq!(CSRF_TOKEN, extract_csrf_form(&html));
-}
-
 #[test]
 fn simplygo_request_test() {
     for has_session in [true, false] {
@@ -116,29 +65,4 @@ fn simplygo_request_test() {
             assert_eq!(AUTH_TOKEN, cookies[AUTH_TOKEN_KEY]);
         }
     }
-}
-
-#[test]
-fn parse_cards_test() {
-    let html = read_to_string(concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/resources/simplygo_card_transactions.html"
-    ))
-    .unwrap();
-    assert!(parse_cards(&html)
-        .into_iter()
-        .zip(
-            vec![
-                Card {
-                    id: "card-id-1".to_owned(),
-                    name: "Visa".to_owned()
-                },
-                Card {
-                    id: "card-id-2".to_owned(),
-                    name: "Mastercard".to_owned()
-                },
-            ]
-            .into_iter()
-        )
-        .all(|(actual, expected)| actual == expected))
 }

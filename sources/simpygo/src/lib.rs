@@ -4,134 +4,33 @@
  * SimplyGo Client
 */
 
-use std::collections::HashMap;
-
-use reqwest::{
-    blocking::{multipart::Form, Client, RequestBuilder, Response},
-    header::{HeaderMap, COOKIE, SET_COOKIE},
-    redirect::Policy,
-    Method,
-};
-use scraper::{Html, Selector};
-
-const SIMPLYGO_URL: &str = "https://simplygo.transitlink.com.sg";
-const CSRF_KEY: &str = "__RequestVerificationToken";
-const SESSION_ID_KEY: &str = "ASP.NET_SessionId";
-const AUTH_TOKEN_KEY: &str = "AuthToken";
-
-// Unit Tests
+mod csrf;
+mod http;
+mod models;
 #[cfg(test)]
 mod tests;
 
-// Parse Cookies from Set-Cookies headers in the given http headers
-fn parse_set_cookies<'a>(headers: &'a HeaderMap) -> HashMap<&'a str, &'a str> {
-    headers
-        .get_all(SET_COOKIE)
-        .into_iter()
-        .map(|header| {
-            header
-                .to_str()
-                .expect("Failed to parse Set-Cookie HTTP header")
-        })
-        // split key value
-        .map(|set_cookie| {
-            set_cookie
-                .split_once("=")
-                .expect("Expected Set-Cookie key & value to separated by '='")
-        })
-        // trim attributes after ';' from value.
-        .map(|(k, value)| {
-            (
-                k,
-                match value.find(';') {
-                    Some(position) => &value[..position],
-                    None => value,
-                },
-            )
-        })
-        .collect()
-}
+use std::collections::HashMap;
 
-/// Extract the value of the CSRF cookie from given SimplyGo homepage response headers
-fn extract_csrf_cookie(headers: &HeaderMap) -> &str {
-    // get value of csrf cookie
-    parse_set_cookies(headers)
-        .get(CSRF_KEY)
-        .map(|&v| v)
-        .expect("Expected cookie with CSRF token is missing.")
-}
+use crate::http::parse_set_cookies;
+use csrf::{CSRF, CSRF_KEY};
+use models::{parse_cards, Card};
+use reqwest::{
+    blocking::{multipart::Form, Client, RequestBuilder},
+    header::COOKIE,
+    redirect::Policy,
+    Method,
+};
 
-/// Extract the value of the CSRF form input from the given SimplyGo homepage html
-fn extract_csrf_form(html: &str) -> String {
-    let document = Html::parse_document(html);
-    // find <input> tag with the csrf token
-    let inputs = document
-        .select(&Selector::parse(&format!("input[name=\"{}\"]", CSRF_KEY)).unwrap())
-        .take(1)
-        .collect::<Vec<_>>();
-    // extract token from value attribute of <input> tag
-    inputs
-        .get(0)
-        .expect("Could not locate <input> element for form CSRF token.")
-        .value()
-        .attr("value")
-        .expect("Expected <input> element to have a 'value' attribute")
-        .to_owned()
-}
-
-/// CSRF Tokens to be submitted in requests to SimplyGo.
-#[derive(Debug)]
-struct CSRF {
-    /// CSRF token to be submitted as a cookie.
-    cookie: String,
-    /// CSRF token to be submitted as a url encoded form data.
-    form: String,
-}
-impl CSRF {
-    /// Derive CSRF by scraping give SimplyGo homepage resposne
-    fn from(homepage: Response) -> Self {
-        Self {
-            cookie: extract_csrf_cookie(&homepage.headers()).to_owned(),
-            form: extract_csrf_form(
-                &homepage
-                    .text()
-                    .expect("Could not parse SimplyGo homepage as text."),
-            )
-            .to_owned(),
-        }
-    }
-}
+const SIMPLYGO_URL: &str = "https://simplygo.transitlink.com.sg";
+const SESSION_ID_KEY: &str = "ASP.NET_SessionId";
+const AUTH_TOKEN_KEY: &str = "AuthToken";
 
 /// Defines an authenticated session on SimplyGo
 #[derive(Debug)]
 struct Session {
     id: String,
     auth: String,
-}
-
-/// Represents a Bank Card registered on SimplyGo
-#[derive(Debug, PartialEq)]
-struct Card {
-    id: String,
-    name: String,
-}
-
-/// Parse the Bank Cards from the given /Cards/Transactions page html
-fn parse_cards(html: &str) -> Vec<Card> {
-    let document = Html::parse_document(html);
-    document
-        .select(
-            &Selector::parse("select#Card_Token[name=\"Card_Token\"] > optgroup > option").unwrap(),
-        )
-        .map(|option| Card {
-            id: option
-                .value()
-                .attr("value")
-                .expect("Missing 'value' attribute in <option> element.")
-                .to_owned(),
-            name: option.inner_html().to_owned(),
-        })
-        .collect()
 }
 
 /// SimplyGo client
@@ -236,15 +135,19 @@ impl SimplyGo {
         }
     }
 
-    //// Obtain the ids of SimplyGo registered bank from /Cards/Transactions page
-    // pub fn card_ids(&self) -> &[&str] {
-    //     parse_card_ids(
-    //         &self
-    //             .request(Method::GET, "/Cards/Transactions")
-    //             .send()
-    //             .expect("Failed to get SimplyGo's /Cards/Transactions page.")
-    //             .text()
-    //             .expect("Could not decode SimplyGo's /Cards/Transactions page as HTML."),
-    //     )
-    // }
+    // Obtain the ids of SimplyGo registered bank from /Cards/Transactions page
+    fn cards(&self) -> Vec<Card> {
+        let url_path = "/Cards/Transactions";
+        parse_cards(
+            &self
+                .request(Method::GET, url_path)
+                .send()
+                .expect(&format!("Failed to get SimplyGo's {} page.", url_path))
+                .text()
+                .expect(&format!(
+                    "Could not decode SimplyGo's {} page as HTML.",
+                    url_path
+                )),
+        )
+    }
 }
