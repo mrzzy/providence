@@ -34,3 +34,5 @@ Sessionx.vim
 tags
 # Persistent undo
 [._]*.un~
+# dotenv files
+.env
