@@ -3,9 +3,8 @@
  * SimplyGo Source
 */
 
-use std::env;
-
 use simplygo_src::SimplyGo;
+use std::env;
 
 fn main() {
     let simplygo = SimplyGo::new().login(
