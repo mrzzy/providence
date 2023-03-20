@@ -4,6 +4,7 @@
  * Models
 */
 
+use chrono::DateTime;
 use scraper::{Html, Selector};
 
 /// A Bank Card registered on SimplyGo
@@ -30,6 +31,13 @@ pub fn parse_cards(html: &str) -> Vec<Card> {
         })
         .collect()
 }
+
+/// Public Transport Trip made on SimplyGo
+pub struct Trip {
+    pub posting_ref: String,
+    begin: DateTime<>
+}
+
 
 #[cfg(test)]
 mod tests {
