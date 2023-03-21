@@ -4,7 +4,9 @@
  * Models
 */
 
-use chrono::{DateTime, offset::Utc};
+use std::time::Duration;
+
+use chrono::{DateTime, offset::Utc, NaiveTime};
 use scraper::{Html, Selector};
 
 /// A Bank Card registered on SimplyGo
@@ -34,19 +36,39 @@ pub fn parse_cards(html: &str) -> Vec<Card> {
         .collect()
 }
 
+
 /// Public Transport Trip made on SimplyGo
 pub struct Trip {
+    /// Bank card to charge for the cost of the trip.
+    pub card: Card,
     /// Reference no. if the the trip was "Posted" ie. charged on the bank account.
-    posting_ref: String,
-    /// Timestamp when the trip begins.
-    begin: DateTime<Utc>,
-    /// Duration of the trip in seconds.
-    duration_secs: u32,
-    // Cost of the trip in SGD, expressed as a decimal string to avoid precision 
-    // lost in floating point in types.
-    cost_sgd: String,
+    /// If the trip has not be posted this field will be null
+    pub posting_ref: Option<String>,
+    /// Date on which this trip was made
+    pub duration: Duration,
+    /// Legs of the trip
+    pub legs: Vec<Leg>,
 }
 
+/// Modes of Public Transport.
+pub enum Mode {
+    Rail,
+    Bus,
+}
+/// Leg of a Public Transport Trip made on SimplyGo
+pub struct Leg {
+    /// time when this leg of the trip begins.
+    pub begin: NaiveTime,
+    /// Cost of this leg of the trip in SGD, expressed as a decimal string 
+    // to avoid precision loss in floating point in types.
+    pub cost_sgd: String,
+    /// Source location of this leg of the trip.
+    pub source: String,
+    /// Destination location of this leg of the trip.
+    pub destination: String,
+    /// Mode of transport.
+    pub mode: Mode,
+}
 
 #[cfg(test)]
 mod tests {
