@@ -7,6 +7,7 @@
 mod csrf;
 mod http;
 mod models;
+mod parsing;
 #[cfg(test)]
 mod tests;
 
