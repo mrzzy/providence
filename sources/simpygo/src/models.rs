@@ -4,13 +4,15 @@
  * Models
 */
 
-use chrono::DateTime;
+use chrono::{DateTime, offset::Utc};
 use scraper::{Html, Selector};
 
 /// A Bank Card registered on SimplyGo
 #[derive(Debug, PartialEq)]
 pub struct Card {
+    // Id used by SimplyGo to identify Bank Card.
     pub id: String,
+    // Name of Bank Card assigned by user.
     pub name: String,
 }
 
@@ -34,8 +36,15 @@ pub fn parse_cards(html: &str) -> Vec<Card> {
 
 /// Public Transport Trip made on SimplyGo
 pub struct Trip {
-    pub posting_ref: String,
-    begin: DateTime<>
+    /// Reference no. if the the trip was "Posted" ie. charged on the bank account.
+    posting_ref: String,
+    /// Timestamp when the trip begins.
+    begin: DateTime<Utc>,
+    /// Duration of the trip in seconds.
+    duration_secs: u32,
+    // Cost of the trip in SGD, expressed as a decimal string to avoid precision 
+    // lost in floating point in types.
+    cost_sgd: String,
 }
 
 
