@@ -18,11 +18,11 @@ pub struct Card {
 
 /// Parse the Bank Cards from the given /Cards/Transactions page html
 pub fn parse_cards(html: &str) -> Vec<Card> {
-    let card_sel: &'static Selector =
-        &Selector::parse("select#Card_Token[name=\"Card_Token\"] > optgroup > option").unwrap();
+    let card_sel =
+        Selector::parse("select#Card_Token[name=\"Card_Token\"] > optgroup > option").unwrap();
     let document = Html::parse_document(html);
     document
-        .select(card_sel)
+        .select(&card_sel)
         .map(|option| Card {
             id: option
                 .value()
@@ -47,10 +47,10 @@ pub struct Trip {
 
 /// Modes of Public Transport.
 pub enum Mode {
-    Unknown,
     Rail,
     Bus,
 }
+
 /// Leg of a Public Transport Trip made on SimplyGo
 pub struct Leg {
     /// time when this leg of the trip begins in the Asia/Singapore time zone.
@@ -66,37 +66,54 @@ pub struct Leg {
     pub mode: Mode,
 }
 
-/// Parse legs of a Trip given <tr> tag representing a Trip Record.
-fn parse_trip_legs(tr: ElementRef) -> Vec<Leg> {
-    // css selectors for parsing trip legs
-    let trip_legs_sel: &'static Selector =
-        &Selector::parse("table.Table-payment-statement-mobile > tbody > tr").unwrap();
-    let time_sel: &'static Selector = &Selector::parse("td.col1 > div").unwrap();
-    let journey_sel: &'static Selector = &Selector::parse("td.col2 > div").unwrap();
-    let cost_sel: &'static Selector = &Selector::parse("td.col3 > div").unwrap();
-    let mode_img_sel: &'static Selector = &Selector::parse("td.col5 > div > img").unwrap();
+fn parse_tranport_mode(tr: &ElementRef) -> Mode {
+    let mode_img_sel = Selector::parse("td.col5 > div > img").unwrap();
+    let mode_img_src = tr
+        .select(&mode_img_sel)
+        .next()
+        .expect("Missing expected <img> tag depicting mode of transport.")
+        .value()
+        .attr("src")
+        .unwrap();
 
-    tr.select(trip_legs_sel)
+    use Mode::*;
+    match mode_img_src {
+        s if s.contains("bus") => Bus,
+        s if s.contains("rail") => Rail,
+        _ => panic!("Could not determine transport mode from <img> tag."),
+    }
+}
+
+fn parse_journey(tr: &ElementRef) -> (String, String) {
+    let journey_sel = Selector::parse("td.col2 > div").unwrap();
+    // parse source and destination from journey column in format: <SRC>-<DEST>
+    let journey_str = tr
+        .select(&journey_sel)
+        .next()
+        .expect("Missing expected 'Journey' column in Trip Leg.")
+        .inner_html();
+    let src_dest = journey_str
+        .split_once("-")
+        .expect("Malformed 'Journey' column value in Trip Leg.");
+
+    (src_dest.0.to_owned(), src_dest.1.to_owned())
+}
+
+/// Parse legs of a Trip given <tr> tag representing a Trip Record.
+fn parse_trip_legs(tr: &ElementRef) -> Vec<Leg> {
+    // css selectors for parsing trip legs
+    let trip_legs_sel =
+        Selector::parse("table.Table-payment-statement-mobile > tbody > tr").unwrap();
+    let time_sel = Selector::parse("td.col1 > div").unwrap();
+    let cost_sel = Selector::parse("td.col3 > div").unwrap();
+
+    tr.select(&trip_legs_sel)
         .map(|tr| {
-            // parse source and destination from journey column in format: <SRC>-<DEST>
-            let src_dest = tr
-                .select(journey_sel)
-                .next()
-                .expect("Missing expected 'Journey' column in Trip Leg.")
-                .inner_html()
-                .split_once("-")
-                .expect("Malformed 'Journey' column value in Trip Leg.");
+            let (source, destination) = parse_journey(&tr);
             // parse mode of transport icon img src url
-            let mode_img_src = tr
-                .select(mode_img_sel)
-                .next()
-                .expect("Missing expected <img> tag depicting mode of transport.")
-                .value()
-                .attr("src")
-                .unwrap();
             Leg {
                 begin_at: NaiveTime::parse_from_str(
-                    &tr.select(time_sel)
+                    &tr.select(&time_sel)
                         .next()
                         .expect("Missing expected 'Date/Time' column in Trip Leg.")
                         .inner_html(),
@@ -104,22 +121,16 @@ fn parse_trip_legs(tr: ElementRef) -> Vec<Leg> {
                 )
                 .expect("Could not parse time in format: HH:MM AM|PM"),
                 cost_sgd: tr
-                    .select(cost_sel)
+                    .select(&cost_sel)
                     .next()
                     .expect("Missing expected 'Charges' column in Trip Leg.")
                     .inner_html()
                     .replace("$", "")
                     .trim()
                     .to_owned(),
-                source: src_dest.0.trim().to_owned(),
-                destination: src_dest.1.trim().to_owned(),
-                mode: if mode_img_src.contains("icon-rail") {
-                    Mode::Rail
-                } else if mode_img_src.contains("icon-bus") {
-                    Mode::Bus
-                } else {
-                    Mode::Unknown
-                },
+                source,
+                destination,
+                mode: parse_tranport_mode(&tr),
             }
         })
         .collect()
@@ -137,48 +148,49 @@ fn parse_date(date_str: &str) -> NaiveDate {
     .expect("Could not parse date in DD-Mmm-YYYY format.")
 }
 
+/// Parse Posting Ref in format: '[Posting Ref No : <POSTING_REF>]'
+fn parse_posting(posting_str: &str) -> &str {
+    posting_str
+        .split_once(":")
+        .expect("Malformed Posting Ref.")
+        .1
+        .split_once("]")
+        .expect("Malformed Posting Ref.")
+        .0
+        .trim()
+}
+
 /// Parse Trips from the given /Card/GetTransactions html
 pub fn parse_trips(html: &str) -> Vec<Trip> {
     // css selectors for parsing trip
-    let trip_record_sel: &'static Selector = &Selector::parse(".form-record > table > tr").unwrap();
-    let statement_sel: &'static Selector = &Selector::parse(".journey_p_collapse").unwrap();
-    let date_sel: &'static Selector = &Selector::parse("td.col1").unwrap();
-    let posting_sel: &'static Selector = &Selector::parse("td.col2 > div").unwrap();
+    let trip_record_sel = Selector::parse(".form-record > table > tr").unwrap();
+    let statement_sel = Selector::parse(".journey_p_collapse").unwrap();
+    let date_sel = Selector::parse("td.col1").unwrap();
+    let posting_sel = Selector::parse("td.col2 > div").unwrap();
     let document = Html::parse_document(html);
     document
-        .select(trip_record_sel)
+        .select(&trip_record_sel)
         // skip payment posting statment row
         .skip(1)
         .map(|tr| {
             // parse trip from payment statement
             let statement = tr
-                .select(statement_sel)
+                .select(&statement_sel)
                 .next()
                 .expect("Missing Trip Payment Statement in Trip Record.");
             Trip {
                 traveled_on: parse_date(
                     &statement
-                        .select(date_sel)
+                        .select(&date_sel)
                         .next()
                         .expect("Missing expected 'Date/Time' column in Payment Statement.")
                         .inner_html(),
                 ),
                 posting_ref: statement
-                    .select(posting_sel)
+                    .select(&posting_sel)
                     .next()
-                    // parse posting ref in format: '[Posting Ref No : <POSTING_REF>]'
-                    .map(|div| {
-                        div.inner_html()
-                            .split_once(":")
-                            .expect("Malformed Posting Ref.")
-                            .1
-                            .split_once("]")
-                            .expect("Malformed Posting Ref.")
-                            .0
-                            .trim()
-                            .to_owned()
-                    }),
-                legs: parse_trip_legs(tr),
+                    .map(|div| parse_posting(&div.inner_html()).to_owned()),
+                legs: parse_trip_legs(&tr),
             }
         })
         .collect()
