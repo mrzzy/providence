@@ -33,6 +33,8 @@ fn get_leg_tr(html: &Html) -> ElementRef {
 fn get_trip_tr(html: &Html) -> ElementRef {
     // extra ,<tbody> automatically inserted on html parsing
     html.select(&Selector::parse(".form-record > table > tbody > tr").unwrap())
+        // skip trip posting record
+        .skip(1)
         .next()
         .unwrap()
 }
@@ -79,9 +81,14 @@ fn parse_posting_test() {
 #[test]
 fn parse_journey_test() {
     let html = load_html("simplygo_card_gettransactions.html");
+    // skip to next row as its a more rigourous test case to parse
+    let tr = html.select(&Selector::parse(".data-p-row-item-01 tbody > tr").unwrap())
+        .skip(1)
+        .next()
+        .unwrap();
     assert_eq!(
-        ("Raffles Place".to_owned(), "Bedok".to_owned()),
-        parse_journey(&get_leg_tr(&html))
+        ("Bedok Stn Exit B".to_owned(), "Upp East Coast Ter".to_owned()),
+        parse_journey(&tr)
     )
 }
 
@@ -94,6 +101,9 @@ fn parse_transport_mode_test() {
 #[test]
 fn parse_trip_legs_test() {
     let html = load_html("simplygo_card_gettransactions.html");
+    let trip_legs = parse_trip_legs(&get_trip_tr(&html));
+
+    assert!(trip_legs.len() > 0);
     assert!(vec![
         Leg {
             begin_at: NaiveTime::from_hms_opt(22, 13, 00).unwrap(),
@@ -105,12 +115,14 @@ fn parse_trip_legs_test() {
         Leg {
             begin_at: NaiveTime::from_hms_opt(22, 51, 00).unwrap(),
             cost_sgd: "0.17".to_owned(),
-            source: "Bedok Std Exit B".to_owned(),
+            source: "Bedok Stn Exit B".to_owned(),
             destination: "Upp East Coast Ter".to_owned(),
             mode: Mode::Bus,
         }
     ]
     .into_iter()
-    .zip(parse_trip_legs(&get_trip_tr(&html)))
-    .all(|(expected, actual)| expected == actual))
+    .zip(trip_legs)
+    .all(|(expected, actual)| {
+        expected == actual
+    }))
 }
