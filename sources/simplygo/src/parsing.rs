@@ -5,6 +5,7 @@
 */
 
 use chrono::{NaiveDate, NaiveTime};
+use regex::Regex;
 use scraper::{ElementRef, Html, Selector};
 
 use crate::models::{Card, Leg, Mode, Trip};
@@ -63,11 +64,15 @@ fn parse_journey(tr: &ElementRef) -> (String, String) {
         .next()
         .expect("Missing expected 'Journey' column in Trip Leg.")
         .inner_html();
-    let src_dest = journey_str
-        .split_once("-")
+    // extract source & destination from journey via regex
+    let journey_re = Regex::new(r"(?P<source>\b[\w ]+\b) - (?P<destination>\b[\w ]+\b)").unwrap();
+    let captures = journey_re
+        .captures(&journey_str)
         .expect("Malformed 'Journey' column value in Trip Leg.");
-
-    (src_dest.0.trim().to_owned(), src_dest.1.trim().to_owned())
+    (
+        captures["source"].to_owned(),
+        captures["destination"].to_owned(),
+    )
 }
 
 /// Parse transport Mode from <img>'s 'src' attribute in the <tr> tag representing
