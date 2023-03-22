@@ -72,7 +72,7 @@ fn parse_journey(tr: &ElementRef) -> (String, String) {
 
 /// Parse transport Mode from <img>'s 'src' attribute in the <tr> tag representing
 /// a Trip Record.
-fn parse_tranport_mode(tr: &ElementRef) -> Mode {
+fn parse_transport_mode(tr: &ElementRef) -> Mode {
     let mode_img_sel = Selector::parse("td.col5 > div > img").unwrap();
     let mode_img_src = tr
         .select(&mode_img_sel)
@@ -120,7 +120,7 @@ fn parse_trip_legs(tr: &ElementRef) -> Vec<Leg> {
                     .to_owned(),
                 source,
                 destination,
-                mode: parse_tranport_mode(&tr),
+                mode: parse_transport_mode(&tr),
             }
         })
         .collect()
@@ -160,4 +160,3 @@ pub fn parse_trips(html: &str) -> Vec<Trip> {
         })
         .collect()
 }
-
