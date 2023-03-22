@@ -107,7 +107,7 @@ fn parse_trip_legs(tr: &ElementRef) -> Vec<Leg> {
                         .next()
                         .expect("Missing expected 'Date/Time' column in Trip Leg.")
                         .inner_html(),
-                    "%H:%M %p",
+                    "%I:%M %p",
                 )
                 .expect("Could not parse time in format: HH:MM AM|PM"),
                 cost_sgd: tr
