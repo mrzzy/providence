@@ -31,7 +31,8 @@ fn get_leg_tr(html: &Html) -> ElementRef {
 
 // Get a <tr> tag representing a full trip record from the given html
 fn get_trip_tr(html: &Html) -> ElementRef {
-    html.select(&Selector::parse(".form-record > table > tr").unwrap())
+    // extra ,<tbody> automatically inserted on html parsing
+    html.select(&Selector::parse(".form-record > table > tbody > tr").unwrap())
         .next()
         .unwrap()
 }

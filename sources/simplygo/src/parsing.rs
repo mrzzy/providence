@@ -128,7 +128,8 @@ fn parse_trip_legs(tr: &ElementRef) -> Vec<Leg> {
 /// Parse Trips from the given /Card/GetTransactions html
 pub fn parse_trips(html: &str) -> Vec<Trip> {
     // css selectors for parsing trip
-    let trip_record_sel = Selector::parse(".form-record > table > tr").unwrap();
+    // extra ,<tbody> automatically inserted on html parsing
+    let trip_record_sel = Selector::parse(".form-record > table > tbody > tr").unwrap();
     let statement_sel = Selector::parse(".journey_p_collapse").unwrap();
     let date_sel = Selector::parse("td.col1").unwrap();
     let posting_sel = Selector::parse("td.col2 > div").unwrap();

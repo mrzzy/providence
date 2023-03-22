@@ -15,6 +15,7 @@ pub struct Card {
     pub name: String,
 }
 /// Public Transport Trip made on SimplyGo
+#[derive(Debug, PartialEq)]
 pub struct Trip {
     /// Reference no. if the the trip was "Posted" ie. charged on the bank account.
     /// If the trip has not be posted this field will be null
@@ -26,13 +27,14 @@ pub struct Trip {
 }
 
 /// Modes of Public Transport.
-#[derive(PartialEq, Eq, Debug)]
+#[derive(PartialEq, Debug)]
 pub enum Mode {
     Rail,
     Bus,
 }
 
 /// Leg of a Public Transport Trip made on SimplyGo
+#[derive(Debug, PartialEq)]
 pub struct Leg {
     /// time when this leg of the trip begins in the Asia/Singapore time zone.
     pub begin_at: NaiveTime,
