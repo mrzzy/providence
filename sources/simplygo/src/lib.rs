@@ -15,7 +15,8 @@ use std::collections::HashMap;
 
 use crate::http::parse_set_cookies;
 use csrf::{CSRF, CSRF_KEY};
-use models::{parse_cards, Card};
+use models::Card;
+use parsing::parse_cards;
 use reqwest::{
     blocking::{multipart::Form, Client, RequestBuilder},
     header::COOKIE,

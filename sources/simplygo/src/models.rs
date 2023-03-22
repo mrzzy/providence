@@ -26,6 +26,7 @@ pub struct Trip {
 }
 
 /// Modes of Public Transport.
+#[derive(PartialEq, Eq, Debug)]
 pub enum Mode {
     Rail,
     Bus,
