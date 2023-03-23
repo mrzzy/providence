@@ -14,9 +14,10 @@ mod tests;
 use std::collections::HashMap;
 
 use crate::http::parse_set_cookies;
+use chrono::NaiveDate;
 use csrf::{CSRF, CSRF_KEY};
-use models::Card;
-use parsing::parse_cards;
+use models::{Card, Trip};
+use parsing::{parse_cards, parse_trips};
 use reqwest::{
     blocking::{multipart::Form, Client, RequestBuilder},
     header::COOKIE,
@@ -137,14 +138,42 @@ impl SimplyGo {
         }
     }
 
-    // Obtain the ids of SimplyGo registered bank from /Cards/Transactions page
-    fn cards(&self) -> Vec<Card> {
+    /// Scrape the ids of SimplyGo registered bank card from /Cards/Transactions page
+    pub fn cards(&self) -> Vec<Card> {
         let url_path = "/Cards/Transactions";
         parse_cards(
             &self
                 .request(Method::GET, url_path)
                 .send()
                 .expect(&format!("Failed to get SimplyGo's {} page.", url_path))
+                .text()
+                .expect(&format!(
+                    "Could not decode SimplyGo's {} page as HTML.",
+                    url_path
+                )),
+        )
+    }
+
+    /// Scrape Trips made on the given bank card in the time period starting
+    /// on `from` &amp; toing on `to` dates.
+    pub fn trips(&self, card: &Card, from: &NaiveDate, to: &NaiveDate) -> Vec<Trip> {
+        // build request multipart form with params
+        let date_fmt = "%d-%b-%Y";
+        let form = Form::new()
+            .text("Card_Token", card.id.clone())
+            .text("From", format!("{}", from.format(date_fmt)))
+            .text("To", format!("{}", to.format(date_fmt)));
+
+        let url_path = "/Cards/GetTransctions";
+        parse_trips(
+            &self
+                .request(Method::POST, url_path)
+                .multipart(form)
+                .send()
+                .expect(&format!(
+                    "Failed to Get Transactions for Card {} from SimplyGo's {} page.",
+                    card.id, url_path
+                ))
                 .text()
                 .expect(&format!(
                     "Could not decode SimplyGo's {} page as HTML.",

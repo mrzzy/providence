@@ -137,6 +137,8 @@ fn parse_trips_test() {
     let trip_trs: Vec<_> = html
         .select(&Selector::parse(TRIP_CSS_SELECTOR).unwrap())
         .collect();
+    let trips = parse_trips(&html.html());
+    assert!(trips.len() > 0);
     assert!(vec![
         Trip {
             posting_ref: Some("BUS/MRT 235310372".to_owned()),
@@ -150,6 +152,6 @@ fn parse_trips_test() {
         }
     ]
     .into_iter()
-    .zip(parse_trips(&html.html()))
+    .zip(trips)
     .all(|(expected, actual)| expected == actual))
 }
