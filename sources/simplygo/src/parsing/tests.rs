@@ -22,23 +22,7 @@ fn load_html(filename: &str) -> Html {
     )
 }
 
-// Get a <tr> tag representing a leg of a trip for testing foom the given html
-fn get_leg_tr(html: &Html) -> ElementRef {
-    html.select(&Selector::parse(".data-p-row-item-01 tbody > tr").unwrap())
-        .next()
-        .unwrap()
-}
-
 // Get a <tr> tag representing a full trip record from the given html
-fn get_trip_tr(html: &Html) -> ElementRef {
-    // extra ,<tbody> automatically inserted on html parsing
-    html.select(&Selector::parse(".form-record > table > tbody > tr").unwrap())
-        // skip trip posting record
-        .skip(1)
-        .next()
-        .unwrap()
-}
-
 #[test]
 fn parse_cards_test() {
     assert!(
@@ -82,12 +66,16 @@ fn parse_posting_test() {
 fn parse_journey_test() {
     let html = load_html("simplygo_card_gettransactions.html");
     // skip to next row as its a more rigourous test case to parse
-    let tr = html.select(&Selector::parse(".data-p-row-item-01 tbody > tr").unwrap())
+    let tr = html
+        .select(&Selector::parse(".data-p-row-item-01 tbody > tr").unwrap())
         .skip(1)
         .next()
         .unwrap();
     assert_eq!(
-        ("Bedok Stn Exit B".to_owned(), "Upp East Coast Ter".to_owned()),
+        (
+            "Bedok Stn Exit B".to_owned(),
+            "Upp East Coast Ter".to_owned()
+        ),
         parse_journey(&tr)
     )
 }
@@ -95,13 +83,29 @@ fn parse_journey_test() {
 #[test]
 fn parse_transport_mode_test() {
     let html = load_html("simplygo_card_gettransactions.html");
-    assert_eq!(Mode::Rail, parse_transport_mode(&get_leg_tr(&html)));
+    assert_eq!(
+        Mode::Rail,
+        parse_transport_mode(
+            &html
+                .select(&Selector::parse(".data-p-row-item-01 tbody > tr").unwrap())
+                .next()
+                .unwrap()
+        )
+    );
 }
 
 #[test]
 fn parse_trip_legs_test() {
     let html = load_html("simplygo_card_gettransactions.html");
-    let trip_legs = parse_trip_legs(&get_trip_tr(&html));
+    let trip_legs = parse_trip_legs(
+        // extra <tbody> automatically inserted on html parsing
+        &html
+            .select(&Selector::parse(".form-record > table > tbody > tr").unwrap())
+            // skip trip posting record
+            .skip(1)
+            .next()
+            .unwrap(),
+    );
 
     assert!(trip_legs.len() > 0);
     assert!(vec![
@@ -122,7 +126,6 @@ fn parse_trip_legs_test() {
     ]
     .into_iter()
     .zip(trip_legs)
-    .all(|(expected, actual)| {
-        expected == actual
-    }))
+    .all(|(expected, actual)| { expected == actual }))
 }
+
