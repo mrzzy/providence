@@ -10,6 +10,10 @@ use chrono::NaiveDate;
 
 use super::*;
 
+// skip first <tr>: trip posting record
+const TRIP_CSS_SELECTOR: &str = ".form-record > table > tbody > tr:not(:first-child)";
+const LEG_CSS_SELECTOR: &str = ".data-p-row-item-01 tbody > tr";
+
 // Load HTML page from resources for testing
 fn load_html(filename: &str) -> Html {
     Html::parse_document(
@@ -67,7 +71,7 @@ fn parse_journey_test() {
     let html = load_html("simplygo_card_gettransactions.html");
     // skip to next row as its a more rigourous test case to parse
     let tr = html
-        .select(&Selector::parse(".data-p-row-item-01 tbody > tr").unwrap())
+        .select(&Selector::parse(LEG_CSS_SELECTOR).unwrap())
         .skip(1)
         .next()
         .unwrap();
@@ -87,7 +91,7 @@ fn parse_transport_mode_test() {
         Mode::Rail,
         parse_transport_mode(
             &html
-                .select(&Selector::parse(".data-p-row-item-01 tbody > tr").unwrap())
+                .select(&Selector::parse(LEG_CSS_SELECTOR).unwrap())
                 .next()
                 .unwrap()
         )
@@ -100,9 +104,7 @@ fn parse_trip_legs_test() {
     let trip_legs = parse_trip_legs(
         // extra <tbody> automatically inserted on html parsing
         &html
-            .select(&Selector::parse(".form-record > table > tbody > tr").unwrap())
-            // skip trip posting record
-            .skip(1)
+            .select(&Selector::parse(TRIP_CSS_SELECTOR).unwrap())
             .next()
             .unwrap(),
     );
@@ -129,3 +131,25 @@ fn parse_trip_legs_test() {
     .all(|(expected, actual)| { expected == actual }))
 }
 
+#[test]
+fn parse_trips_test() {
+    let html = load_html("simplygo_card_gettransactions.html");
+    let trip_trs: Vec<_> = html
+        .select(&Selector::parse(TRIP_CSS_SELECTOR).unwrap())
+        .collect();
+    assert!(vec![
+        Trip {
+            posting_ref: Some("BUS/MRT 235310372".to_owned()),
+            traveled_on: NaiveDate::from_ymd_opt(2023, 2, 22).unwrap(),
+            legs: parse_trip_legs(&trip_trs[0]),
+        },
+        Trip {
+            posting_ref: Some("BUS/MRT 235310372".to_owned()),
+            traveled_on: NaiveDate::from_ymd_opt(2023, 2, 22).unwrap(),
+            legs: parse_trip_legs(&trip_trs[1]),
+        }
+    ]
+    .into_iter()
+    .zip(parse_trips(&html.html()))
+    .all(|(expected, actual)| expected == actual))
+}

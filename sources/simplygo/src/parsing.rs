@@ -141,7 +141,7 @@ pub fn parse_trips(html: &str) -> Vec<Trip> {
     let document = Html::parse_document(html);
     document
         .select(&trip_record_sel)
-        // skip payment posting statment row
+        // skip payment posting statement row
         .skip(1)
         .map(|tr| {
             // parse trip from payment statement
