@@ -2,12 +2,13 @@
 name = "simplygo_src"
 version = "0.1.0"
 edition = "2021"
-  description  = "Providence SimplyGo Data Source"
+description  = "Providence: SimplyGo Data Source scrapes raw data off SimplyGo."
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 chrono = { version = "0.4.24", features = ["serde", "std"] }
-clap = { version = "4.1.8", features = ["derive"] }
+chrono-tz = "0.8.1"
+clap = { version = "4.1.8", features = ["derive", "env"] }
 regex = "1.7.2"
 reqwest = { version = "0.11.14", features = ["blocking", "multipart"] }
 scraper = "0.15.0"

@@ -6,7 +6,7 @@
 
 mod csrf;
 mod http;
-mod models;
+pub mod models;
 mod parsing;
 #[cfg(test)]
 mod tests;
@@ -159,7 +159,7 @@ impl SimplyGo {
     pub fn trips(&self, card: &Card, from: &NaiveDate, to: &NaiveDate) -> Vec<Trip> {
         // build request multipart form with params
         let date_fmt = "%d-%b-%Y";
-
+ 
         let url_path = "/Cards/GetTransactions";
         parse_trips(
             &self
