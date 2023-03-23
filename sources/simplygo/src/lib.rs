@@ -159,16 +159,19 @@ impl SimplyGo {
     pub fn trips(&self, card: &Card, from: &NaiveDate, to: &NaiveDate) -> Vec<Trip> {
         // build request multipart form with params
         let date_fmt = "%d-%b-%Y";
-        let form = Form::new()
-            .text("Card_Token", card.id.clone())
-            .text("From", format!("{}", from.format(date_fmt)))
-            .text("To", format!("{}", to.format(date_fmt)));
 
-        let url_path = "/Cards/GetTransctions";
+        let url_path = "/Cards/GetTransactions";
         parse_trips(
             &self
-                .request(Method::POST, url_path)
-                .multipart(form)
+                .request_form(
+                    Method::POST,
+                    url_path,
+                    HashMap::from([
+                        ("Card_Token", card.id.as_str()),
+                        ("FromDate", format!("{}", from.format(date_fmt)).as_str()),
+                        ("ToDate", format!("{}", to.format(date_fmt)).as_str()),
+                    ]),
+                )
                 .send()
                 .expect(&format!(
                     "Failed to Get Transactions for Card {} from SimplyGo's {} page.",
