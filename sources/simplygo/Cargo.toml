@@ -3,6 +3,8 @@ name = "simplygo_src"
 version = "0.1.0"
 edition = "2021"
 description  = "Providence: SimplyGo Data Source scrapes raw data off SimplyGo."
+license = "MIT"
+repository = "https://github.com/mrzzy/providence"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
