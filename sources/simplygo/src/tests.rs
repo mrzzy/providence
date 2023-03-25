@@ -7,7 +7,7 @@ use std::collections::HashMap;
 
 use reqwest::{blocking::Client, header::HeaderMap};
 
-use crate::csrf::{CSRF, CSRF_KEY};
+use crate::csrf::{Csrf, CSRF_KEY};
 
 use super::*;
 
@@ -36,7 +36,7 @@ fn simplygo_request_test() {
     for has_session in [true, false] {
         let simplygo = SimplyGo {
             http: Client::new(),
-            csrf: CSRF {
+            csrf: Csrf {
                 cookie: CSRF_TOKEN.to_owned(),
                 form: CSRF_TOKEN.to_owned(),
             },
