@@ -16,7 +16,7 @@ fn extract_csrf_cookie(headers: &HeaderMap) -> &str {
     // get value of csrf cookie
     parse_set_cookies(headers)
         .get(CSRF_KEY)
-        .map(|&v| v)
+        .copied()
         .expect("Expected cookie with CSRF token is missing.")
 }
 
@@ -40,23 +40,22 @@ fn extract_csrf_form(html: &str) -> String {
 
 /// CSRF Tokens to be submitted in requests to SimplyGo.
 #[derive(Debug)]
-pub struct CSRF {
+pub struct Csrf {
     /// CSRF token to be submitted as a cookie.
     pub cookie: String,
     /// CSRF token to be submitted as a url encoded form data.
     pub form: String,
 }
-impl CSRF {
+impl Csrf {
     /// Derive CSRF by scraping give SimplyGo homepage resposne
     pub fn from(homepage: Response) -> Self {
         Self {
-            cookie: extract_csrf_cookie(&homepage.headers()).to_owned(),
+            cookie: extract_csrf_cookie(homepage.headers()).to_owned(),
             form: extract_csrf_form(
                 &homepage
                     .text()
                     .expect("Could not parse SimplyGo homepage as text."),
-            )
-            .to_owned(),
+            ),
         }
     }
 }

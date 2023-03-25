@@ -8,7 +8,7 @@ use std::collections::HashMap;
 
 use reqwest::header::{HeaderMap, SET_COOKIE};
 
-pub fn parse_set_cookies<'a>(headers: &'a HeaderMap) -> HashMap<&'a str, &'a str> {
+pub fn parse_set_cookies(headers: &HeaderMap) -> HashMap<&str, &str> {
     headers
         .get_all(SET_COOKIE)
         .into_iter()
@@ -20,7 +20,7 @@ pub fn parse_set_cookies<'a>(headers: &'a HeaderMap) -> HashMap<&'a str, &'a str
         // split key value
         .map(|set_cookie| {
             set_cookie
-                .split_once("=")
+                .split_once('=')
                 .expect("Expected Set-Cookie key & value to separated by '='")
         })
         // trim attributes after ';' from value.

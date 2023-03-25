@@ -15,7 +15,7 @@ use std::collections::HashMap;
 
 use crate::http::parse_set_cookies;
 use chrono::NaiveDate;
-use csrf::{CSRF, CSRF_KEY};
+use csrf::{Csrf, CSRF_KEY};
 use models::{Card, Trip};
 use parsing::{parse_cards, parse_trips};
 use reqwest::{
@@ -40,13 +40,13 @@ struct Session {
 #[derive(Debug)]
 pub struct SimplyGo {
     http: Client,
-    csrf: CSRF,
+    csrf: Csrf,
     session: Option<Session>,
 }
 impl SimplyGo {
     pub fn new() -> Self {
         let http = Client::builder().redirect(Policy::none()).build().unwrap();
-        let csrf = CSRF::from(
+        let csrf = Csrf::from(
             http.get(SIMPLYGO_URL)
                 .send()
                 .expect("Failed to GET Simplygo homepage."),
@@ -145,12 +145,14 @@ impl SimplyGo {
             &self
                 .request(Method::GET, url_path)
                 .send()
-                .expect(&format!("Failed to get SimplyGo's {} page.", url_path))
+                .unwrap_or_else(|e| panic!("Failed to get SimplyGo's {} page: {}", url_path, e))
                 .text()
-                .expect(&format!(
-                    "Could not decode SimplyGo's {} page as HTML.",
-                    url_path
-                )),
+                .unwrap_or_else(|e| {
+                    panic!(
+                        "Could not decode SimplyGo's {} page as HTML: {}",
+                        url_path, e
+                    )
+                }),
         )
     }
 
@@ -173,15 +175,24 @@ impl SimplyGo {
                     ]),
                 )
                 .send()
-                .expect(&format!(
-                    "Failed to Get Transactions for Card {} from SimplyGo's {} page.",
-                    card.id, url_path
-                ))
+                .unwrap_or_else(|e| {
+                    panic!(
+                        "Failed to Get Transactions for Card {} from SimplyGo's {} page: {}",
+                        card.id, url_path, e,
+                    )
+                })
                 .text()
-                .expect(&format!(
-                    "Could not decode SimplyGo's {} page as HTML.",
-                    url_path
-                )),
+                .unwrap_or_else(|e| {
+                    panic!(
+                        "Could not decode SimplyGo's {} page as HTML: {}",
+                        url_path, e,
+                    )
+                }),
         )
+    }
+}
+impl Default for SimplyGo {
+    fn default() -> Self {
+        Self::new()
     }
 }

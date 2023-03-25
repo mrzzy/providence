@@ -26,7 +26,7 @@ pub fn parse_cards(html: &str) -> Vec<Card> {
                 .attr("value")
                 .expect("Missing 'value' attribute in <option> element.")
                 .to_owned(),
-            name: option.inner_html().to_owned(),
+            name: option.inner_html(),
         })
         .collect()
 }
@@ -46,10 +46,10 @@ fn parse_date(date_str: &str) -> NaiveDate {
 /// Parse Posting Ref in format: '[Posting Ref No : <POSTING_REF>]'
 fn parse_posting(posting_str: &str) -> &str {
     posting_str
-        .split_once(":")
+        .split_once(':')
         .expect("Malformed Posting Ref.")
         .1
-        .split_once("]")
+        .split_once(']')
         .expect("Malformed Posting Ref.")
         .0
         .trim()
@@ -120,7 +120,7 @@ fn parse_trip_legs(tr: &ElementRef) -> Vec<Leg> {
                     .next()
                     .expect("Missing expected 'Charges' column in Trip Leg.")
                     .inner_html()
-                    .replace("$", "")
+                    .replace('$', "")
                     .trim()
                     .to_owned(),
                 source,
