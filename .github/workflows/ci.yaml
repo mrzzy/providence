@@ -1,0 +1,25 @@
+#
+# Providence
+# CI Workflow
+#
+
+name: Providence CI
+on: push
+jobs:
+  simplygo-src:
+    name: "SimplyGo Source"
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Lint
+        run: |
+          make lint-simplygo
+      - name: Build
+        run: |
+          make build-simplygo
+      - name: Test
+        env:
+          SIMPLYGO_SRC_USERNAME: "${{ secrets.SIMPLYGO_SRC_USERNAME }}"
+          SIMPLYGO_SRC_PASSWORD: "${{ secrets.SIMPLYGO_SRC_PASSWORD }}"
+        run: |
+          make test-simplygo

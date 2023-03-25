@@ -53,8 +53,8 @@ fn main() {
     };
 
     // write scraped record as json
-    let json =
-        File::create(&args.output).expect(&format!("Could not open {} for writing.", args.output));
+    let json = File::create(&args.output)
+        .unwrap_or_else(|e| panic!("Could not open {} for writing: {}", args.output, e));
     serde_json::to_writer(json, &record)
-        .expect(&format!("Failed to write data records to {}", args.output));
+        .unwrap_or_else(|e| panic!("Failed to write data records to {}: {}", args.output, e));
 }
