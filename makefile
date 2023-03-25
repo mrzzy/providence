@@ -9,7 +9,6 @@
 
 all: fmt lint build test
 
-
 # SimplyGo source
 SIMPLYGO_DIR := sources/simplygo
 
@@ -21,6 +20,6 @@ $(1)-simplygo: $$(SIMPLYGO_DIR)
 endef
 
 $(eval $(call SIMPLYGO_RULE,fmt,cargo fmt))
-$(eval $(call SIMPLYGO_RULE,lint,cargo clippy))
+$(eval $(call SIMPLYGO_RULE,lint,cargo fmt --check && cargo clippy))
 $(eval $(call SIMPLYGO_RULE,build,cargo build))
 $(eval $(call SIMPLYGO_RULE,test,cargo test))
