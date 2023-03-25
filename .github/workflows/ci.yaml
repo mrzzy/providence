@@ -18,5 +18,8 @@ jobs:
         run: |
           make build-simplygo
       - name: Test
+        env:
+          SIMPLYGO_SRC_USERNAME: "${{ secrets.SIMPLYGO_SRC_USERNAME }}"
+          SIMPLYGO_SRC_PASSWORD: "${{ secrets.SIMPLYGO_SRC_PASSWORD }}"
         run: |
           make test-simplygo
