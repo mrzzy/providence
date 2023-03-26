@@ -47,7 +47,7 @@ pub struct Csrf {
     pub form: String,
 }
 impl Csrf {
-    /// Derive CSRF by scraping give SimplyGo homepage resposne
+    /// Derive CSRF by scraping give SimplyGo homepage response
     pub fn from(homepage: Response) -> Self {
         Self {
             cookie: extract_csrf_cookie(homepage.headers()).to_owned(),

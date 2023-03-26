@@ -1,0 +1,3 @@
+[codespell]
+skip = */target/*,./.git/*,tags
+ignore-words = .codespellignore

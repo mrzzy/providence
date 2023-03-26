@@ -69,7 +69,7 @@ fn parse_posting_test() {
 #[test]
 fn parse_journey_test() {
     let html = load_html("simplygo_card_gettransactions.html");
-    // skip to next row as its a more rigourous test case to parse
+    // skip to next row as its a more rigorous test case to parse
     let tr = html
         .select(&Selector::parse(LEG_CSS_SELECTOR).unwrap())
         .skip(1)
