@@ -12,6 +12,7 @@ mod parsing;
 mod tests;
 
 use std::collections::HashMap;
+use std::time::Duration;
 
 use crate::http::parse_set_cookies;
 use chrono::NaiveDate;
@@ -45,7 +46,11 @@ pub struct SimplyGo {
 }
 impl SimplyGo {
     pub fn new() -> Self {
-        let http = Client::builder().redirect(Policy::none()).build().unwrap();
+        let http = Client::builder()
+            .timeout(Some(Duration::from_secs(60)))
+            .redirect(Policy::none())
+            .build()
+            .unwrap();
         let csrf = Csrf::from(
             http.get(SIMPLYGO_URL)
                 .send()
@@ -111,7 +116,7 @@ impl SimplyGo {
 
     /// Login on SimplyGo with the given credentials.
     /// Username is typically a mobile number.
-    /// Returns an authenciated version of this client.
+    /// Returns an authenticated version of this client.
     pub fn login(self, username: &str, password: &str) -> Self {
         let response = self
             .request_form(
