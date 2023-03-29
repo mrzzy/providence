@@ -22,7 +22,8 @@ S3FS_SIDECAR_TEMPLATE = path.join(path.dirname(__file__), "s3fs_sidecar.yaml")
 def ingest_simplygo(
     s3_staging_bucket: str,
     k8s_labels: Dict[str, str],
-    image_tag: str = "latest",
+    # TODO(mrzzy): change to latest on merge
+    image_tag: str = "feat-ingest-simplygo",
 ) -> BaseOperator:
     """Build Task to ingest data from SimplyGo source.
     Spawns a K8s pod with Simplygo Source container configured to write data into S3.
@@ -33,9 +34,7 @@ def ingest_simplygo(
         k8s_labels: K8s labels to add to K8s Pod created by the Airflow task.
     """
     # Extract SimplyGo data with SimplyGo source & load into S3 via S3FS sidecar
-    simplygo_src_version = "latest"
-    simplygo_connection = BaseHook.get_connection("providence_simplygo_src")
-
+    connection = BaseHook.get_connection("providence_simplygo_src")
     extract_load_s3 = KubernetesPodOperator(
         pod_template_file=S3FS_SIDECAR_TEMPLATE,
         task_id="ingest_simplygo",
@@ -58,14 +57,18 @@ def ingest_simplygo(
         ],
         arguments=[
             "--trips-from",
-            "{{ data_interval_start | ds }}" "--trips-to",
+            "{{ data_interval_start | ds }}",
+            "--trips-to",
             "{{ data_interval_end | ds }}"
-            "--output /mnt/s3fs/providence/raw/simplygo/date={{ ds }}/data.json",
+            "--out",
+            "/mnt/s3fs/providence/raw/simplygo/date={{ ds }}/data.json",
         ],
         env_vars=[
-            k8s.V1EnvVar("SIMPLYGO_SRC_USERNAME", simplygo_connection.login),
-            k8s.V1EnvVar("SIMPLYGO_SRC_PASSWORD", simplygo_connection.password),
+            k8s.V1EnvVar("SIMPLYGO_SRC_USERNAME", connection.login),
+            k8s.V1EnvVar("SIMPLYGO_SRC_PASSWORD", connection.password),
         ],
+        # TODO(mrzzy): remove testing
+        is_delete_operator_pod=False,
     )
     return extract_load_s3
 
@@ -90,6 +93,9 @@ def ingest(
     - `providence_simplygo_src":
         - **Login** SimplyGo username.
         - **Password** SimplyGo password.
+    - `aws_default`:
+        - **Login** AWS Access Key ID.
+        - **Password** AWS Access Secret Key.
     """
     k8s_labels = {
         "app.kubernetes.io/part-of": "providence",
