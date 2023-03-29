@@ -3,7 +3,7 @@
 # SimplyGo Source
 #
 
-FROM rust:1.68.1 AS build
+FROM rust:1.68.2 AS build
 RUN mkdir /app
 WORKDIR /app
 # build dependencies in separate layer to cache dependencies
