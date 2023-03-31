@@ -1,0 +1,7 @@
+#
+# Providence
+# Data Pipelines
+# Python Project configs
+#
+[pytest]
+norecursedirs = "venv"
