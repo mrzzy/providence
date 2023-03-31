@@ -3,5 +3,8 @@
 # Data Pipelines
 # Python Project configs
 #
-[pytest]
+[tool.pytest.ini_options]
 norecursedirs = "venv"
+markers = [
+  "unit",
+]
