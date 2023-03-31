@@ -1,6 +1,6 @@
 #
 # Providence
-# Data Pipeline
+# Data Pipelines
 # Data Ingestion
 #
 
@@ -74,18 +74,19 @@ def ingest_simplygo(
 
 
 @dag(
+    dag_id="ingest_providence_data",
     schedule=timedelta(days=1),
     start_date=datetime(2023, 2, 1, tz="utc"),
     catchup=False,
 )
-def ingest(
+def ingest_data(
     s3_staging_bucket: str = "mrzzy-co-data-lake",
 ):
     """
-    Providence Data Pipeline. Ingests data from Data Sources into AWS Redshift
-    & uses AWS S3 as staging area.
-
-    Params:
+    Providence Ingestion Data Pipeline.
+    Ingests data from Data Sources into AWS Redshift & uses AWS S3 as staging area.
+fa
+    Parameters:
     - `s3_staging_bucket`: Name of a existing S3 bucket to stage data.
     - `k8s_labels` Labels to attach to all K8s pods created by this DAG.
 
@@ -103,4 +104,4 @@ def ingest(
     }
     ingest_simplygo(s3_staging_bucket, k8s_labels)
 
-ingest()
+ingest_data()
