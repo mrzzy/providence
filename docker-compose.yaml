@@ -4,6 +4,7 @@
 # Standalone Airflow for Development
 #
 services:
+  # expects an accessible kubernetes cluster via passed $KUBECONFIG
   airflow:
     image: apache/airflow:2.5.3rc2-python3.10
     environment:
@@ -22,9 +23,11 @@ services:
             "login": "${SIMPLYGO_SRC_USERNAME}",
             "password": "${SIMPLYGO_SRC_PASSWORD}"
         }
+      KUBECONFIG: /kubeconfig.yaml
+    network_mode: host
     volumes:
-
+      - ${KUBECONFIG}:/kubeconfig.yaml:r
       - .:/opt/airflow/dags:r
     command: ["airflow", "standalone"]
-    ports:
-      - 8080:8080
+    expose:
+      - 8080
