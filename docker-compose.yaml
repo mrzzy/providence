@@ -1,0 +1,30 @@
+#
+# Providence
+# Data Pipelines
+# Standalone Airflow for Development
+#
+services:
+  airflow:
+    image: apache/airflow:2.5.3rc2-python3.10
+    environment:
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS: "False"
+      # uses env vars from .env automatically loaded by compose
+      AIRFLOW_CONN_AWS_DEFAULT: |
+        {
+            "conn_type": "aws",
+            "login": "${AWS_ACCESS_KEY_ID}",
+            "password": "${AWS_ACCESS_KEY_SECRET_KEY}"
+        }
+      AIRFLOW_CONN_PROVIDENCE_SIMPLYGO_SRC: |
+        {
+            "conn_type": "generic",
+            "login": "${SIMPLYGO_SRC_USERNAME}",
+            "password": "${SIMPLYGO_SRC_PASSWORD}"
+        }
+    volumes:
+
+      - .:/opt/airflow/dags:r
+    command: ["airflow", "standalone"]
+    ports:
+      - 8080:8080
