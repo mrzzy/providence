@@ -59,8 +59,7 @@ def ingest_simplygo(
             "--trips-from",
             "{{ data_interval_start | ds }}",
             "--trips-to",
-            "{{ data_interval_end | ds }}"
-            "--out",
+            "{{ data_interval_end | ds }}" "--output",
             "/mnt/s3fs/providence/raw/simplygo/date={{ ds }}/data.json",
         ],
         env_vars=[
@@ -83,25 +82,26 @@ def ingest_data(
     s3_staging_bucket: str = "mrzzy-co-data-lake",
 ):
     """
-    Providence Ingestion Data Pipeline.
-    Ingests data from Data Sources into AWS Redshift & uses AWS S3 as staging area.
-fa
-    Parameters:
-    - `s3_staging_bucket`: Name of a existing S3 bucket to stage data.
-    - `k8s_labels` Labels to attach to all K8s pods created by this DAG.
+        Providence Ingestion Data Pipeline.
+        Ingests data from Data Sources into AWS Redshift & uses AWS S3 as staging area.
+    fa
+        Parameters:
+        - `s3_staging_bucket`: Name of a existing S3 bucket to stage data.
+        - `k8s_labels` Labels to attach to all K8s pods created by this DAG.
 
-    Connections by expected id:
-    - `providence_simplygo_src":
-        - **Login** SimplyGo username.
-        - **Password** SimplyGo password.
-    - `aws_default`:
-        - **Login** AWS Access Key ID.
-        - **Password** AWS Access Secret Key.
+        Connections by expected id:
+        - `providence_simplygo_src":
+            - **Login** SimplyGo username.
+            - **Password** SimplyGo password.
+        - `aws_default`:
+            - **Login** AWS Access Key ID.
+            - **Password** AWS Access Secret Key.
     """
     k8s_labels = {
         "app.kubernetes.io/part-of": "providence",
         "app.kubernetes.io/managed-by": "airflow",
     }
     ingest_simplygo(s3_staging_bucket, k8s_labels)
+
 
 ingest_data()
