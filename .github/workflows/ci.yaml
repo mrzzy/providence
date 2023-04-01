@@ -50,6 +50,8 @@ jobs:
             type=ref,event=branch
             type=ref,event=tag
             type=semver,pattern={{version}}
+            # set latest tag for default branch (main)
+            type=raw,value=latest,enable={{is_default_branch}}
       - name: Build and Push SimplyGo Container to GitHub Container registry
         uses: docker/build-push-action@v4.0.0
         with:
