@@ -218,3 +218,7 @@ pyrightconfig.json
 [Ss]cripts
 pyvenv.cfg
 pip-selfcheck.json
+
+### Kubernetes ###
+# kubectl credentials
+/.kubeconfig.yaml

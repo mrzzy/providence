@@ -59,7 +59,8 @@ def ingest_simplygo(
             "--trips-from",
             "{{ data_interval_start | ds }}",
             "--trips-to",
-            "{{ data_interval_end | ds }}" "--output",
+            "{{ data_interval_end | ds }}",
+            "--output",
             "/mnt/s3fs/providence/raw/simplygo/date={{ ds }}/data.json",
         ],
         env_vars=[
