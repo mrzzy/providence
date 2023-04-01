@@ -8,6 +8,9 @@ use chrono_tz::Singapore;
 use clap::Parser;
 use simplygo_src::{models::Record, SimplyGo};
 use std::fs::File;
+use std::io::Write;
+
+mod s3;
 
 #[derive(Parser, Debug)]
 #[command(about)]

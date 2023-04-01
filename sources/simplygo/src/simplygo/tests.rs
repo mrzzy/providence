@@ -7,7 +7,7 @@ use std::collections::HashMap;
 
 use reqwest::{blocking::Client, header::HeaderMap};
 
-use crate::csrf::{Csrf, CSRF_KEY};
+use crate::simplygo::csrf::{Csrf, CSRF_KEY};
 
 use super::*;
 
