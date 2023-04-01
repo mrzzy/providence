@@ -23,7 +23,7 @@ def ingest_simplygo(
     s3_staging_bucket: str,
     k8s_labels: Dict[str, str],
     # TODO(mrzzy): change to latest on merge
-    image_tag: str = "feat-ingest-simplygo",
+    image_tag: str = "main",
 ) -> BaseOperator:
     """Build Task to ingest data from SimplyGo source.
     Spawns a K8s pod with Simplygo Source container configured to write data into S3.
@@ -39,7 +39,7 @@ def ingest_simplygo(
         pod_template_file=S3FS_SIDECAR_TEMPLATE,
         task_id="ingest_simplygo",
         image=f"ghcr.io/mrzzy/providence-simplygo-src:{image_tag}",
-        # TODO(mrzzy): change to latest on merge
+        # TODO(mrzzy): remove on merge
         image_pull_policy="always",
         labels=k8s_labels
         | {
