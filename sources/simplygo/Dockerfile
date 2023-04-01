@@ -21,7 +21,7 @@ RUN cargo build --release
 FROM debian:bullseye-slim AS release
 # install CA certificates needed by openssl to verify server identity
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends ca-certificates=20211016ubuntu0.22.04.1 \
+  && apt-get install -y --no-install-recommends ca-certificates=20200601~deb10u2 \
   && rm -rf /var/lib/apt/lists/*
 COPY --from=build /app/target/release/simplygo_src /bin/simplygo_src
 ENTRYPOINT [ "/bin/simplygo_src" ]
