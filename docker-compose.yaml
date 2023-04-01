@@ -10,7 +10,9 @@ services:
     environment:
       AIRFLOW__CORE__LOAD_EXAMPLES: "False"
       AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS: "False"
-      # uses env vars from .env automatically loaded by compose
+      # user env vars from .env automatically loaded by compose to define
+      # Airflow connections expected by Airflow DAGs. NOTE: These Airflow
+      # connections would not appear in the Airflow UI as they are not stored in the DB.
       AIRFLOW_CONN_AWS_DEFAULT: |
         {
             "conn_type": "aws",
