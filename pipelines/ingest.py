@@ -39,6 +39,8 @@ def ingest_simplygo(
         pod_template_file=S3FS_SIDECAR_TEMPLATE,
         task_id="ingest_simplygo",
         image=f"ghcr.io/mrzzy/providence-simplygo-src:{image_tag}",
+        # TODO(mrzzy): change to latest on merge
+        image_pull_policy="always",
         labels=k8s_labels
         | {
             "app.kubernetes.io/name": "simpygo_src",
