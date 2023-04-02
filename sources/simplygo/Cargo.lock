@@ -2092,6 +2092,7 @@ dependencies = [
  "chrono",
  "chrono-tz",
  "clap",
+ "rand 0.8.5",
  "regex",
  "reqwest",
  "scraper",

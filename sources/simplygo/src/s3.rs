@@ -7,7 +7,7 @@
 use std::io::{Error, ErrorKind, Result, Write};
 
 use aws_sdk_s3::Client;
-use tokio::runtime::{Builder, Runtime};
+use tokio::runtime::{self, Runtime};
 use url::Url;
 
 /// Parse the given string as a s3:// URL into bucket name & path
@@ -28,8 +28,9 @@ fn parse_s3_url(s: &str) -> (String, String) {
 }
 
 /// Sink that writes to AWS S3 in an object given by bucket & path.
-struct S3Sink<'a> {
-    s3: &'a Client,
+/// Note that writes are buffered until flush() is called to commit writes to S3.
+pub struct S3Sink {
+    s3: Client,
     /// Name of the bucket to write to.
     bucket: String,
     /// Key / Path within the bucket specifying the object to write to.
@@ -39,19 +40,22 @@ struct S3Sink<'a> {
     /// Tokio async runtime used to run async S3 operations in blocking fashion
     rt: Runtime,
 }
-impl<'a> S3Sink<'a> {
-    pub fn new(s3: &'a Client, s3_url: &str) -> Self {
+impl S3Sink {
+    /// Construct a new S3 sink that writes to the object specified by the given S3 url.
+    /// AWS Credentials should be passed via `AWS_SECRET_KEY_ID` & `AWS_SECRET_KEY_SECRET_KEY` env vars
+    pub fn new(s3_url: &str) -> Self {
+        let rt = runtime::Builder::new_current_thread().enable_all().build().unwrap();
         let (bucket, path) = parse_s3_url(s3_url);
         Self {
-            s3,
+            s3: aws_sdk_s3::Client::new(&rt.block_on(aws_config::load_from_env())),
             bucket,
             path,
             buffer: vec![],
-            rt: Builder::new_current_thread().enable_all().build().unwrap(),
+            rt,
         }
     }
 }
-impl Write for S3Sink<'_> {
+impl Write for S3Sink {
     fn write(&mut self, buf: &[u8]) -> Result<usize> {
         // save to be written data to buffer
         self.buffer.extend_from_slice(buf);
