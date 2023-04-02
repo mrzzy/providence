@@ -17,7 +17,7 @@ services:
         {
             "conn_type": "aws",
             "login": "${AWS_ACCESS_KEY_ID}",
-            "password": "${AWS_ACCESS_KEY_SECRET_KEY}"
+            "password": "${AWS_SECRET_ACCESS_KEY}"
         }
       AIRFLOW_CONN_PROVIDENCE_SIMPLYGO_SRC: |
         {
