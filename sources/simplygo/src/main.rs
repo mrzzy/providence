@@ -28,9 +28,10 @@ struct Cli {
     trips_to: String,
     /// Path or S3 URL of the location to write output scraped data in JSON format.
     /// * Path writes the data as local file on disk.
-    /// * S3 URL write the data as a blob on AWS S3 service. Requires AWS credentials
-    ///   to be provided via `AWS_ACCESS_KEY_ID` & `AWS_SECRET_ACCESS_KEY` environment
-    ///   variables.
+    /// * S3 URL write the data as a blob on AWS S3 service:
+    ///     - Requires AWS credentials to be provided via `AWS_ACCESS_KEY_ID` &
+    ///         `AWS_SECRET_ACCESS_KEY` environment variables.
+    ///     - Requires AWS Region to be set via `AWS_DEFAULT_REGION` environment variable.
     #[arg(long, default_value = "simplygo.json")]
     output: String,
 }
