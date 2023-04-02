@@ -44,10 +44,9 @@ def k8s_env_vars(env_vars: Dict[str, str]) -> List[k8s.V1EnvVar]:
     start_date=datetime(2023, 2, 1, tz="utc"),
     catchup=False,
 )
-# TODO(mrzzy): change image tag back to main
 def ingest_data(
     s3_bucket: str = "mrzzy-co-data-lake",
-    simplygo_src_tag: str = "feat-ingest-simplygo",
+    simplygo_src_tag: str = "main",
 ):
     """Providence Ingestion Data Pipeline.
     Ingests data from Data Sources into AWS Redshift & uses AWS S3 as staging area.
@@ -73,7 +72,6 @@ def ingest_data(
     load_simplygo_s3 = KubernetesPodOperator(
         task_id="ingest_simplygo",
         image="ghcr.io/mrzzy/providence-simplygo-src:{{ params.simplygo_src_tag }}",
-        # TODO(mrzzy): remove on merge
         image_pull_policy="Always",
         labels=k8s_labels
         | {
@@ -96,8 +94,6 @@ def ingest_data(
             }
             | get_aws_env("aws_default")
         ),
-        # TODO(mrzzy): remove testing
-        is_delete_operator_pod=False,
     )
 
 
