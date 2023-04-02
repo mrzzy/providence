@@ -8,8 +8,30 @@ use std::{env, io::Write};
 
 use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
-use simplygo_src::{S3Sink, SimplyGo};
+use simplygo_src::{s3_client, S3Sink, SimplyGo};
 use tokio::runtime;
+
+/// Generate a random alphanumeric string of given length
+fn random_alphanum(len: u32) -> String {
+    let mut rng = thread_rng();
+    (0..len).map(|_| rng.sample(Alphanumeric) as char).collect()
+}
+
+/// Get the object stored in the given bucket and Key as a Vec of bytes
+/// Include the leading '/' in given key referencing the root of the bucket.
+async fn get_s3(s3: &aws_sdk_s3::Client, bucket: &str, key: &str) -> Vec<u8> {
+    s3.get_object()
+        .bucket(bucket)
+        .key(key)
+        .send()
+        .await
+        .unwrap_or_else(|e| panic!("Failedto read from S3: {:?}", e))
+        .body
+        .collect()
+        .await
+        .unwrap()
+        .to_vec()
+}
 
 #[test]
 fn simplygo_login_test() {
@@ -17,12 +39,6 @@ fn simplygo_login_test() {
         &env::var("SIMPLYGO_SRC_USERNAME").unwrap(),
         &env::var("SIMPLYGO_SRC_PASSWORD").unwrap(),
     );
-}
-
-/// Generate a random alphanumeric string of given length
-fn random_alphanum(len: u32) -> String {
-    let mut rng = thread_rng();
-    (0..len).map(|_| rng.sample(Alphanumeric) as char).collect()
 }
 
 #[test]
@@ -47,24 +63,13 @@ fn s3_sink_test() {
         .enable_all()
         .build()
         .unwrap();
-    let s3 = aws_sdk_s3::Client::new(&rt.block_on(aws_config::load_from_env()));
+    let s3 = s3_client(&rt);
     assert_eq!(
-        test_value,
-        rt.block_on(async {
-            s3.get_object()
-                .bucket(&bucket)
-                .key(&test_key)
-                .send()
-                .await
-                .unwrap_or_else(|e| panic!("Failed to read test value from {}: {:?}", s3_url, e))
-                .body
-                .collect()
-                .await
-                .unwrap()
-                .into_bytes()
-        })
-        .as_ref()
+        test_value.to_vec(),
+        rt.block_on(get_s3(&s3, &bucket, &test_key))
     );
+
+    // clean up value
     rt.block_on(s3.delete_object().bucket(&bucket).key(&test_key).send())
         .unwrap_or_else(|e| panic!("Could not clean up test value {}: {:?}", s3_url, e));
 }

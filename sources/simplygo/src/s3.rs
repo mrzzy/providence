@@ -27,6 +27,11 @@ fn parse_s3_url(s: &str) -> (String, String) {
     (url.host_str().unwrap().to_owned(), url.path().to_owned())
 }
 
+/// Build an S3 client using config / credentials from environmennt variables.
+pub fn s3_client(rt: &Runtime) -> Client {
+    aws_sdk_s3::Client::new(&rt.block_on(aws_config::load_from_env()))
+}
+
 /// Sink that writes to AWS S3 in an object given by bucket & path.
 /// Note that writes are buffered until flush() is called to commit writes to S3.
 pub struct S3Sink {
@@ -47,7 +52,7 @@ impl S3Sink {
         let rt = runtime::Builder::new_current_thread().enable_all().build().unwrap();
         let (bucket, path) = parse_s3_url(s3_url);
         Self {
-            s3: aws_sdk_s3::Client::new(&rt.block_on(aws_config::load_from_env())),
+            s3: s3_client(&rt),
             bucket,
             path,
             buffer: vec![],
