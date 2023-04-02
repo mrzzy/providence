@@ -14,9 +14,9 @@ mod tests;
 use std::collections::HashMap;
 use std::time::Duration;
 
-use http::parse_set_cookies;
 use chrono::NaiveDate;
 use csrf::{Csrf, CSRF_KEY};
+use http::parse_set_cookies;
 use models::{Card, Trip};
 use parsing::{parse_cards, parse_trips};
 use reqwest::{
