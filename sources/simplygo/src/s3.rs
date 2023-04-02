@@ -49,7 +49,10 @@ impl S3Sink {
     /// Construct a new S3 sink that writes to the object specified by the given S3 url.
     /// AWS Credentials should be passed via `AWS_SECRET_KEY_ID` & `AWS_SECRET_KEY_SECRET_KEY` env vars
     pub fn new(s3_url: &str) -> Self {
-        let rt = runtime::Builder::new_current_thread().enable_all().build().unwrap();
+        let rt = runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .unwrap();
         let (bucket, path) = parse_s3_url(s3_url);
         Self {
             s3: s3_client(&rt),
@@ -101,7 +104,6 @@ mod tests {
         ];
 
         test_cases.into_iter().for_each(|(input, expect_err)| {
-            println!("{}", input);
             assert_eq!(
                 expect_err,
                 panic::catch_unwind(|| parse_s3_url(input)).is_err()
