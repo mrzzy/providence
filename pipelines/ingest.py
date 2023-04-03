@@ -44,7 +44,7 @@ def k8s_env_vars(env_vars: Dict[str, str]) -> List[k8s.V1EnvVar]:
     start_date=datetime(2023, 2, 1, tz="utc"),
     catchup=False,
 )
-def ingest_data(
+def ingest_dag(
     s3_bucket: str = "mrzzy-co-data-lake",
     simplygo_src_tag: str = "main",
 ):
@@ -97,4 +97,4 @@ def ingest_data(
     )
 
 
-ingest_data()
+ingest_dag()
