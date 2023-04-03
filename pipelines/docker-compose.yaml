@@ -3,6 +3,7 @@
 # Data Pipelines
 # Standalone Airflow for Development
 #
+
 services:
   # expects an accessible kubernetes cluster via passed $KUBECONFIG
   airflow:
