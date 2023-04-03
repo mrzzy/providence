@@ -7,4 +7,5 @@
 norecursedirs = "venv"
 markers = [
   "unit",
+  "integration",
 ]
