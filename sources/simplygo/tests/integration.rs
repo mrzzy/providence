@@ -38,7 +38,7 @@ fn build_runtime() -> Runtime {
 }
 
 /// Get the object stored in the given bucket and Key as a Vec of bytes
-/// Include the leading '/' in given key referencing the root of the bucket.
+/// Do not pass the leading '/' in object key.
 async fn get_s3(s3: &aws_sdk_s3::Client, bucket: &str, key: &str) -> Vec<u8> {
     s3.get_object()
         .bucket(bucket)
@@ -72,10 +72,10 @@ fn s3_sink_test() {
 
     // write object with s3 sink
     let test_key = format!(
-        "/providence/simplygo_src/s3_sink_test/{}",
+        "providence/simplygo_src/s3_sink_test/{}",
         random_alphanum(8)
     );
-    let s3_url = format!("s3://{}{}", bucket, test_key);
+    let s3_url = format!("s3://{}/{}", bucket, test_key);
     let mut sink = S3Sink::new(&s3_url);
     let test_value = b"value";
     sink.write_all(test_value).unwrap();
@@ -128,10 +128,10 @@ fn cli_output_s3_test() {
     // test: command succeeds
     let mut cmd = Command::cargo_bin("simplygo_src").unwrap();
     let test_key = format!(
-        "/providence/simplygo_src/s3_sink_test/{}",
+        "providence/simplygo_src/s3_sink_test/{}",
         random_alphanum(8)
     );
-    let s3_url = format!("s3://{}{}", bucket, test_key);
+    let s3_url = format!("s3://{}/{}", bucket, test_key);
     let assert_cli = cmd
         .args(&[
             "--trips-from",

@@ -24,7 +24,11 @@ fn parse_s3_url(s: &str) -> (String, String) {
         panic!("Missing host component in S3 URL: {}", s);
     }
 
-    (url.host_str().unwrap().to_owned(), url.path().to_owned())
+    (
+        url.host_str().unwrap().to_owned(),
+        // strip leading '/' in path
+        url.path()[1..].to_owned(),
+    )
 }
 
 /// Build an S3 client using config / credentials from environmennt variables.
@@ -96,18 +100,26 @@ mod tests {
     #[test]
     fn parse_s3_url_test() {
         let test_cases = [
-            ("s3://bucket/path", false),
-            ("s3://bucket/", false),
-            ("s3://", true),
-            ("http://", true),
-            ("bucket/path", true),
+            // s3 url, expecting error, parsed bucket, path
+            ("s3://bucket/path", false, "bucket", "path"),
+            ("s3://bucket/", false, "bucket", ""),
+            ("s3://", true, "", ""),
+            ("http://", true, "", ""),
+            ("bucket/path", true, "", ""),
         ];
 
-        test_cases.into_iter().for_each(|(input, expect_err)| {
-            assert_eq!(
-                expect_err,
-                panic::catch_unwind(|| parse_s3_url(input)).is_err()
-            );
-        });
+        test_cases
+            .into_iter()
+            .for_each(|(input, expect_err, bucket, path)| {
+                assert_eq!(
+                    expect_err,
+                    panic::catch_unwind(|| {
+                        let (actual_bucket, actual_path) = parse_s3_url(input);
+                        assert_eq!(bucket, actual_bucket);
+                        assert_eq!(path, actual_path);
+                    })
+                    .is_err()
+                );
+            });
     }
 }
