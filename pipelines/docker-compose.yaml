@@ -32,8 +32,8 @@ services:
       KUBECONFIG: /kubeconfig.yaml
     network_mode: host
     volumes:
-      - "${KUBECONFIG}:/kubeconfig.yaml:r"
-      - .:/opt/airflow/dags:r
+      - "${KUBECONFIG}:/kubeconfig.yaml"
+      - .:/opt/airflow/dags
     command: ["airflow", "standalone"]
     expose:
       - 8080
