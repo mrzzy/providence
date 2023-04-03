@@ -7,7 +7,7 @@
 use reqwest::{blocking::Response, header::HeaderMap};
 use scraper::{Html, Selector};
 
-use crate::http::parse_set_cookies;
+use crate::simplygo::http::parse_set_cookies;
 
 pub const CSRF_KEY: &str = "__RequestVerificationToken";
 
