@@ -31,7 +31,7 @@ services:
       KUBECONFIG: /kubeconfig.yaml
     network_mode: host
     volumes:
-      - ${KUBECONFIG}:/kubeconfig.yaml:r
+      - "${KUBECONFIG}:/kubeconfig.yaml:r"
       - .:/opt/airflow/dags:r
     command: ["airflow", "standalone"]
     expose:
