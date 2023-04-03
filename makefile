@@ -7,7 +7,7 @@
 .DEFAULT_GOAL := all
 
 
-all: fmt lint build test
+all: deps fmt lint build test
 
 # SimplyGo source
 SIMPLYGO_DIR := sources/simplygo
@@ -26,6 +26,11 @@ $(eval $(call SIMPLYGO_RULE,test,cargo test))
 
 # Airflow Pipelines
 PIPELINES_DIR := pipelines
+
+deps: deps-pipelines
+
+deps-pipelines: $(PIPELINES_DIR)
+	cd $< && pip install -r requirements-dev.txt
 
 fmt: fmt-pipelines
 
