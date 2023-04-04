@@ -24,10 +24,17 @@ def test_ingest_dag_import():
         Connection(
             conn_id="aws_default",
             conn_type="aws",
+            login="test",
+            password="test",
+            extra={
+                "region_name": "test",
+            },
         ),
         Connection(
             conn_id="providence_simplygo_src",
             conn_type="generic",
+            login="test",
+            password="test",
         ),
     ]
     with mock.patch.dict(
