@@ -6,6 +6,11 @@
 .PHONY := all fmt lint
 .DEFAULT_GOAL := all
 
+define PHONY_RULE
+.PHONY += $(1)-$(2)
+
+$(1): $(1)-$(2)
+endef
 
 all: deps fmt lint build test
 
@@ -13,8 +18,7 @@ all: deps fmt lint build test
 SIMPLYGO_DIR := sources/simplygo
 
 define SIMPLYGO_RULE
-.PHONY += $(1)-simplygo
-$(1): $(1)-simplygo
+$(call PHONY_RULE,$(1),simplygo)
 $(1)-simplygo: $$(SIMPLYGO_DIR)
 	cd $$< && $(2)
 endef
@@ -27,22 +31,18 @@ $(eval $(call SIMPLYGO_RULE,test,cargo test))
 # Airflow Pipelines
 PIPELINES_DIR := pipelines
 
-deps: deps-pipelines
-
+$(eval $(call PHONY_RULE,deps,pipelines))
 deps-pipelines: $(PIPELINES_DIR)
 	cd $< && pip install -r requirements-dev.txt
 
-fmt: fmt-pipelines
-
+$(eval $(call PHONY_RULE,fmt,pipelines))
 fmt-pipelines: $(PIPELINES_DIR)
 	black $<
 
-lint: lint-pipelines
-
+$(eval $(call PHONY_RULE,lint,pipelines))
 lint-pipelines: $(PIPELINES_DIR)
 	black --check $<
 
-test: test-pipelines
-
+$(eval $(call PHONY_RULE,test,pipelines))
 test-pipelines: $(PIPELINES_DIR)
 	cd $< && pytest
