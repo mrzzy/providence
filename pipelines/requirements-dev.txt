@@ -1,16 +1,5 @@
 -r requirements.txt
 pytest==7.2.2
-bcrypt==4.0.1
-distro==1.8.0
-docker==6.0.1
-docker-compose==1.29.2
-dockerpty==0.4.1
-docopt==0.6.2
-paramiko==3.1.0
-pynacl==1.5.0
-python-dotenv==0.21.1
 testcontainers-compose==0.0.1rc1
 testcontainers-core==0.0.1rc1
-texttable==1.6.7
-websocket-client==0.59.0
 black==22.10.0
