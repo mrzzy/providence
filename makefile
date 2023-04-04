@@ -45,4 +45,5 @@ lint-pipelines: $(PIPELINES_DIR)
 
 $(eval $(call PHONY_RULE,test,pipelines))
 test-pipelines: $(PIPELINES_DIR)
+	airflow db init
 	cd $< && pytest
