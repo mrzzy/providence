@@ -52,6 +52,7 @@ jobs:
       matrix:
         source:
           - simplygo
+          - ynab
     name: "${{ matrix.source }} Source: Publish Container image"
     runs-on: ubuntu-22.04
     # add permissions needed to push containers to GHCR with GITHUB_TOKEN
