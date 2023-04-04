@@ -14,7 +14,7 @@ INGEST_DAG_ID = "ingest_providence_data"
 
 
 def test_ingest_dag():
-    """Integration Test Providence Data Pipeline by performing 1 DAG run.
+    """End to End Test Providence Data Pipeline by performing 1 DAG run.
 
     Expects the following test environment:
     - docker-compose: to run Airflow in docker.
