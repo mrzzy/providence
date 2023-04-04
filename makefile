@@ -12,10 +12,6 @@ $(1): $(1)-$(2)
 endef
 
 define PYTHON_RULES
-$(eval $(call PHONY_RULE,deps,$(1)))
-deps-$(1): $(2)
-	cd $$< && pip install -r requirements-dev.txt
-
 $(eval $(call PHONY_RULE,fmt,$(1)))
 fmt-$(1): $(2)
 	black $$<
@@ -47,10 +43,20 @@ $(eval $(call SIMPLYGO_RULE,test,cargo test))
 
 # YNAB source
 YNAB_DIR := sources/ynab
+
+$(eval $(call PHONY_RULE,deps,ynab))
+deps-ynab:
+	cd $$< && pip install -r requirements-dev.txt
+
 $(eval $(call PYTHON_RULES,ynab,$(YNAB_DIR)))
 
 # Airflow Pipelines
 # NOTE: run 'airflow db init' before running 'make test-pipeline'
 PIPELINES_DIR := pipelines
+
+$(eval $(call PHONY_RULE,deps,pipelines))
+deps-pipeline: $(PIPELINES_DIR)
+	airflow db init
+	cd $$< && pip install -r requirements-dev.txt
 
 $(eval $(call PYTHON_RULES,pipelines,$(PIPELINES_DIR)))
