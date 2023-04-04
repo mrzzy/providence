@@ -63,3 +63,45 @@ jobs:
           tags: ${{ steps.docker-metadata.outputs.tags }}
           labels: ${{ steps.docker-metadata.outputs.labels }}
           push: true
+
+  pipelines:
+    name: "Airflow Pipelines: Lint Build & Test"
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10.6"
+      - name: Install Pip dependencies
+        run: make deps-pipelines
+      - name: Lint
+        run: make lint-pipelines
+      - name: Test
+        run:
+          make test-pipelines
+
+  e2e-test:
+    name: "End to End Test"
+    runs-on: ubuntu-22.04
+    env:
+      KUBECONFIG: /tmp/kubeconfig.yaml
+    steps:
+    - uses: actions/checkout@v3
+    - uses: engineerd/setup-kind@v0.5.0
+      with:
+        version: v0.11.1
+    - uses: actions/setup-python@v4
+      with:
+        python-version: "3.10.6"
+    - name: Install Pip dependencies
+      run: pip install -r tests/requirements.txt
+    - name: Test
+      working-directory: tests
+      env:
+        SIMPLYGO_SRC_USERNAME: "${{ secrets.SIMPLYGO_SRC_USERNAME }}"
+        SIMPLYGO_SRC_PASSWORD: "${{ secrets.SIMPLYGO_SRC_PASSWORD }}"
+        AWS_DEFAULT_REGION: "ap-southeast-1"
+        AWS_S3_TEST_BUCKET: "mrzzy-co-dev"
+        AWS_ACCESS_KEY_ID: "${{ secrets.AWS_ACCESS_KEY_ID }}"
+        AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+      run: pytest

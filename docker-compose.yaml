@@ -1,0 +1,39 @@
+#
+# Providence
+# Docker Compose
+#
+
+services:
+  # Standalone Airflow for Development
+  airflow:
+    image: apache/airflow:2.5.3rc2-python3.10
+    environment:
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS: "False"
+      # user env vars from .env automatically loaded by compose to define
+      # Airflow connections expected by Airflow DAGs. NOTE: These Airflow
+      # connections would not appear in the Airflow UI as they are not stored in the DB.
+      AIRFLOW_CONN_AWS_DEFAULT: |
+        {
+            "conn_type": "aws",
+            "login": "${AWS_ACCESS_KEY_ID}",
+            "password": "${AWS_SECRET_ACCESS_KEY}",
+            "extra": {
+              "region_name": "${AWS_DEFAULT_REGION}"
+            }
+        }
+      AIRFLOW_CONN_PROVIDENCE_SIMPLYGO_SRC: |
+        {
+            "conn_type": "generic",
+            "login": "${SIMPLYGO_SRC_USERNAME}",
+            "password": "${SIMPLYGO_SRC_PASSWORD}"
+        }
+      # expects an accessible kubernetes cluster via passed $KUBECONFIG
+      KUBECONFIG: /kubeconfig.yaml
+    network_mode: host
+    volumes:
+      - "${KUBECONFIG}:/kubeconfig.yaml"
+      - ./pipelines:/opt/airflow/dags
+    command: ["airflow", "standalone"]
+    expose:
+      - 8080

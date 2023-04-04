@@ -1,0 +1,7 @@
+#
+# Providence
+# Data Pipelines
+# Python Project configs
+#
+[tool.pytest.ini_options]
+norecursedirs = "venv"
