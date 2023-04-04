@@ -5,7 +5,3 @@
 #
 [tool.pytest.ini_options]
 norecursedirs = "venv"
-markers = [
-  "unit",
-  "integration",
-]

@@ -1,11 +1,10 @@
 #
 # Providence
-# Data Pipelines
-# Standalone Airflow for Development
+# Docker Compose
 #
 
 services:
-  # expects an accessible kubernetes cluster via passed $KUBECONFIG
+  # Standalone Airflow for Development
   airflow:
     image: apache/airflow:2.5.3rc2-python3.10
     environment:
@@ -29,11 +28,12 @@ services:
             "login": "${SIMPLYGO_SRC_USERNAME}",
             "password": "${SIMPLYGO_SRC_PASSWORD}"
         }
+      # expects an accessible kubernetes cluster via passed $KUBECONFIG
       KUBECONFIG: /kubeconfig.yaml
     network_mode: host
     volumes:
       - "${KUBECONFIG}:/kubeconfig.yaml"
-      - .:/opt/airflow/dags
+      - ./pipelines:/opt/airflow/dags
     command: ["airflow", "standalone"]
     expose:
       - 8080
