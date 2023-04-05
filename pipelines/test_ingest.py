@@ -15,7 +15,7 @@ from airflow.models import Connection, DagBag
 
 DAGS_DIR = Path(os.path.dirname(__file__))
 
-INGEST_DAG_ID = "ingest_providence_data"
+INGEST_DAG_ID = "pvd_ingest_data"
 
 
 def test_ingest_dag_import():
@@ -31,7 +31,7 @@ def test_ingest_dag_import():
             },
         ),
         Connection(
-            conn_id="providence_simplygo_src",
+            conn_id="pvd_simplygo_src",
             conn_type="generic",
             login="test",
             password="test",

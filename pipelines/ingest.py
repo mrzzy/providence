@@ -39,7 +39,7 @@ def k8s_env_vars(env_vars: Dict[str, str]) -> List[k8s.V1EnvVar]:
 
 
 @dag(
-    dag_id="ingest_providence_data",
+    dag_id="pvd_ingest_data",
     schedule=timedelta(days=1),
     start_date=datetime(2023, 2, 1, tz="utc"),
     catchup=False,
@@ -56,7 +56,7 @@ def ingest_dag(
     - `simplygo_src_tag`: Tag specifying the version of the SimplyGo source container to use.
 
     Connections by expected id:
-    - `providence_simplygo_src":
+    - `pvd_simplygo_src":
         - **Login** SimplyGo username.
         - **Password** SimplyGo password.
     - `aws_default`:
@@ -68,10 +68,10 @@ def ingest_dag(
         "app.kubernetes.io/managed-by": "airflow",
     }
     # Extract SimplyGo data with SimplyGo source & load into S3
-    simplygo_connection = BaseHook.get_connection("providence_simplygo_src")
+    simplygo_connection = BaseHook.get_connection("pvd_simplygo_src")
     load_simplygo_s3 = KubernetesPodOperator(
         task_id="ingest_simplygo",
-        image="ghcr.io/mrzzy/providence-simplygo-src:{{ params.simplygo_src_tag }}",
+        image="ghcr.io/mrzzy/pvd-simplygo-src:{{ params.simplygo_src_tag }}",
         image_pull_policy="Always",
         labels=k8s_labels
         | {

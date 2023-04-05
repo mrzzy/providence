@@ -22,7 +22,7 @@ services:
               "region_name": "${AWS_DEFAULT_REGION}"
             }
         }
-      AIRFLOW_CONN_PROVIDENCE_SIMPLYGO_SRC: |
+      AIRFLOW_CONN_PVD_SIMPLYGO_SRC: |
         {
             "conn_type": "generic",
             "login": "${SIMPLYGO_SRC_USERNAME}",
