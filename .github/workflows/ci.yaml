@@ -50,7 +50,7 @@ jobs:
         uses: docker/metadata-action@v4.3.0
         with:
           images: "${{ env.CONTAINER_REGISTRY }}/${{ github.repository_owner }}/\
-                   pvd-${{ matrix.source }}-src"
+                   pvd-simplygo-src"
           tags: |
             type=ref,event=branch
             type=ref,event=tag
