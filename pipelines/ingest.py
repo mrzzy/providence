@@ -67,7 +67,7 @@ def ingest_dag(
         "app.kubernetes.io/part-of": "providence",
         "app.kubernetes.io/managed-by": "airflow",
     }
-    # Extract SimplyGo data with SimplyGo source & load into S3
+    # Extract & load SimplyGo data with SimplyGo source into S3
     simplygo_connection = BaseHook.get_connection("pvd_simplygo_src")
     load_simplygo_s3 = KubernetesPodOperator(
         task_id="ingest_simplygo",
@@ -85,12 +85,12 @@ def ingest_dag(
             "--trips-to",
             "{{ data_interval_end | ds }}",
             "--output",
-            "s3://{{ params.s3_bucket }}/providence/raw/simplygo/{{ ds }}.json",
+            "s3://{{ params.s3_bucket }}/providence/grade=raw/source=simplygo/date={{ ds }}/simplygo.json",
         ],
         env_vars=k8s_env_vars(
             {
-                "SIMPLYGO_SRC_USERNAME": simplygo_connection.login,
-                "SIMPLYGO_SRC_PASSWORD": simplygo_connection.password,
+                "SIMPLYGO_SRC_USERNAME": simplygo.login,
+                "SIMPLYGO_SRC_PASSWORD": simplygo.password,
             }
             | get_aws_env("aws_default")
         ),
