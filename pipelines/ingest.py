@@ -47,13 +47,17 @@ def k8s_env_vars(env_vars: Dict[str, str]) -> List[k8s.V1EnvVar]:
 def ingest_dag(
     s3_bucket: str = "mrzzy-co-data-lake",
     simplygo_src_tag: str = "main",
+    ynab_src_tag: str = "latest",
+    ynab_budget_id: str = "f3f15316-e48c-4235-8d5d-1aa3191b3b8c",
 ):
     """Providence Ingestion Data Pipeline.
     Ingests data from Data Sources into AWS Redshift & uses AWS S3 as staging area.
 
     Parameters:
     - `s3_bucket`: Name of a existing S3 bucket to stage data.
-    - `simplygo_src_tag`: Tag specifying the version of the SimplyGo source container to use.
+    - `simplygo_src_tag`: Tag specifying the version of the SimplyGo Source container to use.
+    - `ynab_src_tag`: Tag specifying the version of the YNAB Source container to use.
+    - `ynab_budget_id`: ID specifying the YNAB Budget to retrieve data for.
 
     Connections by expected id:
     - `pvd_simplygo_src":
@@ -75,7 +79,7 @@ def ingest_dag(
         image_pull_policy="Always",
         labels=k8s_labels
         | {
-            "app.kubernetes.io/name": "simpygo_src",
+            "app.kubernetes.io/name": "simplygo_src",
             "app.kubernetes.io/component": "source",
             "app.kubernetes.io/version": "{{ params.simplygo_src_tag }}",
         },
@@ -91,6 +95,30 @@ def ingest_dag(
             {
                 "SIMPLYGO_SRC_USERNAME": simplygo.login,
                 "SIMPLYGO_SRC_PASSWORD": simplygo.password,
+            }
+            | get_aws_env("aws_default")
+        ),
+    )
+
+    # Extract & load budget data with YNAB source into S3
+    ynab = BaseHook.get_connection("pvd_ynab_src")
+    load_ynab_s3 = KubernetesPodOperator(
+        task_id="ingest_ynab",
+        image="ghcr.io/mrzzy/pvd-ynab-src:{{ params.ynab_src_tag }}",
+        image_pull_policy="Always",
+        labels=k8s_labels
+        | {
+            "app.kubernetes.io/name": "ynab",
+            "app.kubernetes.io/component": "source",
+            "app.kubernetes.io/version": "{{ params.ynab_src_tag }}",
+        },
+        arguments=[
+            "{{ params.ynab_budget_id }}",
+            "s3://{{ params.s3_bucket }}/providence/grade=raw/source=ynab/date={{ ds }}/budget.json",
+        ],
+        env_vars=k8s_env_vars(
+            {
+                "YNAB_SRC_ACCESS_TOKEN": ynab.password,
             }
             | get_aws_env("aws_default")
         ),

@@ -28,6 +28,11 @@ services:
             "login": "${SIMPLYGO_SRC_USERNAME}",
             "password": "${SIMPLYGO_SRC_PASSWORD}"
         }
+      AIRFLOW_CONN_PVD_YNAB_SRC: |
+        {
+            "conn_type": "generic",
+            "password": "${YNAB_SRC_ACCESS_TOKEN}"
+        }
       # expects an accessible kubernetes cluster via passed $KUBECONFIG
       KUBECONFIG: /kubeconfig.yaml
     network_mode: host

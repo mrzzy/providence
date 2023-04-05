@@ -36,6 +36,11 @@ def test_ingest_dag_import():
             login="test",
             password="test",
         ),
+        Connection(
+            conn_id="pvd_ynab_src",
+            conn_type="generic",
+            password="test",
+        ),
     ]
     with mock.patch.dict(
         "os.environ",
