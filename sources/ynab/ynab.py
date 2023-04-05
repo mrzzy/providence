@@ -58,7 +58,7 @@ if __name__ == "__main__":
                 "AWS_DEFAULT_REGION",
                 "AWS_ACCESS_KEY_ID",
                 "AWS_SECRET_ACCESS_KEY",
-                "YNAB_ACCESS_TOKEN",
+                "YNAB_SRC_ACCESS_TOKEN",
             ]
         )
         and len(sys.argv) == 3
@@ -79,12 +79,12 @@ if __name__ == "__main__":
                AWS_ACCESS_KEY_ID     AWS access key id used to authenticate with AWS.
                AWS_SECRET_ACCESS_KEY AWS access key used to authenticate with AWS.
                AWS_DEFAULT_REGION    AWS Region to use.
-               YNAB_ACCESS_TOKEN     YNAB personal access token.
+               YNAB_SRC_ACCESS_TOKEN YNAB personal access token.
             """
             ),
             file=sys.stderr,
         )
         sys.exit(1)
     ingest_budget_s3(
-        YNAB(os.environ["YNAB_ACCESS_TOKEN"]), boto3.client("s3"), *sys.argv[1:]
+        YNAB(os.environ["YNAB_SRC_ACCESS_TOKEN"]), boto3.client("s3"), *sys.argv[1:]
     )

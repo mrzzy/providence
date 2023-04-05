@@ -71,7 +71,7 @@ jobs:
         uses: docker/metadata-action@v4.3.0
         with:
           images: "${{ env.CONTAINER_REGISTRY }}/${{ github.repository_owner }}/\
-                   providence-${{ matrix.source }}-src"
+                   pvd-${{ matrix.source }}-src"
           tags: |
             type=ref,event=branch
             type=ref,event=tag
