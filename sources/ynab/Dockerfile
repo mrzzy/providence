@@ -5,8 +5,12 @@
 #
 
 FROM python:3.10.10-slim
-RUN mkdir /app
-WORKDIR /app
+
+# create system user for ynab source
+ARG USER=ynab
+RUN adduser --system ${USER}
+USER ${USER}
+WORKDIR /home/${USER}
 
 # install pip module requirements
 COPY requirements.txt .
