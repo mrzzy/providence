@@ -31,6 +31,7 @@ jobs:
     name: "YNAB Source: Lint & Test"
     runs-on: ubuntu-22.04
     steps:
+      - uses: actions/checkout@v3
       - uses: ./.github/actions/python
         with:
           make-suffix: pipelines
@@ -39,6 +40,7 @@ jobs:
     name: "Airflow Pipelines: Lint & Test"
     runs-on: ubuntu-22.04
     steps:
+      - uses: actions/checkout@v3
       - uses: ./.github/actions/python
         with:
           make-suffix: pipelines
