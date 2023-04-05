@@ -10,7 +10,7 @@ import stat
 import pytest
 from testcontainers.compose import DockerCompose
 
-INGEST_DAG_ID = "ingest_providence_data"
+INGEST_DAG_ID = "pvd_ingest_data"
 
 
 def test_ingest_dag():
