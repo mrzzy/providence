@@ -1,0 +1,30 @@
+#
+# Providence
+# CI workflow
+# Python Action
+#
+
+name: Python
+description: Lint & Test Python
+inputs:
+  make-suffix:
+    required: true
+    description: Suffix appended this subproject's Makefile rules
+  python-version:
+    description: Version of Python to use.
+    default: 3.10.6
+runs:
+  using: composite
+  steps:
+  - uses: actions/setup-python@v4
+    with:
+      python-version: "${{ inputs.python-version }}"
+  - name: Setup dependencies
+    shell: bash
+    run: "make deps-${{ inputs.make-suffix }}"
+  - name: Lint
+    shell: bash
+    run: "make lint-${{ inputs.make-suffix }}"
+  - name: Test
+    shell: bash
+    run: "make test-${{ inputs.make-suffix }}"
