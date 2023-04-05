@@ -19,9 +19,15 @@ RUN cargo build --release
 
 # Binary only production image
 FROM debian:bullseye-slim AS release
+# create non root user to simplygo source
+ARG USER=simplygo
+RUN adduser --system simplygo
 # install CA certificates needed by openssl to verify server identity
 RUN apt-get update \
   && apt-get install -y --no-install-recommends ca-certificates=20210119 \
   && rm -rf /var/lib/apt/lists/*
+# copy release binary forom build stage
 COPY --from=build /app/target/release/simplygo_src /bin/simplygo_src
+
+USER simplygo
 ENTRYPOINT [ "/bin/simplygo_src" ]
