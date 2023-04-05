@@ -45,8 +45,8 @@ $(eval $(call SIMPLYGO_RULE,test,cargo test))
 YNAB_DIR := sources/ynab
 
 $(eval $(call PHONY_RULE,deps,ynab))
-deps-ynab:
-	cd $$< && pip install -r requirements-dev.txt
+deps-ynab: $(YNAB_DIR)
+	cd $< && pip install -r requirements-dev.txt
 
 $(eval $(call PYTHON_RULES,ynab,$(YNAB_DIR)))
 
@@ -56,7 +56,7 @@ PIPELINES_DIR := pipelines
 
 $(eval $(call PHONY_RULE,deps,pipelines))
 deps-pipelines: $(PIPELINES_DIR)
+	cd $< && pip install -r requirements-dev.txt
 	airflow db init
-	cd $$< && pip install -r requirements-dev.txt
 
 $(eval $(call PYTHON_RULES,pipelines,$(PIPELINES_DIR)))

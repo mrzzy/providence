@@ -68,7 +68,7 @@ def ingest_dag(
         "app.kubernetes.io/managed-by": "airflow",
     }
     # Extract & load SimplyGo data with SimplyGo source into S3
-    simplygo_connection = BaseHook.get_connection("pvd_simplygo_src")
+    simplygo = BaseHook.get_connection("pvd_simplygo_src")
     load_simplygo_s3 = KubernetesPodOperator(
         task_id="ingest_simplygo",
         image="ghcr.io/mrzzy/pvd-simplygo-src:{{ params.simplygo_src_tag }}",
