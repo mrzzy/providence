@@ -110,4 +110,5 @@ jobs:
         AWS_S3_TEST_BUCKET: "mrzzy-co-dev"
         AWS_ACCESS_KEY_ID: "${{ secrets.AWS_ACCESS_KEY_ID }}"
         AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+        YNAB_SRC_ACCESS_TOKEN: "${{ secrets.YNAB_SRC_ACCESS_TOKEN }}"
       run: pytest
