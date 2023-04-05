@@ -55,7 +55,7 @@ $(eval $(call PYTHON_RULES,ynab,$(YNAB_DIR)))
 PIPELINES_DIR := pipelines
 
 $(eval $(call PHONY_RULE,deps,pipelines))
-deps-pipeline: $(PIPELINES_DIR)
+deps-pipelines: $(PIPELINES_DIR)
 	airflow db init
 	cd $$< && pip install -r requirements-dev.txt
 
