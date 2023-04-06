@@ -74,7 +74,7 @@ linkify-it-py==2.0.0
 lockfile==0.12.2
 lxml==4.9.2
 Mako==1.2.4
-Markdown==3.4.1
+Markdown==3.4.3
 markdown-it-py==2.2.0
 MarkupSafe==2.1.2
 marshmallow==3.19.0
