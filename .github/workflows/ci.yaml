@@ -87,6 +87,7 @@ jobs:
           push: true
 
   e2e-test:
+    needs: [src-container]
     name: "End to End Test"
     runs-on: ubuntu-22.04
     env:
