@@ -23,7 +23,7 @@ use reqwest::{
     blocking::{multipart::Form, Client, RequestBuilder},
     header::COOKIE,
     redirect::Policy,
-    Method,
+    Method, StatusCode,
 };
 const SIMPLYGO_URL: &str = "https://simplygo.transitlink.com.sg";
 const SESSION_ID_KEY: &str = "ASP.NET_SessionId";
@@ -124,7 +124,13 @@ impl SimplyGo {
                 HashMap::from([("Username", username), ("Password", password)]),
             )
             .send()
-            .expect("Failed to authenticate on Simplygo with username & password.");
+            .expect("Could not make authentication request to Simplygo.");
+
+        // check whether authentication was successful via http status code
+        // if authenticated, simplygo will perform a FOUND 302 redirect
+        if response.status() != StatusCode::FOUND {
+            panic!("Failed to authenticate on Simplygo with username & password.");
+        }
 
         let cookies = parse_set_cookies(response.headers());
         Self {
