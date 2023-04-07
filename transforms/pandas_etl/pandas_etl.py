@@ -13,16 +13,20 @@ from urllib.parse import urlparse, urlunparse
 import pandas as pd
 from pandas import DataFrame, factorize
 
-# Map of file extensions to their pandas read implementation
+from transforms import extract_uob
+
+# Dict of file extensions to their pandas read implementation
 pandas_read = {
     ".xls": pd.read_excel,
 }
 
+# Dict of transform_ids to transform functions
 transforms: Dict[str, Callable[[DataFrame], DataFrame]] = {
     "noop": lambda df: df,
+    "extract_uob": extract_uob,
 }
 
-# Map of file extensions to their pandas write implementation
+# Dict of file extensions to their pandas write implementation
 pandas_write: Dict[str, Callable[[DataFrame, str], Any]] = {
     ".csv": lambda df, path: df.to_csv(path),
 }
