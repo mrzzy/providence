@@ -1,7 +1,7 @@
 #
 # Providence
 # Transforms
-# Pandas S3
+# Pandas
 #
 
 from typing import Dict, Callable, Any
@@ -15,7 +15,7 @@ from pandas import DataFrame, factorize
 
 # Map of file extensions to their pandas read implementation
 pandas_read = {
-    "xlsx": pd.read_excel,
+    ".xls": pd.read_excel,
 }
 
 transforms: Dict[str, Callable[[DataFrame], DataFrame]] = {
@@ -24,7 +24,7 @@ transforms: Dict[str, Callable[[DataFrame], DataFrame]] = {
 
 # Map of file extensions to their pandas write implementation
 pandas_write: Dict[str, Callable[[DataFrame, str], Any]] = {
-    "csv": lambda df, path: df.write_csv(path),
+    ".csv": lambda df, path: df.to_csv(path),
 }
 
 if __name__ == "__main__":
@@ -45,19 +45,15 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "src_url",
-        help="s3:// URL specifying the source object storing input data.",
+        help="URL or path specifying the source file storing input data.",
         type=urlparse,
     )
     parser.add_argument(
         "dest_url",
-        help="s3:// URL specifying the destination object to store the transformed data.",
+        help="URL or path specifying the destination file to store the transformed data.",
         type=urlparse,
     )
     args = parser.parse_args()
-    if args.src_url.schema != "s3":
-        raise ValueError(f"Unsupported URL schema in given src_url")
-    if args.dest_url.schema != "s3":
-        raise ValueError(f"Unsupported URL schema in given dest_url")
 
     # read, transform with pandas & write
     _, src_ext = splitext(args.src_url.path)
