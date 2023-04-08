@@ -45,7 +45,7 @@ runs:
     - name: "Build and Push ${{ inputs.name }} Container to GitHub Container Registry"
       uses: docker/build-push-action@v4.0.0
       with:
-        context: "${{ input.context_dir }}"
+        context: "${{ inputs.context_dir }}"
         tags: ${{ steps.docker-metadata.outputs.tags }}
         labels: ${{ steps.docker-metadata.outputs.labels }}
         push: true
