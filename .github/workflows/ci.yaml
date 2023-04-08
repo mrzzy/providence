@@ -77,8 +77,32 @@ jobs:
           name: "pvd-${{ matrix.source }}-src"
           context_dir: "sources/${{ matrix.source }}"
 
+  tfm-container:
+    strategy:
+      fail-fast: false
+      matrix:
+        transform:
+          - pandas_etl
+    name: "${{ matrix.transform }} Transform: Publish Container image"
+    runs-on: ubuntu-22.04
+    # add permissions needed to push containers to GHCR with GITHUB_TOKEN
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build & Publish
+        uses: ./.github/actions/ghcr
+        with:
+          username: "${{ github.actor }}"
+          password: "${{ secrets.GITHUB_TOKEN }}"
+          name: "pvd-${{ matrix.transform }}-tfm"
+          context_dir: "transforms/${{ matrix.source }}"
+
   e2e-test:
-    needs: [src-container]
+    needs:
+      - src-container
+      - tfm-container
     name: "End to End Test"
     runs-on: ubuntu-22.04
     env:
