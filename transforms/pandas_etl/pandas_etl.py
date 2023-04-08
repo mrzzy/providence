@@ -29,6 +29,7 @@ transforms: Dict[str, Callable[[DataFrame], DataFrame]] = {
 # Dict of file extensions to their pandas write implementation
 pandas_write: Dict[str, Callable[[DataFrame, str], Any]] = {
     ".csv": lambda df, path: df.to_csv(path),
+    ".pq": lambda df, path: df.to_parquet(path),
 }
 
 if __name__ == "__main__":
