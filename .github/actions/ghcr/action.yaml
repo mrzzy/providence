@@ -1,0 +1,51 @@
+#
+# Providence
+# CI Workflow
+# GHCR Container Action
+#
+
+name: GHCR container
+description: Builds & Publish Docker containers to GHCR
+inputs:
+  username:
+    required: true
+    description: Username used to login into GHCR
+  password:
+    required: true
+    description: Password used to login into GHCR. Github Actions runner token
+      with write permissions to 'packages' can be used as password.
+  name:
+    required: true
+    description: >
+      Name of the built & published container. The resulting container will ub
+      published tagged the fully qualified id 'ghcr.io/<OWNER>/<NAME>'.
+  context_dir:
+    required: true
+    description: Path to the context directory used to build the container.
+runs:
+  using: composite
+  steps:
+    - name: Log in to the GitHub Container registry
+      uses: docker/login-action@v2.1.0
+      with:
+        registry: ghcr.io
+        username: "${{ inputs.username }}"
+        password: "${{ inputs.password }}"
+    - id: docker-metadata
+      name: "Gather metadata for tagging / labeling ${{ matrix.source }} Container"
+      uses: docker/metadata-action@v4.3.0
+      with:
+        images: "ghcr.io/${{ github.repository_owner }}/${{ inputs.name }}"
+        tags: |
+          type=ref,event=branch
+          type=ref,event=tag
+          type=semver,pattern={{version}}
+          # set latest tag for default branch (main)
+          type=raw,value=latest,enable={{is_default_branch}}
+    - name: "Build and Push ${{ inputs.name }} Container to GitHub Container Registry"
+      uses: docker/build-push-action@v4.0.0
+      with:
+        context: "${{ input.context_dir }}"
+        tags: ${{ steps.docker-metadata.outputs.tags }}
+        labels: ${{ steps.docker-metadata.outputs.labels }}
+        push: true
