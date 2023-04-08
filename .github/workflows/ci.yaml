@@ -36,6 +36,15 @@ jobs:
         with:
           make-suffix: ynab
 
+  pandas-etl-transform:
+    name: "Pandas ETL Transform: Lint & Test"
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/python
+        with:
+          make-suffix: pandas-etl
+
   pipelines:
     name: "Airflow Pipelines: Lint & Test"
     runs-on: ubuntu-22.04
@@ -61,7 +70,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build & Publish
-        uses: .github/actions/ghcr
+        uses: ./.github/actions/ghcr
         with:
           username: "${{ github.actor }}"
           password: "${{ secrets.GITHUB_TOKEN }}"
