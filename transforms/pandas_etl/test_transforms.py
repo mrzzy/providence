@@ -46,12 +46,15 @@ def test_transform_uob():
             "Withdrawal": ["5", "5"],
             "Deposit": ["5", "5"],
             "Available Balance": ["2000", "2000"],
+            "Account Number": ["123456789", "123456789"],
             "Account Type": ["One Account", "One Account"],
             "Statement Period": [
                 "06 Feb 2023 To 07 Apr 2023",
                 "06 Feb 2023 To 07 Apr 2023",
             ],
+            "Currency": ["SGD", "SGD"],
         },
     )
+    print(actual_df.to_string())
 
     assert expected_df.equals(actual_df)
