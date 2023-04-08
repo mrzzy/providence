@@ -51,7 +51,7 @@ deps-ynab: $(YNAB_DIR)
 $(eval $(call PYTHON_RULES,ynab,$(YNAB_DIR)))
 
 # Pandas ETL transform
-PANDAS_ETL_DIR := transforms/pandas_etl
+PANDAS_ETL_DIR := transforms/pandas-etl
 
 $(eval $(call PHONY_RULE,deps,pandas-etl))
 deps-pandas-etl: $(PANDAS_ETL_DIR)
