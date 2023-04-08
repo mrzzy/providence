@@ -54,7 +54,7 @@ $(eval $(call PYTHON_RULES,ynab,$(YNAB_DIR)))
 PANDAS_ETL_DIR := transforms/pandas_etl
 
 $(eval $(call PHONY_RULE,deps,pandas-etl))
-deps-pandas-etl: $(YNAB_DIR)
+deps-pandas-etl: $(PANDAS_ETL_DIR)
 	cd $< && pip install -r requirements-dev.txt
 
 $(eval $(call PYTHON_RULES,pandas-etl,$(PANDAS_ETL_DIR)))
