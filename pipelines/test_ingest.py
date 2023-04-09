@@ -14,6 +14,7 @@ from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import os
 from airflow.models import Connection, DagBag
 
 DAGS_DIR = Path(os.path.dirname(__file__))
+DAG_IDS = ["pvd_ingest_simplygo", "pvd_ingest_ynab", "pvd_ingest_uob"]
 
 
 def test_ingest_dag_import():
@@ -47,6 +48,5 @@ def test_ingest_dag_import():
     ):
         dagbag = DagBag(DAGS_DIR)
     assert dagbag.import_errors == {}
-    expected_dags = ["pvd_ingest_simplygo", "pvd_ingest_ynab", "pvd_ingest_uob"]
-    for dag_id in expected_dags:
+    for dag_id in DAG_IDS:
         assert dagbag.get_dag(dag_id) is not None
