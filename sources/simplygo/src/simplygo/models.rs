@@ -4,9 +4,22 @@
  * Models
 */
 
-use chrono::serde::ts_milliseconds;
 use chrono::{DateTime, NaiveDate, NaiveTime, Utc};
 use serde::Serialize;
+
+/// Defines a UTC datetime format that only retains millisecond resolution
+/// from the nanosecond resolution that chrono::DateTime maintains internally.
+mod datetime_millisec_fmt {
+    use chrono::{DateTime, Utc};
+    use serde::Serializer;
+
+    pub fn serialize<S>(timestamp: &DateTime<Utc>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(&timestamp.format("%Y-%m-%dT%H:%M:%S%.3fZ").to_string())
+    }
+}
 
 /// Modes of Public Transport.
 #[derive(Eq, PartialEq, Debug, Serialize)]
@@ -52,7 +65,7 @@ pub struct Card {
 #[derive(Debug, Serialize)]
 pub struct Record {
     /// Timestamp when the data was scraped in UTC timezone.
-    #[serde(with = "ts_milliseconds")]
+    #[serde(with = "datetime_millisec_fmt")]
     pub scraped_on: DateTime<Utc>,
     /// Bank cards registered on SimplyGo.
     pub cards: Vec<Card>,
