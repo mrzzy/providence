@@ -6,36 +6,16 @@
 
 from os import path
 from datetime import timedelta
-from typing import Dict, List
+from typing import Any, Dict, List
 from airflow.decorators import dag, task
 from airflow.hooks.base import BaseHook
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
     KubernetesPodOperator,
 )
-from airflow.models.baseoperator import BaseOperator
 from pendulum import datetime
 from kubernetes.client import models as k8s
 
-
-def get_aws_env(conn_id: str) -> Dict[str, str]:
-    """Get environment variables used to configure AWS access from the Airflow connection.
-
-    Args:
-        conn_id: ID of the Airflow connection to retrieve for aws credentials.
-    Returns:
-        Dict of environment variable name & value needed to configure AWS.
-    """
-    aws = BaseHook.get_connection(conn_id)
-    return {
-        "AWS_DEFAULT_REGION": aws.extra_dejson["region_name"],
-        "AWS_ACCESS_KEY_ID": str(aws.login),
-        "AWS_SECRET_ACCESS_KEY": aws.password,
-    }
-
-
-def k8s_env_vars(env_vars: Dict[str, str]) -> List[k8s.V1EnvVar]:
-    """Convert given env_vars into list of K8s env vars."""
-    return [k8s.V1EnvVar(name, value) for name, value in env_vars.items()]
+from common import AWS_CONNECTION_ID, K8S_LABELS, get_aws_env, k8s_env_vars
 
 
 @dag(
@@ -46,7 +26,7 @@ def k8s_env_vars(env_vars: Dict[str, str]) -> List[k8s.V1EnvVar]:
 )
 def ingest_dag(
     s3_bucket: str = "mrzzy-co-data-lake",
-    simplygo_src_tag: str = "main",
+    simplygo_src_tag: str = "latest",
     ynab_src_tag: str = "latest",
     ynab_budget_id: str = "f3f15316-e48c-4235-8d5d-1aa3191b3b8c",
 ):
@@ -67,17 +47,13 @@ def ingest_dag(
         - **Login** AWS Access Key ID.
         - **Password** AWS Access Secret Key.
     """
-    k8s_labels = {
-        "app.kubernetes.io/part-of": "providence",
-        "app.kubernetes.io/managed-by": "airflow",
-    }
-    # Extract & load SimplyGo data with SimplyGo source into S3
+    # Extract & load SimplyGo data with SimplyGo source into S3 as JSON
     simplygo = BaseHook.get_connection("pvd_simplygo_src")
-    load_simplygo_s3 = KubernetesPodOperator(
+    ingest_simplygo = KubernetesPodOperator(
         task_id="ingest_simplygo",
         image="ghcr.io/mrzzy/pvd-simplygo-src:{{ params.simplygo_src_tag }}",
         image_pull_policy="Always",
-        labels=k8s_labels
+        labels=K8S_LABELS
         | {
             "app.kubernetes.io/name": "simplygo_src",
             "app.kubernetes.io/component": "source",
@@ -85,9 +61,9 @@ def ingest_dag(
         },
         arguments=[
             "--trips-from",
-            "{{ data_interval_start | ds }}",
+            "{{  ds }}",
             "--trips-to",
-            "{{ data_interval_end | ds }}",
+            "{{ ds }}",
             "--output",
             "s3://{{ params.s3_bucket }}/providence/grade=raw/source=simplygo/date={{ ds }}/simplygo.json",
         ],
@@ -96,17 +72,17 @@ def ingest_dag(
                 "SIMPLYGO_SRC_USERNAME": simplygo.login,
                 "SIMPLYGO_SRC_PASSWORD": simplygo.password,
             }
-            | get_aws_env("aws_default")
+            | get_aws_env(AWS_CONNECTION_ID)
         ),
     )
 
-    # Extract & load budget data with YNAB source into S3
+    # Extract & load budget data with YNAB source into S3 as JSON
     ynab = BaseHook.get_connection("pvd_ynab_src")
-    load_ynab_s3 = KubernetesPodOperator(
+    ingest_ynab = KubernetesPodOperator(
         task_id="ingest_ynab",
         image="ghcr.io/mrzzy/pvd-ynab-src:{{ params.ynab_src_tag }}",
         image_pull_policy="Always",
-        labels=k8s_labels
+        labels=K8S_LABELS
         | {
             "app.kubernetes.io/name": "ynab",
             "app.kubernetes.io/component": "source",
@@ -120,7 +96,7 @@ def ingest_dag(
             {
                 "YNAB_SRC_ACCESS_TOKEN": ynab.password,
             }
-            | get_aws_env("aws_default")
+            | get_aws_env(AWS_CONNECTION_ID)
         ),
     )
 
