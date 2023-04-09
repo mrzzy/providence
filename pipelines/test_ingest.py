@@ -1,7 +1,7 @@
 #
 # Providence
 # Data Pipelines
-# Data Ingestion
+# Unit Tests
 #
 
 import json
@@ -14,8 +14,6 @@ from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import os
 from airflow.models import Connection, DagBag
 
 DAGS_DIR = Path(os.path.dirname(__file__))
-
-INGEST_DAG_ID = "pvd_ingest_data"
 
 
 def test_ingest_dag_import():
@@ -44,10 +42,11 @@ def test_ingest_dag_import():
     ]
     with mock.patch.dict(
         "os.environ",
+        PYTHON_PATH=str(DAGS_DIR),
         **{f"AIRFLOW_CONN_{c.conn_id.upper()}": c.get_uri() for c in connections},  # type: ignore
     ):
         dagbag = DagBag(DAGS_DIR)
     assert dagbag.import_errors == {}
-    expected_dags = [INGEST_DAG_ID]
+    expected_dags = ["pvd_ingest_simplygo", "pvd_ingest_ynab", "pvd_ingest_uob"]
     for dag_id in expected_dags:
         assert dagbag.get_dag(dag_id) is not None

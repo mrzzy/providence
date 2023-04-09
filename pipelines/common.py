@@ -1,7 +1,7 @@
 #
 # Providence
 # Data Pipelines
-# Utilities
+# Common
 #
 
 
@@ -9,6 +9,12 @@ from typing import Dict, List
 
 from airflow.hooks.base import BaseHook
 from kubernetes.client import models as k8s
+
+AWS_CONNECTION_ID = "aws_default"
+K8S_LABELS = {
+    "app.kubernetes.io/part-of": "providence",
+    "app.kubernetes.io/managed-by": "airflow",
+}
 
 
 def get_aws_env(conn_id: str) -> Dict[str, str]:
