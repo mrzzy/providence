@@ -4,7 +4,7 @@
  * Models
 */
 
-use chrono::{NaiveDateTime, NaiveDate, NaiveTime};
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 use serde::Serialize;
 /// Modes of Public Transport.
 #[derive(Eq, PartialEq, Debug, Serialize)]
