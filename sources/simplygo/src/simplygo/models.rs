@@ -4,23 +4,8 @@
  * Models
 */
 
-use chrono::{DateTime, NaiveDate, NaiveTime, Utc};
+use chrono::{NaiveDateTime, NaiveDate, NaiveTime};
 use serde::Serialize;
-
-/// Defines a UTC datetime format that only retains millisecond resolution
-/// from the nanosecond resolution that chrono::DateTime maintains internally.
-mod datetime_millisec_fmt {
-    use chrono::{DateTime, Utc};
-    use serde::Serializer;
-
-    pub fn serialize<S>(timestamp: &DateTime<Utc>, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        serializer.serialize_str(&timestamp.format("%Y-%m-%dT%H:%M:%S%.3fZ").to_string())
-    }
-}
-
 /// Modes of Public Transport.
 #[derive(Eq, PartialEq, Debug, Serialize)]
 pub enum Mode {
@@ -64,9 +49,9 @@ pub struct Card {
 /// Record embeds the raw data produced by SimplyGo source.
 #[derive(Debug, Serialize)]
 pub struct Record {
-    /// Timestamp when the data was scraped in UTC timezone.
-    #[serde(with = "datetime_millisec_fmt")]
-    pub scraped_on: DateTime<Utc>,
+    /// Timestamp when the data was scraped in Asia/Singapore timezone.
+    #[serde(with = "dt_millisec_fmt")]
+    pub scraped_on: NaiveDateTime,
     /// Bank cards registered on SimplyGo.
     pub cards: Vec<Card>,
     /// Date of the start of the time period on Trips were scraped.
@@ -75,4 +60,17 @@ pub struct Record {
     pub trips_to: NaiveDate,
     /// Public transport trips scraped from SimplyGo for the specified time period.
     pub trips: Vec<Trip>,
+}
+/// Defines a datetime format that only retains millisecond resolution
+/// from the nanosecond resolution that chrono::DateTime maintains internally.
+mod dt_millisec_fmt {
+    use chrono::NaiveDateTime;
+    use serde::Serializer;
+
+    pub fn serialize<S>(timestamp: &NaiveDateTime, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(&timestamp.format("%Y-%m-%dT%H:%M:%S%.6f").to_string())
+    }
 }

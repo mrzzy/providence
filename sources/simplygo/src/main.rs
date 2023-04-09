@@ -3,7 +3,7 @@
  * SimplyGo Source
 */
 
-use chrono::{NaiveDate, Utc};
+use chrono::{Local, NaiveDate};
 use clap::Parser;
 use simplygo_src::S3Sink;
 use simplygo_src::{models::Record, SimplyGo};
@@ -48,7 +48,7 @@ fn main() {
     // scrape data into record
     let cards = simplygo.cards();
     let record = Record {
-        scraped_on: Utc::now(),
+        scraped_on: Local::now().naive_local(),
         trips_from,
         trips_to,
         trips: cards
