@@ -30,7 +30,7 @@ def s3_bucket():
     yield test_bucket
 
     # clean up test uob export
-    s3.delete_object(test_bucket, key)
+    s3.delete_object(Bucket=test_bucket, Key=key)
 
 
 def test_ingest_dag(s3_bucket: str):
