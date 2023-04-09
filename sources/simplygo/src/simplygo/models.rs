@@ -50,7 +50,7 @@ pub struct Card {
 #[derive(Debug, Serialize)]
 pub struct Record {
     /// Timestamp when the data was scraped in Asia/Singapore timezone.
-    #[serde(with = "dt_millisec_fmt")]
+    #[serde(with = "dt_microsec_fmt")]
     pub scraped_on: NaiveDateTime,
     /// Bank cards registered on SimplyGo.
     pub cards: Vec<Card>,
@@ -61,9 +61,9 @@ pub struct Record {
     /// Public transport trips scraped from SimplyGo for the specified time period.
     pub trips: Vec<Trip>,
 }
-/// Defines a datetime format that only retains millisecond resolution
-/// from the nanosecond resolution that chrono::DateTime maintains internally.
-mod dt_millisec_fmt {
+/// Defines a datetime format that only retains microsecond resolution
+/// from the nanosecond resolution that NaiveDateTime maintains internally.
+mod dt_microsec_fmt {
     use chrono::NaiveDateTime;
     use serde::Serializer;
 
