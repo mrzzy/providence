@@ -4,8 +4,8 @@
  * Models
 */
 
-use chrono::{DateTime, NaiveDate, NaiveTime};
-use chrono_tz::Tz;
+use chrono::serde::ts_milliseconds;
+use chrono::{DateTime, NaiveDate, NaiveTime, Utc};
 use serde::Serialize;
 
 /// Modes of Public Transport.
@@ -51,8 +51,9 @@ pub struct Card {
 /// Record embeds the raw data produced by SimplyGo source.
 #[derive(Debug, Serialize)]
 pub struct Record {
-    /// Timestamp when the data was scraped in Asia/Singapore timezone.
-    pub scraped_on: DateTime<Tz>,
+    /// Timestamp when the data was scraped in UTC timezone.
+    #[serde(with = "ts_milliseconds")]
+    pub scraped_on: DateTime<Utc>,
     /// Bank cards registered on SimplyGo.
     pub cards: Vec<Card>,
     /// Date of the start of the time period on Trips were scraped.
