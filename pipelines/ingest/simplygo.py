@@ -22,7 +22,6 @@ from common import AWS_CONNECTION_ID, K8S_LABELS, get_aws_env, k8s_env_vars
     dag_id="pvd_ingest_simplygo",
     schedule=timedelta(days=1),
     start_date=datetime(2023, 4, 4, tz="utc"),
-    catchup=False,
 )
 def ingest_simplygo_dag(
     s3_bucket: str = "mrzzy-co-data-lake",

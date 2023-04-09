@@ -19,7 +19,6 @@ from common import AWS_CONNECTION_ID, K8S_LABELS, get_aws_env, k8s_env_vars
     dag_id="pvd_ingest_ynab",
     schedule=timedelta(days=1),
     start_date=datetime(2023, 4, 4, tz="utc"),
-    catchup=False,
 )
 def ingest_ynab_dag(
     ynab_src_tag: str = "latest",
