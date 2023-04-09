@@ -36,6 +36,15 @@ jobs:
         with:
           make-suffix: ynab
 
+  pandas-etl-transform:
+    name: "Pandas ETL Transform: Lint & Test"
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/python
+        with:
+          make-suffix: pandas-etl
+
   pipelines:
     name: "Airflow Pipelines: Lint & Test"
     runs-on: ubuntu-22.04
@@ -60,34 +69,40 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v3
-      - name: Log in to the GitHub Container registry
-        uses: docker/login-action@v2.1.0
+      - name: Build & Publish
+        uses: ./.github/actions/ghcr
         with:
-          registry: ${{ env.CONTAINER_REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - id: docker-metadata
-        name: "Gather metadata for tagging / labeling ${{ matrix.source }} Container"
-        uses: docker/metadata-action@v4.3.0
+          username: "${{ github.actor }}"
+          password: "${{ secrets.GITHUB_TOKEN }}"
+          name: "pvd-${{ matrix.source }}-src"
+          context_dir: "sources/${{ matrix.source }}"
+
+  tfm-container:
+    strategy:
+      fail-fast: false
+      matrix:
+        transform:
+          - pandas-etl
+    name: "${{ matrix.transform }} Transform: Publish Container image"
+    runs-on: ubuntu-22.04
+    # add permissions needed to push containers to GHCR with GITHUB_TOKEN
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build & Publish
+        uses: ./.github/actions/ghcr
         with:
-          images: "${{ env.CONTAINER_REGISTRY }}/${{ github.repository_owner }}/\
-                   pvd-${{ matrix.source }}-src"
-          tags: |
-            type=ref,event=branch
-            type=ref,event=tag
-            type=semver,pattern={{version}}
-            # set latest tag for default branch (main)
-            type=raw,value=latest,enable={{is_default_branch}}
-      - name: "Build and Push ${{ matrix.source }} Container to GitHub Container Registry"
-        uses: docker/build-push-action@v4.0.0
-        with:
-          context: "sources/${{ matrix.source }}"
-          tags: ${{ steps.docker-metadata.outputs.tags }}
-          labels: ${{ steps.docker-metadata.outputs.labels }}
-          push: true
+          username: "${{ github.actor }}"
+          password: "${{ secrets.GITHUB_TOKEN }}"
+          name: "pvd-${{ matrix.transform }}-tfm"
+          context_dir: "transforms/${{ matrix.transform }}"
 
   e2e-test:
-    needs: [src-container]
+    needs:
+      - src-container
+      - tfm-container
     name: "End to End Test"
     runs-on: ubuntu-22.04
     env:
