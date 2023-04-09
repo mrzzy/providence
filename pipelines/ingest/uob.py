@@ -26,11 +26,9 @@ from common import AWS_CONNECTION_ID, K8S_LABELS, get_aws_env, k8s_env_vars
     catchup=False,
 )
 def ingest_uob_dag(
-    # TODO: revert
-    s3_bucket: str = "mrzzy-co-dev",
+    s3_bucket: str = "mrzzy-co-data-lake",
     export_prefix="providence/manual/uob/ACC_TXN_History_",
-    # TODO: revert
-    pandas_etl_tag: str = "feat-uob-csv",
+    pandas_etl_tag: str = "latest",
 ):
     """Ingests manual UOB transaction export into AWS Redshift.
 
