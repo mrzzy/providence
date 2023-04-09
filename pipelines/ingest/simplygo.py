@@ -47,6 +47,8 @@ def ingest_simplygo_dag(
     simplygo = BaseHook.get_connection("pvd_simplygo_src")
     ingest_simplygo = KubernetesPodOperator(
         task_id="ingest_simplygo",
+        # pool to limit load impact of concurrent requests on the SimplyGo Website
+        pool="simplygo_web",
         image="ghcr.io/mrzzy/pvd-simplygo-src:{{ params.simplygo_src_tag }}",
         image_pull_policy="Always",
         labels=K8S_LABELS

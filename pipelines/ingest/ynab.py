@@ -46,6 +46,8 @@ def ingest_ynab_dag(
     ynab = BaseHook.get_connection("pvd_ynab_src")
     ingest_ynab = KubernetesPodOperator(
         task_id="ingest_ynab",
+        # pool to limit load impact of concurrent requests on the YNAB API
+        pool="ynab_api",
         image="ghcr.io/mrzzy/pvd-ynab-src:{{ params.ynab_src_tag }}",
         image_pull_policy="Always",
         labels=K8S_LABELS
