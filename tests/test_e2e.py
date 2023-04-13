@@ -3,7 +3,7 @@
 # End to End Tests
 #
 
-from datetime import datetime
+from datetime import date
 import os
 import json
 from pathlib import Path
@@ -24,9 +24,7 @@ def s3_bucket():
     # upload test uob export into test bucket
     s3 = boto3.client("s3")
     # dag finds uob exports by date so we include today's date in the s3 key
-    key = datetime.utcnow().date.strftime(
-        "providence/manual/uob/ACC_TXN_History_%d%m%Ytest.xls"
-    )
+    key = date.today().strftime("providence/manual/uob/ACC_TXN_History_%d%m%Ytest.xls")
     s3.upload_file(str(RESOURCE_DIR / "ACC_TXN_test.xls"), test_bucket, key)
 
     yield test_bucket
