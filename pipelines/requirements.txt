@@ -20,7 +20,7 @@ Babel==2.12.1
 beautifulsoup4==4.12.2
 blinker==1.5
 boto3==1.26.109
-botocore==1.29.109
+botocore==1.29.113
 cachelib==0.9.0
 cachetools==5.3.0
 cattrs==22.2.0
