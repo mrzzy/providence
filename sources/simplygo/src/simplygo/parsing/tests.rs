@@ -165,13 +165,11 @@ fn parse_trips_unposted() {
         .select(&Selector::parse(TRIP_CSS_SELECTOR).unwrap())
         .collect();
     let trips = parse_trips(&html.html());
-    assert!(vec![
-        Trip {
-            posting_ref: None,
-            traveled_on: NaiveDate::from_ymd_opt(2023, 4, 13).unwrap(),
-            legs: parse_trip_legs(&trip_trs[0]),
-        },
-    ]
+    assert!(vec![Trip {
+        posting_ref: None,
+        traveled_on: NaiveDate::from_ymd_opt(2023, 4, 13).unwrap(),
+        legs: parse_trip_legs(&trip_trs[0]),
+    },]
     .into_iter()
     .zip(trips)
     .all(|(expected, actual)| expected == actual))
