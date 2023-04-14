@@ -44,15 +44,22 @@ fn parse_date(date_str: &str) -> NaiveDate {
 }
 
 /// Parse Posting Ref in format: '[Posting Ref No : <POSTING_REF>]'
-fn parse_posting(posting_str: &str) -> &str {
-    posting_str
-        .split_once(':')
-        .expect("Malformed Posting Ref.")
-        .1
-        .split_once(']')
-        .expect("Malformed Posting Ref.")
-        .0
-        .trim()
+fn parse_posting(posting_str: &str) -> Option<&str> {
+    let trim_posting = posting_str.trim();
+    if trim_posting.len() == 0 {
+        None
+    } else {
+        Some(
+            posting_str
+                .split_once(':')
+                .expect("Malformed Posting Ref.")
+                .1
+                .split_once(']')
+                .expect("Malformed Posting Ref.")
+                .0
+                .trim(),
+        )
+    }
 }
 
 /// Parse source and destination from journey column in the <tr> tag representing
@@ -133,16 +140,21 @@ fn parse_trip_legs(tr: &ElementRef) -> Vec<Leg> {
 /// Parse Trips from the given /Card/GetTransactions html
 pub fn parse_trips(html: &str) -> Vec<Trip> {
     // css selectors for parsing trip
-    // extra ,<tbody> automatically inserted on html parsing
+    // extra <tbody> automatically inserted on html parsing
     let trip_record_sel = Selector::parse(".form-record > table > tbody > tr").unwrap();
     let statement_sel = Selector::parse(".journey_p_collapse").unwrap();
     let date_sel = Selector::parse("td.col1").unwrap();
+    let posting_table_sel = Selector::parse(".Table-payment-statement-post").unwrap();
     let posting_sel = Selector::parse("td.col2 > div").unwrap();
     let document = Html::parse_document(html);
     document
         .select(&trip_record_sel)
-        // skip payment posting statement row
-        .skip(1)
+        // skip payment posting statement table if it exists
+        .skip(if document.select(&posting_table_sel).count() > 0 {
+            1
+        } else {
+            0
+        })
         .map(|tr| {
             // parse trip from payment statement
             let statement = tr
@@ -157,10 +169,14 @@ pub fn parse_trips(html: &str) -> Vec<Trip> {
                         .expect("Missing expected 'Date/Time' column in Payment Statement.")
                         .inner_html(),
                 ),
-                posting_ref: statement
-                    .select(&posting_sel)
-                    .next()
-                    .map(|div| parse_posting(&div.inner_html()).to_owned()),
+                posting_ref: parse_posting(
+                    &statement
+                        .select(&posting_sel)
+                        .next()
+                        .expect("Missing expected Posting Ref <div> in Payment Statement.")
+                        .inner_html(),
+                )
+                .map(|s| s.to_owned()),
                 legs: parse_trip_legs(&tr),
             }
         })

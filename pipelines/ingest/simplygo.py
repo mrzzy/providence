@@ -59,7 +59,7 @@ def ingest_simplygo_dag(
         },
         arguments=[
             "--trips-from",
-            "{{  ds }}",
+            "{{ ds }}",
             "--trips-to",
             "{{ ds }}",
             "--output",

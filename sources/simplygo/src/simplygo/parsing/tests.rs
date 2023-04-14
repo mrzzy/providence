@@ -10,8 +10,7 @@ use chrono::NaiveDate;
 
 use super::*;
 
-// skip first <tr>: trip posting record
-const TRIP_CSS_SELECTOR: &str = ".form-record > table > tbody > tr:not(:first-child)";
+const TRIP_CSS_SELECTOR: &str = ".form-record > table > tbody > tr";
 const LEG_CSS_SELECTOR: &str = ".data-p-row-item-01 tbody > tr";
 
 // Load HTML page from resources for testing
@@ -62,8 +61,9 @@ fn parse_posting_test() {
     let posting_ref = "_POSTING_REF";
     assert_eq!(
         parse_posting(&format!("[Posting Ref No : {}]", posting_ref)),
-        posting_ref
+        Some(posting_ref)
     );
+    assert_eq!(parse_posting("                     "), None);
 }
 
 #[test]
@@ -105,6 +105,8 @@ fn parse_trip_legs_test() {
         // extra <tbody> automatically inserted on html parsing
         &html
             .select(&Selector::parse(TRIP_CSS_SELECTOR).unwrap())
+            // skip first <tr>: trip posting record
+            .skip(1)
             .next()
             .unwrap(),
     );
@@ -136,6 +138,8 @@ fn parse_trips_test() {
     let html = load_html("simplygo_card_gettransactions.html");
     let trip_trs: Vec<_> = html
         .select(&Selector::parse(TRIP_CSS_SELECTOR).unwrap())
+        // skip first <tr>: trip posting record
+        .skip(1)
         .collect();
     let trips = parse_trips(&html.html());
     assert!(trips.len() > 0);
@@ -151,6 +155,23 @@ fn parse_trips_test() {
             legs: parse_trip_legs(&trip_trs[1]),
         }
     ]
+    .into_iter()
+    .zip(trips)
+    .all(|(expected, actual)| expected == actual))
+}
+
+#[test]
+fn parse_trips_unposted() {
+    let html = load_html("simplygo_card_gettransactions_unposted.html");
+    let trip_trs: Vec<_> = html
+        .select(&Selector::parse(TRIP_CSS_SELECTOR).unwrap())
+        .collect();
+    let trips = parse_trips(&html.html());
+    assert!(vec![Trip {
+        posting_ref: None,
+        traveled_on: NaiveDate::from_ymd_opt(2023, 4, 13).unwrap(),
+        legs: parse_trip_legs(&trip_trs[0]),
+    },]
     .into_iter()
     .zip(trips)
     .all(|(expected, actual)| expected == actual))

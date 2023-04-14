@@ -31,7 +31,7 @@ pub struct Leg {
 #[derive(Debug, Eq, PartialEq, Serialize)]
 pub struct Trip {
     /// Reference no. if the the trip was "Posted" ie. charged on the bank account.
-    /// If the trip has not be posted this field will be null
+    /// If the trip has not be posted this field will be None.
     pub posting_ref: Option<String>,
     /// Date on which this trip was made in the Asia/Singapore time zone.
     pub traveled_on: NaiveDate,
