@@ -46,7 +46,7 @@ fn parse_date(date_str: &str) -> NaiveDate {
 /// Parse Posting Ref in format: '[Posting Ref No : <POSTING_REF>]'
 fn parse_posting(posting_str: &str) -> Option<&str> {
     let trim_posting = posting_str.trim();
-    if trim_posting.len() <= 0 {
+    if trim_posting.len() == 0 {
         None
     } else {
         Some(
