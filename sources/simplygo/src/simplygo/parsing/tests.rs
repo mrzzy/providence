@@ -138,6 +138,8 @@ fn parse_trips_test() {
     let html = load_html("simplygo_card_gettransactions.html");
     let trip_trs: Vec<_> = html
         .select(&Selector::parse(TRIP_CSS_SELECTOR).unwrap())
+        // skip first <tr>: trip posting record
+        .skip(1)
         .collect();
     let trips = parse_trips(&html.html());
     assert!(trips.len() > 0);
