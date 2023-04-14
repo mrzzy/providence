@@ -37,6 +37,8 @@ pub struct Trip {
     pub traveled_on: NaiveDate,
     /// Legs of the trip
     pub legs: Vec<Leg>,
+    // Id used by SimplyGo to identify Bank Card the trip was made on.
+    pub card_id: String,
 }
 /// A Bank Card registered on SimplyGo
 #[derive(Debug, Eq, PartialEq, Serialize)]

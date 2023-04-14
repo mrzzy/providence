@@ -141,18 +141,21 @@ fn parse_trips_test() {
         // skip first <tr>: trip posting record
         .skip(1)
         .collect();
-    let trips = parse_trips(&html.html());
+    let card_id = "card-id";
+    let trips = parse_trips(card_id, &html.html());
     assert!(trips.len() > 0);
     assert!(vec![
         Trip {
             posting_ref: Some("BUS/MRT 235310372".to_owned()),
             traveled_on: NaiveDate::from_ymd_opt(2023, 2, 22).unwrap(),
             legs: parse_trip_legs(&trip_trs[0]),
+            card_id: card_id.to_owned()
         },
         Trip {
             posting_ref: Some("BUS/MRT 235310372".to_owned()),
             traveled_on: NaiveDate::from_ymd_opt(2023, 2, 22).unwrap(),
             legs: parse_trip_legs(&trip_trs[1]),
+            card_id: card_id.to_owned()
         }
     ]
     .into_iter()
@@ -166,11 +169,13 @@ fn parse_trips_unposted() {
     let trip_trs: Vec<_> = html
         .select(&Selector::parse(TRIP_CSS_SELECTOR).unwrap())
         .collect();
-    let trips = parse_trips(&html.html());
+    let card_id = "card-id".to_owned();
+    let trips = parse_trips(&card_id, &html.html());
     assert!(vec![Trip {
         posting_ref: None,
         traveled_on: NaiveDate::from_ymd_opt(2023, 4, 13).unwrap(),
         legs: parse_trip_legs(&trip_trs[0]),
+        card_id: card_id.to_owned()
     },]
     .into_iter()
     .zip(trips)

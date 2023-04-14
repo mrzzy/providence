@@ -174,6 +174,7 @@ impl SimplyGo {
 
         let url_path = "/Cards/GetTransactions";
         parse_trips(
+            &card.id,
             &self
                 .request_form(
                     Method::POST,

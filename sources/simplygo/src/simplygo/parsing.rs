@@ -138,7 +138,7 @@ fn parse_trip_legs(tr: &ElementRef) -> Vec<Leg> {
         .collect()
 }
 /// Parse Trips from the given /Card/GetTransactions html
-pub fn parse_trips(html: &str) -> Vec<Trip> {
+pub fn parse_trips(card_id: &str, html: &str) -> Vec<Trip> {
     // css selectors for parsing trip
     // extra <tbody> automatically inserted on html parsing
     let trip_record_sel = Selector::parse(".form-record > table > tbody > tr").unwrap();
@@ -178,6 +178,7 @@ pub fn parse_trips(html: &str) -> Vec<Trip> {
                 )
                 .map(|s| s.to_owned()),
                 legs: parse_trip_legs(&tr),
+                card_id: card_id.to_owned(),
             }
         })
         .collect()
