@@ -8,8 +8,8 @@ version: 2
 sources:
   - name: lake
     description: Data stored in AWS S3 bucket mrzzy-co-data-lake exposed as external tables.
-    database: main
-    schema: mrzzy
+    database: mrzzy
+    schema: lake
     tables:
       - name: source_simplygo
         description: Public transport trips data scraped from SimplyGo.
@@ -24,6 +24,14 @@ sources:
             description: Date of the end of the time period on Trips were scraped.
           - name: trips
             description: Public transport trips scraped from SimplyGo for the specified time period.
+        freshness:
+          warn_after:
+            count: 1
+            period: day
+          error_after:
+            count: 2
+            period: day
+        loaded_at_field: "convert_timezone('SGT', 'UTC', cast(scraped_on as timestamp))"
       - name: source_uob
         description: UOB Bank statement export.
         columns:
@@ -49,6 +57,14 @@ sources:
             description: >
               Timestamp when the bank transactions were extracted from the
               UOB Excel export in the UTC timezone.
+        freshness:
+          warn_after:
+            count: 7
+            period: day
+          error_after:
+            count: 8
+            period: day
+        loaded_at_field: "cast(_pandas_etl_transformed_on as timestamp)"
       - name: source_ynab
         description: YNAB accounting software data export.
         columns:
@@ -88,3 +104,11 @@ sources:
             description: List of transactions
           - name: _ynab_src_scraped_on
             description: Timestamp when the data was scraped in UTC timezone.
+        freshness:
+          warn_after:
+            count: 1
+            period: day
+          error_after:
+            count: 2
+            period: day
+        loaded_at_field: "cast(_ynab_src_scraped_on as timestamp)"
