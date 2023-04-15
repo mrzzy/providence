@@ -1,0 +1,84 @@
+#
+# Providence
+# Transforms
+# Raw Models Config
+#
+
+version: 2
+sources:
+  - name: lake
+    description: Data stored in AWS S3 bucket mrzzy-co-data-lake exposed as external tables.
+    database: main
+    schema: mrzzy
+    tables:
+      - name: source_simplygo
+        description: Public transport trips data scraped from SimplyGo.
+        columns:
+          - name: scraped_on
+            description: Timestamp when the data was scraped in Asia/Singapore timezone.
+          - name: cards
+            description: Bank cards registered on SimplyGo.
+          - name: trips_from
+            description: Date of the start of the time period on Trips were scraped.
+          - name: trips_to
+            description: Date of the end of the time period on Trips were scraped.
+          - name: trips
+            description: Public transport trips scraped from SimplyGo for the specified time period.
+      - name: source_uob
+        description: UOB Bank statement export.
+        columns:
+          - name: transaction date
+            description: Date the bank transaction was made.
+          - name: transaction description
+            description: Description of the bank transaction.
+          - name: withdrawal
+            description: How much was withdrawn from the bank account by the transaction.
+          - name: deposit
+            description: How much was deposited into from the bank account by the transaction.
+          - name: available balance
+            description: Balance of the bank account available for use.
+          - name: account number
+            description: Bank account no.
+          - name: account type
+            description: Bank account type.
+          - name: statement period
+            description: Date range in which the bank statement covers.
+          - name: currency
+            description: Bank account currency.
+      - name: source_ynab
+        description: YNAB accounting software data export.
+        columns:
+          - name: id
+            description: YNAB assigned budget id.
+          - name: name
+            description: Name of the budget
+          - name: accounts
+            description: List of Budget accounts.
+          - name: categories
+            description: List of Budget categories.
+          - name: category_groups
+            description: List of Budget category groupings.
+          - name: currency_format
+            description: Budget currency format configuration.
+          - name: date_format
+            description: Budget date format configuration.
+          - name: first_month
+            description: The first year-month the budget accounted for.
+          - name: last_modified_on
+            description: Timestamp the was Budget last modified on.
+          - name: last_month
+            description: The last year-month the budget accounted for.
+          - name: months
+            description: List of Monthly Budget allocation data.
+          - name: payee_locations
+            description: List of Payee location coordinates
+          - name: payees
+            description: List of Payee information
+          - name: scheduled_subtransactions
+            description: List of scheduled transactions
+          - name: scheduled_transactions
+            description: List of scheduled subtransactions
+          - name: subtransactions
+            description: List of subtransactions
+          - name: transactions
+            description: List of transactions
