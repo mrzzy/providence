@@ -59,6 +59,21 @@ deps-pandas-etl: $(PANDAS_ETL_DIR)
 
 $(eval $(call PYTHON_RULES,pandas-etl,$(PANDAS_ETL_DIR)))
 
+# DBT transform
+DBT_DIR := transforms/dbt
+
+$(eval $(call PHONY_RULE,deps,dbt))
+deps-dbt: $(PANDAS_ETL_DIR)
+	cd $< && pip install -r requirements-dev.txt
+
+$(eval $(call PHONY_RULE,fmt,$(1)))
+fmt-dbt: $(DBT_DIR)
+	cd $< && sqlfmt .
+
+$(eval $(call PHONY_RULE,lint,$(1)))
+lint-dbt: $(DBT_DIR)
+	cd $< && sqlfmt --check .
+
 # Airflow Pipelines
 # NOTE: run 'airflow db init' before running 'make test-pipeline'
 PIPELINES_DIR := pipelines
