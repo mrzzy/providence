@@ -47,7 +47,7 @@ def ingest_budget_s3(ynab: YNAB, s3, budget_id: str, s3_url: str):
 
     # add source metadata
     meta_prefix = "_ynab_src"
-    budget_dict[f"{meta_prefix}_scraped_on"] = datetime.utcnow.isoformat()
+    budget_dict[f"{meta_prefix}_scraped_on"] = datetime.utcnow().isoformat()
 
     # upload budget to s3
     s3.upload_fileobj(BytesIO(json.dumps(budget_dict).encode()), bucket, key)
