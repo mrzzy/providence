@@ -1,0 +1,19 @@
+#
+# Providence
+# Transforms
+# DBT Staging Simplygo Models
+#
+
+version: 2
+models:
+  - name: stg_simplygo_cards
+    description: Bank Cards registered in SimplyGo with duplicates.
+    columns:
+    - name: simplygo_id
+      description: ID of the Bank Card as assigned by SimplyGo.
+      tests:
+        - not_null
+    - name: name
+      description: Name of the Bank Card.
+      tests:
+        - not_null
