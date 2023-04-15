@@ -8,8 +8,9 @@ import os
 import sys
 from io import BytesIO
 from datetime import datetime
+from typing import Any, Dict
 from urllib.parse import urlparse
-from dataclasses import asdict
+from dataclasses import asdict, dataclass, make_dataclass
 from textwrap import dedent
 
 import boto3
@@ -17,7 +18,13 @@ from ynab_sdk import YNAB
 from ynab_sdk.api.models.responses.budget_detail import Budget
 
 
-def to_json(budget: Budget) -> str:
+# extend YNAB budget dataclass with YNAB Source metadata
+@dataclass
+class MetaBudget(Budget):
+    _ynab_src_scraped_on: datetime
+
+
+def to_json(budget: MetaBudget) -> str:
     def serialize_json(obj) -> str:
         if isinstance(obj, datetime):
             return obj.isoformat()
@@ -26,14 +33,17 @@ def to_json(budget: Budget) -> str:
     return json.dumps(asdict(budget), default=serialize_json)
 
 
-def ingest_budget_s3(ynab: YNAB, s3, budget_id: str, s3_url: str):
+def ingest_budget_s3(
+    ynab: YNAB, s3, budget_id: str, s3_url: str, scraped_on=datetime.utcnow()
+):
     """Ingest the YNAB budget as JSON into AWS S3 at the specified URL.
 
     Args:
         ynab: YNAB client used to access the YNAB API.
         s3: Boto3 S3 Client used to upload to AWS S3.
-        budget_id: Id specifying the YNAB budget to ingest.a
+        budget_id: Id specifying the YNAB budget to ingest.
         s3_url: s3:// url specifying the bucket & key of the ingested object.
+        scraped_on: UTC timestamp defining the YNAB budget was scraped.
     """
     # parse given s3 url
     url = urlparse(s3_url)
@@ -42,15 +52,13 @@ def ingest_budget_s3(ynab: YNAB, s3, budget_id: str, s3_url: str):
     # path[1:] need to skip leading '/'
     bucket, key = url.hostname, url.path[1:]
 
-    # get budget as json
-    budget_dict = json.loads(to_json(ynab.budgets.get_budget(budget_id).data.budget))
-
-    # add source metadata
-    meta_prefix = "_ynab_src"
-    budget_dict[f"{meta_prefix}_scraped_on"] = datetime.utcnow().isoformat()
-
+    # get budget as json & add metadata
+    budget = MetaBudget(
+        _ynab_src_scraped_on=scraped_on,
+        **asdict(ynab.budgets.get_budget(budget_id).data.budget),
+    )
     # upload budget to s3
-    s3.upload_fileobj(BytesIO(json.dumps(budget_dict).encode()), bucket, key)
+    s3.upload_fileobj(BytesIO(to_json(budget).encode()), bucket, key)
 
 
 if __name__ == "__main__":
