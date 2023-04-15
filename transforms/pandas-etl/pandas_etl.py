@@ -4,6 +4,7 @@
 # Pandas
 #
 
+from datetime import datetime
 from typing import Dict, Callable, Any
 from os.path import splitext
 from textwrap import dedent
@@ -60,9 +61,15 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    # read, transform with pandas & write
+    # read, transform with pandas
     _, src_ext = splitext(args.src_url.path)
     df = pandas_read[src_ext](urlunparse(args.src_url))
     df = transforms[args.transform_id](df)
+
+    # add pandas_etl metadata
+    meta_prefx = "_pandas_etl"
+    df[f"{meta_prefx}_transformed_on"] = datetime.utcnow().isoformat()
+
+    # write results to dest_url
     _, dest_ext = splitext(args.dest_url.path)
     pandas_write[dest_ext](df, urlunparse(args.dest_url))
