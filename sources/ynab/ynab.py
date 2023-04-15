@@ -43,10 +43,14 @@ def ingest_budget_s3(ynab: YNAB, s3, budget_id: str, s3_url: str):
     bucket, key = url.hostname, url.path[1:]
 
     # get budget as json
-    budget = ynab.budgets.get_budget(budget_id).data.budget
+    budget_dict = json.loads(to_json(ynab.budgets.get_budget(budget_id).data.budget))
+
+    # add source metadata
+    meta_prefix = "_ynab_src"
+    budget_dict[f"{meta_prefix}_scraped_on"] = datetime.utcnow.isoformat()
 
     # upload budget to s3
-    s3.upload_fileobj(BytesIO(to_json(budget).encode()), bucket, key)
+    s3.upload_fileobj(BytesIO(json.dumps(budget_dict).encode()), bucket, key)
 
 
 if __name__ == "__main__":
