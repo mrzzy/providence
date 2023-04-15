@@ -47,11 +47,11 @@ def ingest_uob_dag(
 
     # Find UOB export for the dag data interval
     @task
-    def find_uob_export(params: Dict[str, Any] = None, data_interval_start: DateTime = None):  # type: ignore
+    def find_uob_export(params: Dict[str, Any] = None, data_interval_end: DateTime = None):  # type: ignore
         s3 = S3Hook()
         export_keys = s3.list_keys(
             bucket_name=params["s3_bucket"],
-            prefix=f"{params['export_prefix']}{data_interval_start.strftime('%d%m%Y')}",
+            prefix=f"{params['export_prefix']}{data_interval_end.strftime('%d%m%Y')}",
         )
         # exports are given a increasing numeric suffix, use max() to return the last one
         return f"s3://{params['s3_bucket']}/{max(export_keys)}"
