@@ -45,6 +45,10 @@ sources:
             description: Date range in which the bank statement covers.
           - name: currency
             description: Bank account currency.
+          - name: _pandas_etl_transformed_on
+            description: >
+              Timestamp when the bank transactions were extracted from the
+              UOB Excel export in the UTC timezone.
       - name: source_ynab
         description: YNAB accounting software data export.
         columns:
@@ -82,3 +86,5 @@ sources:
             description: List of subtransactions
           - name: transactions
             description: List of transactions
+          - name: _ynab_src_scraped_on
+            description: Timestamp when the data was scraped in UTC timezone.
