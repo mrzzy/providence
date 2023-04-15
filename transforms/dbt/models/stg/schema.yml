@@ -1,14 +1,14 @@
 #
 # Providence
 # Transforms
-# Raw Models Config
+# Staging Models Config
 #
 
 version: 2
+
 sources:
   - name: lake
     description: Data stored in AWS S3 bucket mrzzy-co-data-lake exposed as external tables.
-    database: mrzzy
     schema: lake
     tables:
       - name: source_simplygo
