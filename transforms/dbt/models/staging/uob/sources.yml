@@ -1,0 +1,46 @@
+#
+# Providence
+# Transforms
+# DBT Staging UOB Source
+#
+
+version: 2
+
+sources:
+  - name: uob
+    description: UOB Bank statement export stored on AWS S3 data lake.
+    schema: lake
+    tables:
+      - name: source_uob
+        description: UOB Bank statement export.
+        columns:
+          - name: transaction date
+            description: Date the bank transaction was made.
+          - name: transaction description
+            description: Description of the bank transaction.
+          - name: withdrawal
+            description: How much was withdrawn from the bank account by the transaction.
+          - name: deposit
+            description: How much was deposited into from the bank account by the transaction.
+          - name: available balance
+            description: Balance of the bank account available for use.
+          - name: account number
+            description: Bank account no.
+          - name: account type
+            description: Bank account type.
+          - name: statement period
+            description: Date range in which the bank statement covers.
+          - name: currency
+            description: Bank account currency.
+          - name: _pandas_etl_transformed_on
+            description: >
+              Timestamp when the bank transactions were extracted from the
+              UOB Excel export in the UTC timezone.
+        freshness:
+          warn_after:
+            count: 7
+            period: day
+          error_after:
+            count: 8
+            period: day
+        loaded_at_field: "cast(_pandas_etl_transformed_on as timestamp)"
