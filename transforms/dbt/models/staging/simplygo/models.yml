@@ -51,6 +51,7 @@ models:
     - name: transport_mode
       description: Mode of public transport used for this Trip Leg.
       tests:
+        - not_null
         - accepted_values:
             values:
             - Rail
@@ -58,6 +59,7 @@ models:
     - name: card_id
       description: ID of the Bank Card used to pay for this Trip Leg.
       tests:
+        - not_null
         - relationship:
             to: ref("stg_simplygo_cards")
             field: simplygo_id

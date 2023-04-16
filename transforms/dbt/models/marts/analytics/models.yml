@@ -1,0 +1,87 @@
+#
+# Providence
+# Transforms
+# DBT Analytics Models
+#
+
+version: 2
+models:
+  - name: dim_date
+    description: Date dimension provides descriptive attributes for dates.
+    columns:
+      - name: date_id
+        description: Durable surroate key for the date.
+        tests:
+          - unique
+          - not_null
+      - name: date
+        tests:
+          - not_null
+      - name: day_of_month
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 31
+      - name: month_of_year
+        description: Numeric month of the year.
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 12
+      - name: month_name
+        description: Long name  of the month.
+        tests:
+          - not_null
+      - name: month_short
+        description: "3 character abbreviation of the name of the month."
+        tests:
+          - not_null
+      - name: year
+        tests:
+          - not_null
+      - name: day_of_week
+        description: Numeric day of the week (Sunday is 0).
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 6
+      - name: weekday_name
+        description: Name of the weekday.
+        tests:
+          - not_null
+      - name: weekday_short
+        description: "3 character abbreviation of the name of the weekday."
+      - name: day_of_year
+        description: Numeric day of the year
+        test:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 366
+      - name: week_of_month,
+        description: Week no. of the month,
+        test:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 1
+      - name: week_of_year
+        description: Week no. of the year.
+        test:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 52
+      - name: quarter
+        description: Quarter no. of the year.
+        test:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 52
+      - name: year_month
+        test:
+          - not_null
