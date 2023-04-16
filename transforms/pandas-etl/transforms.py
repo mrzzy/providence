@@ -5,8 +5,8 @@
 
 from typing import Dict, Callable
 
-import pandas as pd
 from pandas import DataFrame
+from pandas.api.types import pandas_dtype
 
 
 def promote_header(df: DataFrame) -> DataFrame:
@@ -34,5 +34,21 @@ def extract_uob(df: DataFrame) -> DataFrame:
     # reset index based on transactions rows
     transactions_df = transactions_df.reset_index(drop=True)
     transactions_df.columns.name = None
+
+    # enforce consistent schema regardless of inferred types
+    return transactions_df.astype(
+        {
+            "Transaction Date": pandas_dtype("O"),
+            "Transaction Description": pandas_dtype("O"),
+            "Withdrawal": pandas_dtype("float64"),
+            "Deposit": pandas_dtype("float64"),
+            "Available Balance": pandas_dtype("float64"),
+            "Account Number": pandas_dtype("O"),
+            "Account Type": pandas_dtype("O"),
+            "Statement Period": pandas_dtype("O"),
+            "Currency": pandas_dtype("O"),
+            "_pandas_etl_transformed_on": pandas_dtype("O"),
+        }
+    )
 
     return transactions_df
