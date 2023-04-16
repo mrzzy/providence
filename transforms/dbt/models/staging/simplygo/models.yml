@@ -7,7 +7,7 @@
 version: 2
 models:
   - name: stg_simplygo_cards
-    description: Bank Cards registered in SimplyGo with duplicates.
+    description: Bank cards registered in SimplyGo by scrape time.
     columns:
     - name: simplygo_id
       description: ID of the Bank Card as assigned by SimplyGo.
@@ -15,5 +15,53 @@ models:
         - not_null
     - name: name
       description: Name of the Bank Card.
+      tests:
+        - not_null
+    - name: scraped_on
+      description: Timestamp when the data was scraped from SimplyGo.
+      tests:
+        - not_null
+  - name: stg_simplygo_trip_legs
+    description: Bank cards registered in SimplyGo by scrape time.
+    columns:
+    - name: posting_ref
+      description: Posting reference assigned by SimplyGo once the Trip Leg is billed.
+    - name: traveled_on
+      description: Date on which the Trip Leg was made.
+      test:
+        - not_null
+    - name: begin_at
+      description: Time at which the Trip Leg was made in Asia/Singapore timezone.
+      test:
+        - not_null
+    - name: cost_sgd
+      description: Cost of the Trip Leg in SGD.
+      test:
+        - not_null
+        - dbt_utils.accepted_range:
+            min_value: 0
+    - name: source
+      description: Start location of the Trip Leg.
+      test:
+        - not_null
+    - name: destination
+      description: End location of the Trip Leg.
+      test:
+        - not_null
+    - name: transport_mode
+      description: Mode of public transport used for this Trip Leg.
+      tests:
+        - accepted_values:
+          values:
+          - Rail
+          - Bus
+    - name: card_id
+      description: ID of the Bank Card used to pay for this Trip Leg.
+      tests:
+        - relationship:
+            to: ref("stg_simplygo_cards")
+            field: simplygo_id
+    - name: scraped_on
+      description: Timestamp when the data was scraped from SimplyGo.
       tests:
         - not_null
