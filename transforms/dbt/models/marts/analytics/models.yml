@@ -9,7 +9,7 @@ models:
   - name: dim_date
     description: Provides descriptive attributes for dates.
     columns:
-      - name: date_id
+      - name: id
         description: Surrogate key for the date.
         tests:
           - unique
@@ -94,7 +94,60 @@ models:
         tests:
           - not_null
           - unique
-      - name: Name
+      - name: name
         description: User assigned name of the bank card.
+        tests:
+          - not_null
+      - name: updated_at
+        description: Timestamp when the data was last updated / refreshed.
+        tests:
+          - not_null
+
+  - name: fact_public_transport_trip_leg
+    description: Legs of a Public Transport Trip.
+    columns:
+      - name: id
+        description: Surrogate key for the Trip leg.
+      - name: posting_ref
+        description: Posting / billing reference assigned once the Trip Leg is billed.
+      - name: traveled_on
+        description: Timestamp when the Trip Leg was made.
+        tests:
+          - not_null
+      - name: travel_date_id
+        description: Date on which the Trip Leg was made.
+        tests:
+          - not_null
+      - name: cost_sgd
+        description: Cost of the Trip Leg in SGD.
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+      - name: source
+        description: Start location of the Trip Leg.
+        tests:
+          - not_null
+      - name: destination
+        description: End location of the Trip Leg.
+        tests:
+          - not_null
+      - name: transport_mode
+        description: Mode of public transport used for this Trip Leg.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+              - Rail
+              - Bus
+      - name: bank_card_id
+        description: ID of the Bank Card used to pay for this Trip Leg.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("dim_bank_card")
+              field: id
+      - name: updated_at
+        description: Timestamp when the data was last updated / refreshed.
         tests:
           - not_null

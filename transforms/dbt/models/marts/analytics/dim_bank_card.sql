@@ -1,9 +1,9 @@
 --
 -- Providence
 -- Transforms
--- DBT Analytics Bank Card Dimension
+-- DBT Analytics: Bank Card Dimension
 --
-select id, name
+select id, name, scraped_on as updated_at
 from
     (
         {{

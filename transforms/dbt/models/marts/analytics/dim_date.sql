@@ -1,19 +1,18 @@
 --
 -- Providence
 -- Transforms
--- DBT Analytics Date Dimension
+-- DBT Analytics: Date Dimension
 --
--- vim:ft=sql.jinja2:
 with
     dates as (
-        select scraped_on as "date"
+        select date_trunc('day', scraped_on) as "date"
         from {{ ref("stg_simplygo_trip_leg") }}
         union
         select traveled_on as "date"
         from {{ ref("stg_simplygo_trip_leg") }}
     )
 select
-    {{ dbt_utils.generate_surrogate_key(["date"]) }} as id,
+    "date" as id,
     "date",
     extract(day from "date") as day_of_month,
     extract(month from "date") as month_of_year,
@@ -32,4 +31,4 @@ select
         -- 0: sunday, 6: saturday
         when extract(dayofweek from "date") in (0, 6) then true else false
     end as is_weekend
-from dat
+from dates

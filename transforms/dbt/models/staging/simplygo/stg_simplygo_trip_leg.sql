@@ -1,7 +1,7 @@
 --
 -- Providence
 -- Transforms
--- DBT Staging Simplygo Public Transport Trip Legs
+-- DBT Staging: Simplygo Public Transport Trip Legs
 --
 select
     cast(t.posting_ref as varchar) as posting_ref,

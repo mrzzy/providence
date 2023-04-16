@@ -21,8 +21,9 @@ models:
       description: Timestamp when the data was scraped from SimplyGo.
       tests:
         - not_null
+
   - name: stg_simplygo_trip_leg
-    description: Bank cards registered in SimplyGo by scrape time.
+    description: Legs of a Public Transport Trip made on SimplyGo.
     columns:
     - name: posting_ref
       description: Posting reference assigned by SimplyGo once the Trip Leg is billed.
@@ -62,7 +63,7 @@ models:
         - not_null
         - relationship:
             to: ref("stg_simplygo_cards")
-            field: simplygo_id
+            field: id
     - name: scraped_on
       description: Timestamp when the data was scraped from SimplyGo.
       tests:
