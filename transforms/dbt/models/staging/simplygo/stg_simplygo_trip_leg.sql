@@ -12,5 +12,5 @@ select
     cast(l.destination as varchar) as destination,
     cast(l."mode" as varchar) as transport_mode,
     cast(l.card_id as varchar) as card_id,
-    cast(s.scraped_on as timestamp) as scraped_on,
+    cast(s.scraped_on as timestamp) as scraped_on
 from {{ source("simplygo", "source_simplygo") }} as s, s.trips as t, t.legs as l
