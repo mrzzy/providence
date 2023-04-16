@@ -9,7 +9,7 @@ models:
   - name: stg_simplygo_card
     description: Bank cards registered in SimplyGo by scrape time.
     columns:
-    - name: simplygo_id
+    - name: id
       description: ID of the Bank Card as assigned by SimplyGo.
       tests:
         - not_null

@@ -7,10 +7,10 @@
 version: 2
 models:
   - name: dim_date
-    description: Date dimension provides descriptive attributes for dates.
+    description: Provides descriptive attributes for dates.
     columns:
       - name: date_id
-        description: Durable surroate key for the date.
+        description: Surrogate key for the date.
         tests:
           - unique
           - not_null
@@ -84,4 +84,17 @@ models:
               max_value: 52
       - name: year_month
         test:
+          - not_null
+
+  - name: dim_bank_card
+    description: Bank card used to pay for public transport trips.
+    columns:
+      - name: id
+        description: Key for the bank card.
+        tests:
+          - not_null
+          - unique
+      - name: Name
+        description: User assigned name of the bank card.
+        tests:
           - not_null

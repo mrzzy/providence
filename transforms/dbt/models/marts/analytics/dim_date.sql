@@ -13,7 +13,7 @@ with
         from {{ ref("stg_simplygo_trip_leg") }}
     )
 select
-    {{ dbt_utils.generate_surrogate_key(["date"]) }} as date_id,
+    {{ dbt_utils.generate_surrogate_key(["date"]) }} as id,
     "date",
     extract(day from "date") as day_of_month,
     extract(month from "date") as month_of_year,
@@ -32,4 +32,4 @@ select
         -- 0: sunday, 6: saturday
         when extract(dayofweek from "date") in (0, 6) then true else false
     end as is_weekend
-from dates
+from dat
