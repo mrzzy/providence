@@ -1,9 +1,8 @@
 --
 -- Providence
 -- Transforms
--- DBT Staging Simplygo Cards
+-- DBT Staging: Simplygo Cards
 --
--- vim:ft=sql.jinja2:
 select
     cast(c.id as varchar) as "id",
     cast(c.name as varchar) as "name",

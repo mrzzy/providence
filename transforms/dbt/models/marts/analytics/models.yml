@@ -156,3 +156,31 @@ models:
         description: Timestamp when the data was last updated / refreshed.
         tests:
           - not_null
+
+  - name: dim_budget
+    description: An accounting budget.
+    columns:
+      - name: id
+        description: ID that uniquely identifies the budget.
+        tests:
+          - unique
+          - not_null
+      - name: name
+        destination: User assigned budget name.
+        tests:
+          - not_null
+      - name: modified_on
+        destination: Timestamp when the budget was last modified / changed.
+        tests:
+          - not_null
+      - name: currency_code
+        destination: "3 character ISO code of the currency used by the budget."
+        tests:
+          - not_null
+      - name: currency_symbol
+        destination: Symbol used to denote the currency (eg. $ for dollar)
+        tests:
+          - not_null
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "len(currency_code) = 3"

@@ -1,0 +1,33 @@
+#
+# Providence
+# Transforms
+# Staging Models Config
+# DBT Staging: YNAB Models
+#
+
+version: 2
+
+models:
+  - name: stg_ynab_budget
+    description: A YNAB accounting budget.
+    columns:
+      - name: id
+        description: YNAB assigned budget ID.
+        tests:
+          - not_null
+      - name: name
+        destination: User assigned budget name.
+        tests:
+          - not_null
+      - name: modified_on
+        destination: Timestamp when the budget was last modified / changed.
+        tests:
+          - not_null
+      - name: currency_code
+        destination: "3 character ISO code of the currency used by the budget."
+        tests:
+          - not_null
+      - name: currency_symbol
+        destination: Symbol used to denote the currency (eg. $ for dollar)
+        tests:
+          - not_null
