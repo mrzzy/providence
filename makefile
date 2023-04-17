@@ -65,6 +65,7 @@ DBT_DIR := transforms/dbt
 $(eval $(call PHONY_RULE,deps,dbt))
 deps-dbt: $(DBT_DIR)
 	cd $< && pip install -r requirements-dev.txt
+	cd $< && dbt deps
 
 $(eval $(call PHONY_RULE,fmt,dbt))
 fmt-dbt: $(DBT_DIR)
