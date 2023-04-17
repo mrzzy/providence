@@ -31,7 +31,7 @@ models:
               min_value: 1
               max_value: 12
       - name: month_name
-        description: Long name  of the month.
+        description: Long name of the month.
         tests:
           - not_null
       - name: month_short
@@ -85,6 +85,11 @@ models:
       - name: year_month
         test:
           - not_null
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "len(month_short) = 3"
+      - dbt_utils.expression_is_true:
+          expression: "len(weekday_short) = 3"
 
   - name: dim_bank_card
     description: Bank card used to pay for public transport trips.
