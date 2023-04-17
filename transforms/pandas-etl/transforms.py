@@ -47,8 +47,5 @@ def extract_uob(df: DataFrame) -> DataFrame:
             "Account Type": pandas_dtype("O"),
             "Statement Period": pandas_dtype("O"),
             "Currency": pandas_dtype("O"),
-            "_pandas_etl_transformed_on": pandas_dtype("O"),
         }
     )
-
-    return transactions_df

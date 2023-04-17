@@ -43,9 +43,9 @@ def test_transform_uob():
                 "Placeholder Description",
                 "Placeholder Description",
             ],
-            "Withdrawal": ["5", "5"],
-            "Deposit": ["5", "5"],
-            "Available Balance": ["2000", "2000"],
+            "Withdrawal": [5.0, 5.0],
+            "Deposit": [5.0, 5.0],
+            "Available Balance": [2000.0, 2000.0],
             "Account Number": ["123456789", "123456789"],
             "Account Type": ["One Account", "One Account"],
             "Statement Period": [
@@ -55,6 +55,4 @@ def test_transform_uob():
             "Currency": ["SGD", "SGD"],
         },
     )
-    print(actual_df.to_string())
-
     assert expected_df.equals(actual_df)
