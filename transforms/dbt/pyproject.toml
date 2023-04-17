@@ -1,9 +1,2 @@
 [tool.sqlfmt]
 exclude=["target/**/*", "dbt_packages/**/*", "venv/**/*"]
-
-[tool.sqlfluff.templater.jinja]
-apply_dbt_builtins = true
-[tool.sqlfluff.core]
-templater = "dbt"
-dialect = "redshift"
-nocolor = true

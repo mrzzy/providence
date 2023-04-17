@@ -62,7 +62,7 @@ models:
       tests:
         - not_null
         - relationship:
-            to: ref("stg_simplygo_cards")
+            to: ref("stg_simplygo_card")
             field: id
     - name: scraped_on
       description: Timestamp when the data was scraped from SimplyGo.
