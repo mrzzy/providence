@@ -15,3 +15,11 @@ tomli==2.0.1
 tqdm==4.65.0
 typer==0.7.0
 diff-cover==7.5.0
+jinja2-simple-tags==0.4.1
+markdown-it-py==2.2.0
+mdurl==0.1.2
+pydantic==1.10.7
+rich==13.3.4
+ruamel.yaml==0.17.21
+ruamel.yaml.clib==0.2.7
+sqlfluff-templater-dbt==2.0.5
