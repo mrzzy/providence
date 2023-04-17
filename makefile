@@ -66,12 +66,12 @@ $(eval $(call PHONY_RULE,deps,dbt))
 deps-dbt: $(PANDAS_ETL_DIR)
 	cd $< && pip install -r requirements-dev.txt
 
-$(eval $(call PHONY_RULE,fmt,$(1)))
+$(eval $(call PHONY_RULE,fmt,dbt))
 fmt-dbt: $(DBT_DIR)
 	cd $< && sqlfmt .
 	cd $< && sqlfluff fix .
 
-$(eval $(call PHONY_RULE,lint,$(1)))
+$(eval $(call PHONY_RULE,lint,dbt))
 lint-dbt: $(DBT_DIR)
 	cd $< && sqlfmt --check .
 	cd $< && sqlfluff lint .
