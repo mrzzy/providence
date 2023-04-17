@@ -98,7 +98,7 @@ jobs:
         # if: ${{ github.ref == 'refs/heads/main' }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: transform/dbt/docs
+          publish_dir: transforms/dbt/docs
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           full_commit_message: "doc(transform): update dbt docs for ${{ github.ref }}"
