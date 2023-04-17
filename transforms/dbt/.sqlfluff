@@ -1,0 +1,18 @@
+[sqlfluff]
+exclude_rules = LT01, L003, L018, L036, RF06
+templater = dbt
+dialect = redshift
+nocolor = True
+max_line_length = 88
+
+[sqlfluff:rules]
+capitalisation_policy = lower
+extended_capitalisation_policy = lower
+
+[sqlfluff:indentation]
+indented_joins = False
+indented_using_on = True
+template_blocks_indent = False
+
+[sqlfluff:rules:convention.terminator]
+multiline_newline = True

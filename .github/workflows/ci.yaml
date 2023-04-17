@@ -49,6 +49,60 @@ jobs:
         with:
           make-suffix: pandas-etl
 
+  dbt-transform:
+    name: "DBT Transform: Lint, Build & Test"
+    runs-on: ubuntu-22.04
+    env:
+      DBT_ENV_SECRET_AWS_REDSHIFT_USER: "${{ secrets.DBT_ENV_SECRET_AWS_REDSHIFT_USER }}"
+      DBT_ENV_SECRET_AWS_REDSHIFT_PASSWORD: "${{ secrets.DBT_ENV_SECRET_AWS_REDSHIFT_PASSWORD }}"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "${{ inputs.python-version }}"
+      - name: Setup dependencies
+        run: make deps-dbt
+      - name: Lint
+        run: make lint-dbt
+      - name: Build
+        run: make build-dbt
+      - name: Test
+        run: make test-dbt
+
+  dbt-docs:
+    name: "DBT Docs"
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "${{ inputs.python-version }}"
+      - name: Setup dependencies
+        run: make deps-dbt
+      - name: Generate docs
+        env:
+          DBT_ENV_SECRET_AWS_REDSHIFT_USER: "${{ secrets.DBT_ENV_SECRET_AWS_REDSHIFT_USER }}"
+          DBT_ENV_SECRET_AWS_REDSHIFT_PASSWORD: "${{ secrets.DBT_ENV_SECRET_AWS_REDSHIFT_PASSWORD }}"
+        working-directory: transforms/dbt
+        run: |
+          set -ex -o pipefail
+          # generate docs into 'target' dir
+          dbt docs generate
+          # create 'docs' dir containing only the files needed for dbt docs
+          mkdir docs
+          cp target/{index.html,manifest.json,catalog.json} -t docs
+      - name: Publish docs
+        uses: peaceiris/actions-gh-pages@v3
+        if: ${{ github.ref == 'refs/heads/main' }}
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: transforms/dbt/docs
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          full_commit_message: "doc(transform): update dbt docs for ${{ github.ref }}"
+
   pipelines:
     name: "Airflow Pipelines: Lint & Test"
     runs-on: ubuntu-22.04
