@@ -12,7 +12,6 @@ with
         select traveled_on as "date"
         from {{ ref("stg_simplygo_trip_leg") }}
     )
-
 select
     "date" as "id",
     "date",
