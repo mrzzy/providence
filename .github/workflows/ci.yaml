@@ -49,6 +49,32 @@ jobs:
         with:
           make-suffix: pandas-etl
 
+  dbt-transform:
+    name: "DBT Transform: Lint, Build & Test"
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "${{ inputs.python-version }}"
+      - name: Setup dependencies
+        run: make deps-dbt
+      - name: Lint
+        env:
+          DBT_ENV_SECRET_AWS_REDSHIFT_USER: "${{ secrets.DBT_ENV_SECRET_AWS_REDSHIFT_USER }}"
+          DBT_ENV_SECRET_AWS_REDSHIFT_PASSWORD: "${{ secrets.DBT_ENV_SECRET_AWS_REDSHIFT_PASSWORD }}"
+        run: make lint-dbt
+      - name: Build
+        env:
+          DBT_ENV_SECRET_AWS_REDSHIFT_USER: "${{ secrets.DBT_ENV_SECRET_AWS_REDSHIFT_USER }}"
+          DBT_ENV_SECRET_AWS_REDSHIFT_PASSWORD: "${{ secrets.DBT_ENV_SECRET_AWS_REDSHIFT_PASSWORD }}"
+        run: make build-dbt
+      - name: Test
+        env:
+          DBT_ENV_SECRET_AWS_REDSHIFT_USER: "${{ secrets.DBT_ENV_SECRET_AWS_REDSHIFT_USER }}"
+          DBT_ENV_SECRET_AWS_REDSHIFT_PASSWORD: "${{ secrets.DBT_ENV_SECRET_AWS_REDSHIFT_PASSWORD }}"
+        run: make test-dbt
+
   pipelines:
     name: "Airflow Pipelines: Lint & Test"
     runs-on: ubuntu-22.04
