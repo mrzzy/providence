@@ -69,10 +69,12 @@ deps-dbt: $(PANDAS_ETL_DIR)
 $(eval $(call PHONY_RULE,fmt,$(1)))
 fmt-dbt: $(DBT_DIR)
 	cd $< && sqlfmt .
+	cd $< && sqlfluff fix .
 
 $(eval $(call PHONY_RULE,lint,$(1)))
 lint-dbt: $(DBT_DIR)
 	cd $< && sqlfmt --check .
+	cd $< && sqlfluff lint .
 
 # Airflow Pipelines
 # NOTE: run 'airflow db init' before running 'make test-pipeline'
