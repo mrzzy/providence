@@ -61,7 +61,7 @@ models:
       description: ID of the Bank Card used to pay for this Trip Leg.
       tests:
         - not_null
-        - relationship:
+        - relationships:
             to: ref("stg_simplygo_card")
             field: id
     - name: scraped_on
