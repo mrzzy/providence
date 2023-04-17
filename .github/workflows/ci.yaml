@@ -89,7 +89,7 @@ jobs:
         run: |
           set -ex -o pipefail
           # generate docs into 'target' dir
-          dbt docs
+          dbt docs generate
           # create 'docs' dir containing only the files needed for dbt docs
           mkdir docs
           cp target/{index.html,manifest.json,catalog.json} -t docs
