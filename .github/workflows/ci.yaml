@@ -161,6 +161,8 @@ jobs:
     needs:
       - src-container
       - tfm-container
+      # order e2e after simplygo src to reduce concurrency group contention
+      - simplygo-src
     name: "End to End Test"
     # use concurrency group to synchronize access to simplygo site
     # the website does not appear to support concurrent logins
