@@ -63,7 +63,7 @@ $(eval $(call PYTHON_RULES,pandas-etl,$(PANDAS_ETL_DIR)))
 DBT_DIR := transforms/dbt
 
 $(eval $(call PHONY_RULE,deps,dbt))
-deps-dbt: $(PANDAS_ETL_DIR)
+deps-dbt: $(DBT_DIR)
 	cd $< && pip install -r requirements-dev.txt
 
 $(eval $(call PHONY_RULE,fmt,dbt))
