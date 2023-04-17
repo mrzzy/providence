@@ -95,7 +95,7 @@ jobs:
           cp target/{index.html,manifest.json,catalog.json} -t docs
       - name: Publish docs
         uses: peaceiris/actions-gh-pages@v3
-        # if: ${{ github.ref == 'refs/heads/main' }}
+        if: ${{ github.ref == 'refs/heads/main' }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: transforms/dbt/docs
