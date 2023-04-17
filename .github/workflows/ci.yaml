@@ -10,6 +10,10 @@ env:
 jobs:
   simplygo-src:
     name: "SimplyGo Source: Lint, Build & Test"
+    # use concurrency group to synchronize access to simplygo site
+    # the website does not appear to support concurrent logins
+    concurrency:
+      group: simplygo
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
@@ -104,6 +108,10 @@ jobs:
       - src-container
       - tfm-container
     name: "End to End Test"
+    # use concurrency group to synchronize access to simplygo site
+    # the website does not appear to support concurrent logins
+    concurrency:
+      group: simplygo
     runs-on: ubuntu-22.04
     env:
       KUBECONFIG: /tmp/kubeconfig.yaml
