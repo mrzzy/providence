@@ -76,6 +76,14 @@ lint-dbt: $(DBT_DIR)
 	cd $< && sqlfmt --check .
 	cd $< && sqlfluff lint .
 
+$(eval $(call PHONY_RULE,build,dbt))
+build-dbt: $(DBT_DIR)
+	cd $< && dbt run
+
+$(eval $(call PHONY_RULE,test,dbt))
+test-dbt: $(DBT_DIR) build-dbt
+	cd $< && dbt test
+
 # Airflow Pipelines
 # NOTE: run 'airflow db init' before running 'make test-pipeline'
 PIPELINES_DIR := pipelines
