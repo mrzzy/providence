@@ -101,7 +101,7 @@ jobs:
           publish_dir: transforms/dbt/docs
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
-          full_commit_message: "doc(transform): update dbt docs for ${{ github.ref }}"
+          full_commit_message: "doc(transform): update dbt docs for ${{ github.sha }}"
 
   pipelines:
     name: "Airflow Pipelines: Lint & Test"
