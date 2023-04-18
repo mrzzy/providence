@@ -7,6 +7,7 @@
 
 from datetime import timedelta
 from typing import Any, Dict
+from textwrap import dedent
 from pendulum import datetime
 from kubernetes.client import models as k8s
 from pendulum.datetime import DateTime
@@ -30,7 +31,8 @@ def ingest_uob_dag(
     export_prefix="providence/manual/uob/ACC_TXN_History_",
     pandas_etl_tag: str = "latest",
 ):
-    """Ingests manual UOB transaction export into AWS Redshift.
+    dedent(
+        """Ingests manual UOB transaction export into AWS Redshift.
 
     Parameters:
     - `s3_bucket`: Name of a existing S3 bucket to that contains the UOB export to ingest.
@@ -45,6 +47,7 @@ def ingest_uob_dag(
         - `extras`:
             - `region`: AWS region.
     """
+    )
 
     # Find UOB export for the dag data interval
     @task

@@ -40,7 +40,7 @@ def ingest_simplygo_dag(
     - `aws_default`:
         - `login`: AWS Access Key ID.
         - `password`: AWS Access Secret Key.
-        - `extras`:
+        - `extra`:
             - `region`: AWS region.
     """
     # Extract & load SimplyGo data with SimplyGo source into S3 as JSON
