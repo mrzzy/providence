@@ -15,7 +15,6 @@ with flat_categories as  (
         {{ ref("stg_ynab_budget_category") }} c
         inner join {{ ref("stg_ynab_budget_category_group") }} g on g.id = c.category_group_id
 )
-fd
 select * from (
     {{
     dbt_utils.deduplicate(
