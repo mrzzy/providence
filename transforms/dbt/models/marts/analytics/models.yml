@@ -184,3 +184,47 @@ models:
     tests:
       - dbt_utils.expression_is_true:
           expression: "len(currency_code) = 3"
+
+  - name: dim_budget_category
+    description: Budget allocation category where funds are allocated in budget.
+    columns:
+      - name: id
+        description: Unique Surrogate key for Category.
+        tests:
+          - not_null
+          - unique
+      - name: ynab_id
+        description: YNAB assigned Category ID.
+        tests:
+          - not_null
+      - name: name
+        destination: User assigned Category name.
+        tests:
+          - not_null
+      - name: budget_id
+        destination: YNAB assigned ID of the Budget this Category belongs to.
+        tests:
+          - not_null
+      - name: category_group_id
+        destination: YNAB assigned ID of the Category Group this Category belongs to.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("stg_ynab_budget_category_group")
+              field: id
+      - name: category_group
+        destination: User assigned name of the Category Group.
+        tests:
+          - not_null
+      - name: is_deleted
+        destination: Whether the Category was deleted.
+        tests:
+          - not_null
+      - name: budget_year_month
+        destination: The month this budget allocation was effective.
+        tests:
+          - not_null
+      - name: updated_at
+        description: Timestamp when the data was last updated / refreshed.
+        tests:
+          - not_null
