@@ -220,7 +220,7 @@ models:
         destination: Whether the Category was deleted.
         tests:
           - not_null
-      - name: budget_year_month
+      - name: budget_month
         destination: The month this budget allocation was effective.
         tests:
           - not_null

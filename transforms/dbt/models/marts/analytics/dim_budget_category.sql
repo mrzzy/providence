@@ -6,7 +6,7 @@
 
 with flat_categories as  (
     select
-        {{ dbt_utils.generate_surrogate_key(["c.id", "c.budget_year_month"]) }} as id,
+        {{ dbt_utils.generate_surrogate_key(["c.id", "c.budget_month"]) }} as id,
         {{ dbt_utils.star(ref("stg_ynab_budget_category"), except=["id", "scraped_on"], relation_alias="c") }},
         c.id as ynab_id,
         c.scraped_on as updated_at,
