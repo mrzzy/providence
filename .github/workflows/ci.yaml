@@ -48,8 +48,8 @@ jobs:
     name: "DBT Transform: Lint, Build & Test"
     runs-on: ubuntu-22.04
     env:
-      DBT_ENV_SECRET_AWS_REDSHIFT_USER: "${{ secrets.DBT_ENV_SECRET_AWS_REDSHIFT_USER }}"
-      DBT_ENV_SECRET_AWS_REDSHIFT_PASSWORD: "${{ secrets.DBT_ENV_SECRET_AWS_REDSHIFT_PASSWORD }}"
+      AWS_REDSHIFT_USER: "${{ secrets.AWS_REDSHIFT_USER }}"
+      AWS_REDSHIFT_PASSWORD: "${{ secrets.AWS_REDSHIFT_PASSWORD }}"
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -78,8 +78,8 @@ jobs:
         run: make deps-dbt
       - name: Generate docs
         env:
-          DBT_ENV_SECRET_AWS_REDSHIFT_USER: "${{ secrets.DBT_ENV_SECRET_AWS_REDSHIFT_USER }}"
-          DBT_ENV_SECRET_AWS_REDSHIFT_PASSWORD: "${{ secrets.DBT_ENV_SECRET_AWS_REDSHIFT_PASSWORD }}"
+          AWS_REDSHIFT_USER: "${{ secrets.AWS_REDSHIFT_USER }}"
+          AWS_REDSHIFT_PASSWORD: "${{ secrets.AWS_REDSHIFT_PASSWORD }}"
         working-directory: transforms/dbt
         run: |
           set -ex -o pipefail
