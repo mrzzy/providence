@@ -20,6 +20,7 @@ select
     cast(c.goal_target as decimal(10, 2)) / 1000 as goal_amount,
     cast(c.goal_target_month as date) as goal_due,
     cast(c.deleted as boolean) as is_deleted,
-    cast(m.month as date) as budget_year_month
+    cast(m.month as date) as budget_year_month,
+    cast(s._ynab_src_scraped_on as timestamp) as scraped_on
 from
-    {{ source("ynab", "source_ynab") }} s, s.months m, s.categories c
+    {{ source("ynab", "source_ynab") }} as s, s.months as m, s.categories as c

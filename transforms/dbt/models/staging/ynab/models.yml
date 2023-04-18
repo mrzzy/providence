@@ -31,8 +31,12 @@ models:
         destination: Symbol used to denote the currency (eg. $ for dollar)
         tests:
           - not_null
+      - name: scraped_on
+        destination: Timestamp when the data was last scraped from YNAB.
+        tests:
+          - not_null
 
-  - name: stg_budget_category
+  - name: stg_ynab_budget_category
     description: Budget allocation category where funds are allocated in budget.
     columns:
       - name: id
@@ -76,8 +80,12 @@ models:
         destination: The month this budget allocation was effective.
         tests:
           - not_null
+      - name: scraped_on
+        destination: Timestamp when the data was last scraped from YNAB.
+        tests:
+          - not_null
 
-  - name: stg_budget_category_group
+  - name: stg_ynab_budget_category_group
     description: Grouping for budget categories.
     columns:
       - name: id
@@ -90,5 +98,9 @@ models:
           - not_null
       - name: is_deleted
         destination: Whether the Category Group was deleted.
+        tests:
+          - not_null
+      - name: scraped_on
+        destination: Timestamp when the data was last scraped from YNAB.
         tests:
           - not_null
