@@ -113,8 +113,8 @@ models:
     columns:
       - name: id
         description: Surrogate key for the Trip leg.
-      - name: posting_ref
-        description: Posting / billing reference assigned once the Trip Leg is billed.
+        tests:
+          - not_null
       - name: traveled_on
         description: Timestamp when the Trip Leg was made.
         tests:
