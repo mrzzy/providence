@@ -1,0 +1,27 @@
+#
+# Providence
+# Transforms
+# Staging Models Config
+# DBT Staging: YNAB Models
+#
+
+version: 2
+
+models:
+  - name: stg_uob_account
+    description: A UOB Bank account.
+    columns:
+      - name: account_no
+        description: UOB Bank account number.
+        tests:
+          - not_null
+          - unique
+      - name: name
+        description: Product name of the UOB Bank Account.
+        tests:
+          - not_null
+          - unique
+      - name: currency_code
+        destination: "3 character ISO code of the currency used by Bank Account."
+        tests:
+          - not_null
