@@ -104,3 +104,57 @@ models:
         destination: Timestamp when the data was last scraped from YNAB.
         tests:
           - not_null
+
+  - name: stg_ynab_account
+    description: A YNAB Budget Account.
+    columns:
+      - name: id
+        description: YNAB assigned Budget Account ID.
+        tests:
+          - not_null
+      - name: name
+        description: User assigned name of the Budget Account.
+        tests:
+          - not_null
+      - name: type
+        description: Type of Budget Account.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - checking
+                - savings
+                - cash
+                - creditCard
+                - lineOfCredit
+                - otherAsset
+                - otherLiability
+                - mortgage
+                - autoLoan
+                - studentLoan
+                - personalLoan
+                - medicalDebt
+                - otherDebt
+      - name: on_budget
+        description: Whether the funds in this account is budgetable.
+        tests:
+          - not_null
+      - name: is_closed
+        description: Whether the account has been used.
+        tests:
+          - not_null
+      - name: is_deleted
+        description: Whether the account has been deleted.
+        tests:
+          - not_null
+      - name: payee_id
+        description: ID of the YNAB payee that credits this account.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("stg_ynab_payee")
+              field: id
+      - name: scraped_on
+        destination: Timestamp when the data was last scraped from YNAB.
+        tests:
+          - not_null
