@@ -1,0 +1,8 @@
+#
+# Providence
+# End to End Tests
+# Python Project
+#
+
+[tool.pytest.ini_options]
+log_cli = true

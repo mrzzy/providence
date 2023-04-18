@@ -3,12 +3,14 @@
 # End to End Tests
 #
 
-from datetime import date, timedelta
 import os
 import json
-from pathlib import Path
 import stat
+import string
 import boto3
+import random
+from pathlib import Path
+from datetime import date, timedelta
 
 import pytest
 from testcontainers.compose import DockerCompose
@@ -17,22 +19,44 @@ DAG_IDS = ["pvd_ingest_simplygo", "pvd_ingest_ynab", "pvd_ingest_uob"]
 RESOURCE_DIR = Path(".") / "resources"
 
 
+def random_suffix(n=8) -> str:
+    """Generate a random suffix of the given length"""
+    return "".join(
+        random.choice(string.ascii_lowercase + string.digits) for _ in range(n)
+    )
+
+
 @pytest.fixture
-def s3_bucket():
-    test_bucket = os.environ["AWS_S3_TEST_BUCKET"]
+def e2e_suffix() -> str:
+    suffix = random_suffix()
+    print(f"random suffix for e2e test: {suffix}")
+    return suffix
+
+
+@pytest.fixture
+def s3_bucket(e2e_suffix: str):
+    # create test bucket for e2e test
+    s3 = boto3.resource("s3")
+    bucket = s3.Bucket(f"mrzzy-co-providence-e2e-{e2e_suffix}")
+    # by default buckets are created in us-east-1, use default region instead.
+    bucket.create(
+        CreateBucketConfiguration={
+            "LocationConstraint": os.environ["AWS_DEFAULT_REGION"]
+        },
+    )
 
     # upload test uob export into test bucket
-    s3 = boto3.client("s3")
     # dag finds uob exports by end of data interval so we include today + day's date in the s3 key
     key = (date.today() + timedelta(days=7)).strftime(
         "providence/manual/uob/ACC_TXN_History_%d%m%Ytest.xls"
     )
-    s3.upload_file(str(RESOURCE_DIR / "ACC_TXN_test.xls"), test_bucket, key)
+    bucket.Object(key).upload_file(str(RESOURCE_DIR / "ACC_TXN_test.xls"))
 
-    yield test_bucket
+    yield bucket.name
 
-    # clean up test uob export
-    s3.delete_object(Bucket=test_bucket, Key=key)
+    # clean up test bucket
+    bucket.objects.delete()
+    bucket.delete()
 
 
 def test_ingest_dag(s3_bucket: str):
@@ -40,7 +64,6 @@ def test_ingest_dag(s3_bucket: str):
 
     Expects the following test environment:
     - docker-compose: to run Airflow in docker.
-    - existing S3 bucket to be provided via the 'AWS_S3_TEST_BUCKET' env var.
     - AWS credentials exposed via environment variables:
         - AWS_DEFAULT_REGION: AWS Region.
         - AWS_ACCESS_KEY_ID": AWS Access Key.
