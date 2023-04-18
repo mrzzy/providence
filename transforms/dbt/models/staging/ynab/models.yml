@@ -31,3 +31,64 @@ models:
         destination: Symbol used to denote the currency (eg. $ for dollar)
         tests:
           - not_null
+
+  - name: stg_budget_category
+    description: Budget allocation category where funds are allocated in budget.
+    columns:
+      - name: id
+        description: YNAB assigned Category ID.
+        tests:
+          - not_null
+      - name: name
+        destination: User assigned Category name.
+        tests:
+          - not_null
+      - name: budget_id
+        destination: YNAB assigned ID of the Budget this Category belongs to.
+        tests:
+          - not_null
+      - name: category_group_id
+        destination: YNAB assigned ID of the Category Group this Category belongs to.
+        tests:
+          - not_null
+      - name: goal_type
+        destination: Type of goal setting selected for this budget category.
+        tests:
+          - accepted_values:
+              values:
+                - "Target Category Balance"
+                - "Target Category Balance by Date"
+                - "Monthly Funding"
+                - "Plan Your Spending"
+      - name: budget_amount
+        destination: Amount of money budgeted into this budget category.
+        tests:
+          - not_null
+      - name: goal_amount
+        destination: Target amount the user aims to set aside for this budget category.
+      - name: goal_due
+        destination: Due date by when user aims to set aside the money for the goal.
+      - name: is_deleted
+        destination: Whether the Category was deleted.
+        tests:
+          - not_null
+      - name: budget_year_month
+        destination: The month this budget allocation was effective.
+        tests:
+          - not_null
+
+  - name: stg_budget_category_group
+    description: Grouping for budget categories.
+    columns:
+      - name: id
+        description: YNAB assigned Category Group ID.
+        tests:
+          - not_null
+      - name: name
+        destination: User assigned name of the Category Group.
+        tests:
+          - not_null
+      - name: is_deleted
+        destination: Whether the Category Group was deleted.
+        tests:
+          - not_null
