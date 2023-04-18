@@ -5,6 +5,8 @@
 #
 
 
+from os.path import dirname
+from pathlib import Path
 from typing import Dict, List
 
 from airflow.hooks.base import BaseHook
@@ -15,6 +17,7 @@ K8S_LABELS = {
     "app.kubernetes.io/part-of": "providence",
     "app.kubernetes.io/managed-by": "airflow",
 }
+SQL_DIR = str(Path(dirname(__file__)) / "sql")
 
 
 def get_aws_env(conn_id: str) -> Dict[str, str]:
