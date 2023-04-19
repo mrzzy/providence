@@ -86,5 +86,4 @@ dag(
     redshift_table="map_account",
     create_table_sql="create_map_account.sql",
     mapping_path="providence/manual/mapping/account.csv",
-    s3_bucket="mrzzy-co-dev",
 )
