@@ -47,7 +47,7 @@ def test_transform_uob():
             "Deposit": [5.0, 5.0],
             "Available Balance": [2000.0, 2000.0],
             "Account Number": ["123456789", "123456789"],
-            "Account Type": ["One Account", "One Account"],
+            "Account Type": ["Test Account", "Test Account"],
             "Statement Period": [
                 "06 Feb 2023 To 07 Apr 2023",
                 "06 Feb 2023 To 07 Apr 2023",
