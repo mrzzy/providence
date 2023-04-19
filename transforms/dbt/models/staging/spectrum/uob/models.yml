@@ -25,3 +25,18 @@ models:
         destination: "3 character ISO code of the currency used by Bank Account."
         tests:
           - not_null
+      - name: statement_begin
+        destination: >-
+          Timestamp denoting the start the date range of the bank statement form
+          the Bank Account information was derived.
+        tests:
+          - not_null
+      - name: statement_end
+        destination: >-
+          Timestamp denoting the end (inclusive) the date range of the bank statement
+          from which the Bank Account information was derived.
+        tests:
+          - not_null
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "statement_begin >= statement_end"
