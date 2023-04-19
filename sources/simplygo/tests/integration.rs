@@ -7,7 +7,6 @@
 // NOTE: The following integration tests expect these environment variables to be set:
 // - `SIMPLYGO_SRC_USERNAME`
 // - `SIMPLYGO_SRC_PASSWORD`
-// - `AWS_S3_TEST_BUCKET`
 // - `AWS_DEFAULT_REGION`
 // - `AWS_ACCESS_KEY_ID`
 // - `AWS_SECRET_ACCESS_KEY`
@@ -17,6 +16,7 @@ use std::{env, io::Write};
 
 use assert_cmd::Command;
 use assert_fs::NamedTempFile;
+use aws_sdk_s3::types::{CreateBucketConfiguration, Delete, ObjectIdentifier};
 use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
 use serial_test::serial;
@@ -53,6 +53,60 @@ async fn get_s3(s3: &aws_sdk_s3::Client, bucket: &str, key: &str) -> Vec<u8> {
         .to_vec()
 }
 
+/// Create a S3 bucket in SG region with the given s3 client name bucket name.
+async fn create_s3_bucket(s3: &aws_sdk_s3::Client, bucket: &str) {
+    s3.create_bucket()
+        .bucket(bucket)
+        .create_bucket_configuration(
+            CreateBucketConfiguration::builder()
+                // ap-southeast-1: singapore
+                .location_constraint(aws_sdk_s3::types::BucketLocationConstraint::ApSoutheast1)
+                .build(),
+        )
+        .send()
+        .await
+        .unwrap_or_else(|e| panic!("Could not create test s3 bucket {}: {:?}", bucket, e));
+}
+
+/// Delete S3 bucket with the given name, along with any object it stores.
+async fn delete_s3_bucket(s3: &aws_sdk_s3::Client, bucket: &str) {
+    // list contents of s3 bucket for deletion
+    let response = s3
+        .list_objects_v2()
+        .bucket(bucket)
+        .send()
+        .await
+        .unwrap_or_else(|e| panic!("Failed to list objects in s3 bucket {}: {:?}", bucket, e));
+    let object_ids = response
+        .contents()
+        .unwrap_or_default()
+        .iter()
+        .map(|object| {
+            ObjectIdentifier::builder()
+                .key(object.key().unwrap())
+                .build()
+        });
+
+    // delete s3 bucket's objects
+    let mut delete = Delete::builder();
+    for object_id in object_ids {
+        delete = delete.objects(object_id);
+    }
+    s3.delete_objects()
+        .bucket(bucket)
+        .delete(delete.build())
+        .send()
+        .await
+        .unwrap_or_else(|e| panic!("Failed to delete objects in s3 bucket {}: {:?}", bucket, e));
+
+    // delete s3 bucket
+    s3.delete_bucket()
+        .bucket(bucket)
+        .send()
+        .await
+        .unwrap_or_else(|e| panic!("Failed to delete s3 bucket {}: {:?}", bucket, e));
+}
+
 /// Test integration with SimplyGo
 #[test]
 #[serial]
@@ -65,16 +119,19 @@ fn simplygo_login_test() {
 
 /// Test integration with AWS S3
 #[test]
-#[serial]
+// #[serial]
 fn s3_sink_test() {
-    // expects existing, already created S3 bucket
-    let bucket = env::var("AWS_S3_TEST_BUCKET").unwrap();
+    // create test bucket
+    let rt = build_runtime();
+    let s3 = s3_client(&rt);
+    let bucket = format!(
+        "mrzzy-co-providence-simplygo-src-integration-{}",
+        random_alphanum(8).to_lowercase(),
+    );
+    rt.block_on(create_s3_bucket(&s3, &bucket));
 
     // write object with s3 sink
-    let test_key = format!(
-        "providence/simplygo_src/s3_sink_test/{}",
-        random_alphanum(8)
-    );
+    let test_key = "test";
     let s3_url = format!("s3://{}/{}", bucket, test_key);
     let mut sink = S3Sink::new(&s3_url);
     let test_value = b"value";
@@ -83,16 +140,13 @@ fn s3_sink_test() {
         .unwrap_or_else(|e| panic!("Failed to write test value to {}: {:?}", s3_url, e));
 
     // get & check written value
-    let rt = build_runtime();
-    let s3 = s3_client(&rt);
     assert_eq!(
         test_value.to_vec(),
         rt.block_on(get_s3(&s3, &bucket, &test_key))
     );
 
-    // clean up value
-    rt.block_on(s3.delete_object().bucket(&bucket).key(&test_key).send())
-        .unwrap_or_else(|e| panic!("Could not clean up test value {}: {:?}", s3_url, e));
+    // clean up test bucket
+    rt.block_on(delete_s3_bucket(&s3, &bucket));
 }
 
 /// Test CLI scrape & write to file
@@ -122,15 +176,18 @@ fn cli_output_file_test() {
 #[test]
 #[serial]
 fn cli_output_s3_test() {
-    // expects existing, already created S3 bucket
-    let bucket = env::var("AWS_S3_TEST_BUCKET").unwrap();
+    // create test bucket
+    let rt = build_runtime();
+    let s3 = s3_client(&rt);
+    let bucket = format!(
+        "mrzzy-co-providence-simplygo-src-integration-{}",
+        random_alphanum(8).to_lowercase(),
+    );
+    rt.block_on(create_s3_bucket(&s3, &bucket));
 
     // test: command succeeds
     let mut cmd = Command::cargo_bin("simplygo_src").unwrap();
-    let test_key = format!(
-        "providence/simplygo_src/s3_sink_test/{}",
-        random_alphanum(8)
-    );
+    let test_key = "test";
     let s3_url = format!("s3://{}/{}", bucket, test_key);
     let assert_cli = cmd
         .args(&[
@@ -145,11 +202,8 @@ fn cli_output_s3_test() {
     assert_cli.success();
 
     // test: we actually wrote something by retrieving from s3
-    let rt = build_runtime();
-    let s3 = s3_client(&rt);
     rt.block_on(get_s3(&s3, &bucket, &test_key));
 
-    // clean up test object
-    rt.block_on(s3.delete_object().bucket(&bucket).key(&test_key).send())
-        .unwrap_or_else(|e| panic!("Could not clean up test value {}: {:?}", s3_url, e));
+    // clean up test bucket
+    rt.block_on(delete_s3_bucket(&s3, &bucket));
 }
