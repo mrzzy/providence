@@ -22,7 +22,7 @@ DAG_IDS = [
     "pvd_ingest_uob",
     "pvd_ingest_account_map",
 ]
-RESOURCE_DIR = Path(".") / "resources"
+RESOURCE_DIR = Path(__file__).parent / "resources"
 
 
 def random_suffix(n=8) -> str:

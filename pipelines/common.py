@@ -5,7 +5,6 @@
 #
 
 
-from os.path import dirname
 from pathlib import Path
 from typing import Dict, List
 
@@ -17,7 +16,7 @@ K8S_LABELS = {
     "app.kubernetes.io/part-of": "providence",
     "app.kubernetes.io/managed-by": "airflow",
 }
-SQL_DIR = str(Path(".") / "sql")
+SQL_DIR = str(Path(__file__).parent / "sql")
 
 
 def get_aws_env(conn_id: str) -> Dict[str, str]:
