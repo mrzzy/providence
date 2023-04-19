@@ -85,6 +85,11 @@ models:
       - name: year_month
         test:
           - not_null
+      - name: updated_at
+        description: Timestamp when the data was last updated / refreshed.
+        tests:
+          - not_null
+
     tests:
       - dbt_utils.expression_is_true:
           expression: "len(month_short) = 3"
@@ -155,14 +160,14 @@ models:
           - relationships:
               to: ref("dim_bank_card")
               field: id
-      - name: updated_at
-        description: Timestamp when the data was last updated / refreshed.
-        tests:
-          - not_null
       - name: billing_ref
         description: Billing reference assigned once the Trip Leg is billed.
       - name: is_billed
         description: Whether the fare for the Trip has been billed & deducted.
+        tests:
+          - not_null
+      - name: updated_at
+        description: Timestamp when the data was last updated / refreshed.
         tests:
           - not_null
 
