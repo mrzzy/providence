@@ -7,24 +7,29 @@
 version: 2
 
 models:
-  - name: stg_map_ynab_uob_account
+  - name: stg_map_budget_account
     description:
-      Manually crafted mapping between YNAB Budget account & UOB Bank account.
+      Manually crafted mapping between YNAB Budget Account & a Vendor Account.
     columns:
+      - name: id
+        description: Surrogate key for the Account mapping
+        tests:
+          - unique
       - name: budget_account_id
-        description: YNAB Budget Account ID to associate with UOB Bank account.
+        description: YNAB Budget Account ID to associate with the Vendor Account.
         tests:
           - not_null
           - relationships:
               to: ref("stg_ynab_account")
               field: id
-      - name: account_no
-        description: Account No. of the UOB Bank Account to associate YNAB Budget Account.
+      - name: vendor
+        description: Name of the Vendor hosting the Vendor Account.
         tests:
           - not_null
-          - relationships:
-              to: ref("stg_uob_account")
-              field: account_no
-    tests:
-      - unique:
-          column_name: "(budget_account_id || account_no)"
+          - accepted_values:
+              values:
+                - UOB
+      - name: vendor_id
+        description: Vendor assigned ID to the Account associated with the YNAB Budget Account.
+        tests:
+          - not_null
