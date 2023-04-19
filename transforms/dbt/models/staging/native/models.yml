@@ -1,0 +1,30 @@
+#
+# Providence
+# Transforms
+# DBT Staging Manual Mappings Models
+#
+
+version: 2
+
+models:
+  - name: stg_map_ynab_uob_account
+    description:
+      Manually crafted mapping between YNAB Budget account & UOB Bank account.
+    columns:
+      - name: budget_account_id
+        description: YNAB Budget Account ID to associate with UOB Bank account.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("stg_ynab_account")
+              field: id
+      - name: account_no
+        description: Account No. of the UOB Bank Account to associate YNAB Budget Account.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("stg_uob_account")
+              field: account_no
+    tests:
+      - unique:
+          column_name: "budget_account_id || account_no"
