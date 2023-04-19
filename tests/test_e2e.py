@@ -3,6 +3,7 @@
 # End to End Tests
 #
 
+from collections.abc import Iterator
 import os
 import json
 import stat
@@ -34,7 +35,7 @@ def e2e_suffix() -> str:
 
 
 @pytest.fixture
-def s3_bucket(e2e_suffix: str):
+def s3_bucket(e2e_suffix: str) -> Iterator[str]:
     # create test bucket for e2e test
     s3 = boto3.resource("s3")
     bucket = s3.Bucket(f"mrzzy-co-providence-e2e-{e2e_suffix}")
@@ -59,7 +60,30 @@ def s3_bucket(e2e_suffix: str):
     bucket.delete()
 
 
-def test_ingest_dag(s3_bucket: str):
+@pytest.fixture
+def redshift_schema(e2e_suffix: str) -> Iterator[str]:
+    # create redshift schema within 'dev' database for e2e test
+    redshift = boto3.client("redshift-data")
+    e2e_schema = f"providence_e2e_{e2e_suffix}"
+    db_params = {
+        "WorkgroupName": "main",
+        "Database": "dev",
+    }
+    redshift.batch_execute_statement(
+        Sqls=[f"CREATE SCHEMA {e2e_schema}"],
+        **db_params,
+    )
+
+    yield e2e_schema
+
+    # clean up test schema
+    redshift.batch_execute_statement(
+        Sqls=[f"DROP SCHEMA {e2e_schema}"],
+        **db_params,
+    )
+
+
+def test_ingest_dag(s3_bucket: str, redshift_schema: str):
     """End to End Test Providence Data Pipeline by performing 1 DAG run.
 
     Expects the following test environment:
@@ -87,7 +111,12 @@ def test_ingest_dag(s3_bucket: str):
                     "test",
                     dag_id,
                     "-c",
-                    json.dumps({"s3_bucket": s3_bucket}),
+                    json.dumps(
+                        {
+                            "s3_bucket": s3_bucket,
+                            "redshift_schema": redshift_schema,
+                        }
+                    ),
                 ],
             )
             if status != 0:
