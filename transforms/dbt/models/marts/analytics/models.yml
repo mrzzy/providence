@@ -309,3 +309,51 @@ models:
         description: Timestamp when the data was last updated / refreshed.
         tests:
           - not_null
+
+  - name: dim_account
+    description: An Account hosted by a vendor containing assets tracked in the accounting budget.
+    columns:
+      - name: id
+        description: Surrogate key the Account.
+        tests:
+          - not_null
+          - unique
+      - name: name
+        description: User assigned name of the Account.
+        tests:
+          - not_null
+      - name: is_closed
+        description: Whether the account has been closed in the accounting budget.
+        tests:
+          - not_null
+      - name: is_deleted
+        description: Whether the account has been deleted in the accounting budget.
+        tests:
+        - not_null
+      - name: budget_type
+        description: Account type as assigned in the accounting budget.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - checking
+                - savings
+                - cash
+                - creditCard
+                - lineOfCredit
+                - otherAsset
+                - otherLiability
+                - mortgage
+                - autoLoan
+                - studentLoan
+                - personalLoan
+                - medicalDebt
+                - otherDebt
+      - name: is_liquid
+        description: Whether the funds in this account is budgetable.
+        tests:
+          - not_null
+      - name: updated_at
+        description: Timestamp when the data was last updated / refreshed.
+        tests:
+          - not_null

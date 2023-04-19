@@ -3,7 +3,6 @@
 -- Transforms
 -- DBT Staging: YNAB Payee
 --
-
 select
     cast(p.id as varchar) as "id",
     cast(p.name as varchar) as "name",

@@ -3,7 +3,6 @@
 -- Transforms
 -- DBT Analytics: YNAB Budget Account
 --
-
 select
     cast(a.id as varchar) as "id",
     cast(a.name as varchar) as "name",

@@ -21,13 +21,14 @@ select
     date_trunc('month', date_day) as year_month,
     coalesce(extract(dayofweek from date_day) in (0, 6), false) as is_weekend,
     date_trunc('day', sysdate) as updated_at
-from (
-    -- generate next 20 years of date dimension rows
-    {{
-        dbt_utils.date_spine(
-            datepart="day",
-            start_date="cast('2019-01-01' as date)",
-            end_date="cast(dateadd(year, 20, sysdate) as date)"
-        )
-    }}
-)
+from
+    (
+        -- generate next 20 years of date dimension rows
+        {{
+            dbt_utils.date_spine(
+                datepart="day",
+                start_date="cast('2019-01-01' as date)",
+                end_date="cast(dateadd(year, 20, sysdate) as date)",
+            )
+        }}
+    )

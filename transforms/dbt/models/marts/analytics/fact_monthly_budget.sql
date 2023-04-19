@@ -3,7 +3,6 @@
 -- Transforms
 -- DBT Analytics: Monthly budget Facts
 --
-
 -- grain 1 row: 1 monthly budget snapshot
 select
     {{ dbt_utils.generate_surrogate_key(["c.budget_month", "b.id", "c.id"]) }} as "id",
@@ -15,5 +14,5 @@ select
     c.goal_amount as goal_amount,
     c.goal_due as goal_due,
     c.updated_at as updated_at
-from {{ ref("dim_budget_category") }} c
-    inner join {{ ref("dim_budget") }} b on b.id = c.budget_id
+from {{ ref("dim_budget_category") }} as c
+inner join {{ ref("dim_budget") }} as b on b.id = c.budget_id
