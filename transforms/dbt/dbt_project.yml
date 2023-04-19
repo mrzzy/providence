@@ -33,11 +33,18 @@ clean-targets:         # directories to be removed by `dbt clean`
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 models:
   providence:
-    # use redshift late binding views allow dbt to replace the tables backing them
+    # use redshift late binding views allow us replace the tables backing them
     # https://www.getdbt.com/blog/using-redshift-s-late-binding-views-with-dbt/
     bind: false
-    # Config indicated by + and applies to all files under models/example/
     staging:
-      +materialized: view
+      # staging models backed by native redshift tables.
+      native:
+        +materialized: view
+      # staging models backed by data lake queried via redshift spectrum.
+      # redshift spectrum only supports a limited no. of SQL features.
+      # writes the spectrum staging models as tables to have full SQL functions
+      # in downstream transformations.
+      spectrum:
+        +materialized: table
     marts:
       +materialized: table
