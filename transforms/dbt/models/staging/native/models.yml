@@ -27,4 +27,4 @@ models:
               field: account_no
     tests:
       - unique:
-          column_name: "budget_account_id || account_no"
+          column_name: "(budget_account_id || account_no)"
