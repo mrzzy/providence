@@ -246,7 +246,7 @@ models:
         tests:
           - not_null
       - name: month_date_id
-        destination: Date dimension ID of the year-month the budget allocation is made for.
+        destination: Date ID of the year-month the budget allocation is made for.
         tests:
           - not_null
           - relationships:

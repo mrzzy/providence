@@ -3,17 +3,6 @@
 -- Transforms
 -- DBT Analytics: "Date" Dimension
 --
-with
-    dates as (
-        select date_trunc('day', scraped_on) as "date"
-        from {{ ref("stg_simplygo_trip_leg") }}
-        union
-        select traveled_on as "date"
-        from {{ ref("stg_simplygo_trip_leg") }}
-        union
-        select budget_month as "date"
-        from {{ ref("stg_ynab_budget_category") }}
-    )
 select
     "date" as "id",
     "date",
@@ -31,4 +20,13 @@ select
     extract(dayofyear from "date") as day_of_year,
     date_trunc('month', "date") as year_month,
     coalesce(extract(dayofweek from "date") in (0, 6), false) as is_weekend
-from dates
+from (
+    -- generate next 20 years of date dimension rows
+    {{
+        dbt_utils.date_spline(
+            datepart="day",
+            start_date="cast('2019-01-01' as date)",
+            end_date="cast(dateadd(year, 20, sysdate)) as date)"
+        )
+    }}
+)
