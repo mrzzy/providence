@@ -103,6 +103,9 @@ def test_ingest_dag(s3_bucket: str, redshift_schema: str):
         - AWS_DEFAULT_REGION: AWS Region.
         - AWS_ACCESS_KEY_ID": AWS Access Key.
         - AWS_SECRET_ACCESS_KEY": Secret of AWS Access Key.
+    - AWS Redshift credentials:
+        - AWS_REDSHIFT_USER: RedShift username.
+        - AWS_REDSHIFT_PASSWORD: RedShift password.
     - SimplyGo credentials: SIMPLYGO_SRC_USERNAME & SIMPLYGO_SRC_PASSWORD
     - YNAB credentials: YNAB_SRC_ACCESS_TOKEN
     - access to a Kubernetes cluster configured via a kube config file provided
