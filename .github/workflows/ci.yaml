@@ -171,7 +171,7 @@ jobs:
         version: v0.11.1
     - uses: actions/setup-python@v4
       with:
-        python-version: "${{ inputs.python-version }}"
+        python-version: "${{ env.PYTHON_VERSION }}"
     - name: Setup dependencies
       run: pip install -r tests/requirements.txt
     - name: Test
