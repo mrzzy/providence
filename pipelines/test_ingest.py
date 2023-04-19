@@ -13,8 +13,13 @@ from unittest import mock
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import os
 from airflow.models import Connection, DagBag
 
-DAGS_DIR = Path(os.path.dirname(__file__))
-DAG_IDS = ["pvd_ingest_simplygo", "pvd_ingest_ynab", "pvd_ingest_uob"]
+DAGS_DIR = Path(__file__).parent
+DAG_IDS = [
+    "pvd_ingest_simplygo",
+    "pvd_ingest_ynab",
+    "pvd_ingest_uob",
+    "pvd_ingest_account_map",
+]
 
 
 def test_ingest_dag_import():

@@ -16,8 +16,13 @@ from datetime import date, timedelta
 import pytest
 from testcontainers.compose import DockerCompose
 
-DAG_IDS = ["pvd_ingest_simplygo", "pvd_ingest_ynab", "pvd_ingest_uob"]
-RESOURCE_DIR = Path(".") / "resources"
+DAG_IDS = [
+    "pvd_ingest_simplygo",
+    "pvd_ingest_ynab",
+    "pvd_ingest_uob",
+    "pvd_ingest_account_map",
+]
+RESOURCE_DIR = Path(__file__).parent / "resources"
 
 
 def random_suffix(n=8) -> str:
@@ -52,6 +57,12 @@ def s3_bucket(e2e_suffix: str) -> Iterator[str]:
         "providence/manual/uob/ACC_TXN_History_%d%m%Ytest.xls"
     )
     bucket.Object(key).upload_file(str(RESOURCE_DIR / "ACC_TXN_test.xls"))
+
+    # copy account mapping from dev bucket to test bucket
+    account_map_key = "providence/manual/mapping/account.csv"
+    bucket.Object(account_map_key).copy_from(
+        CopySource={"Bucket": "mrzzy-co-dev", "Key": account_map_key}
+    )
 
     yield bucket.name
 
@@ -92,6 +103,9 @@ def test_ingest_dag(s3_bucket: str, redshift_schema: str):
         - AWS_DEFAULT_REGION: AWS Region.
         - AWS_ACCESS_KEY_ID": AWS Access Key.
         - AWS_SECRET_ACCESS_KEY": Secret of AWS Access Key.
+    - AWS Redshift credentials:
+        - AWS_REDSHIFT_USER: RedShift username.
+        - AWS_REDSHIFT_PASSWORD: RedShift password.
     - SimplyGo credentials: SIMPLYGO_SRC_USERNAME & SIMPLYGO_SRC_PASSWORD
     - YNAB credentials: YNAB_SRC_ACCESS_TOKEN
     - access to a Kubernetes cluster configured via a kube config file provided

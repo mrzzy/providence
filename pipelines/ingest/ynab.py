@@ -38,7 +38,7 @@ def ingest_ynab_dag(
     - `aws_default`:
         - `login`: AWS Access Key ID.
         - `password`: AWS Access Secret Key.
-        - `extras`:
+        - `extra`:
             - `region`: AWS region.
     """
 

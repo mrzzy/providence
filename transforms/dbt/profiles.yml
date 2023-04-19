@@ -9,8 +9,8 @@ providence:
     dev:
       dbname: dev
       host: main.132307318913.ap-southeast-1.redshift-serverless.amazonaws.com
-      user: "{{ env_var('DBT_ENV_SECRET_AWS_REDSHIFT_USER') }}"
-      password: "{{ env_var('DBT_ENV_SECRET_AWS_REDSHIFT_PASSWORD') }}"
+      user: "{{ env_var('AWS_REDSHIFT_USER') }}"
+      password: "{{ env_var('AWS_REDSHIFT_PASSWORD') }}"
       port: 5439
       schema: public
       threads: 8
@@ -18,8 +18,8 @@ providence:
     prod:
       dbname: mrzzy
       host: main.132307318913.ap-southeast-1.redshift-serverless.amazonaws.com
-      user: "{{ env_var('DBT_ENV_SECRET_AWS_REDSHIFT_USER') }}"
-      password: "{{ env_var('DBT_ENV_SECRET_AWS_REDSHIFT_PASSWORD') }}"
+      user: "{{ env_var('AWS_REDSHIFT_USER') }}"
+      password: "{{ env_var('AWS_REDSHIFT_PASSWORD') }}"
       port: 5439
       schema: public
       threads: 8

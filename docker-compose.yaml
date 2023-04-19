@@ -33,6 +33,18 @@ services:
             "conn_type": "generic",
             "password": "${YNAB_SRC_ACCESS_TOKEN}"
         }
+      AIRFLOW_CONN_REDSHIFT_DEFAULT: |
+        {
+          "conn_type": "redshift",
+          "host": "main.132307318913.ap-southeast-1.redshift-serverless.amazonaws.com",
+          "port": 5439,
+          "login": "${AWS_REDSHIFT_USER}",
+          "password": "${AWS_REDSHIFT_PASSWORD}",
+          "schema": "dev",
+          "extra": {
+            "role_arn": "arn:aws:iam::132307318913:role/warehouse"
+          }
+        }
       # expects an accessible kubernetes cluster via passed $KUBECONFIG
       KUBECONFIG: /kubeconfig.yaml
     network_mode: host
