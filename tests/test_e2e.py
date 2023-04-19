@@ -58,6 +58,12 @@ def s3_bucket(e2e_suffix: str) -> Iterator[str]:
     )
     bucket.Object(key).upload_file(str(RESOURCE_DIR / "ACC_TXN_test.xls"))
 
+    # copy account mapping from dev bucket to test bucket
+    account_map_key = "providence/manual/mapping/account.csv"
+    bucket.Object(account_map_key).copy_from(
+        CopySource={"Bucket": "mrzzy-co-dev", "Key": account_map_key}
+    )
+
     yield bucket.name
 
     # clean up test bucket
