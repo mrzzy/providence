@@ -292,3 +292,20 @@ models:
         description: Timestamp when the data was last updated / refreshed.
         tests:
           - not_null
+
+  - name: dim_payee
+    description: A Payee in transaction.
+    columns:
+      - name: id
+        description: ID that uniquely identifies the payee.
+        tests:
+          - unique
+          - not_null
+      - name: name
+        destination: Name of the Payee.
+        tests:
+          - not_null
+      - name: updated_at
+        description: Timestamp when the data was last updated / refreshed.
+        tests:
+          - not_null
