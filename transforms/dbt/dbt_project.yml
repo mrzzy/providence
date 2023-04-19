@@ -33,8 +33,11 @@ clean-targets:         # directories to be removed by `dbt clean`
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 models:
   providence:
+    # use redshift late binding views allow dbt to replace the tables backing them
+    # https://www.getdbt.com/blog/using-redshift-s-late-binding-views-with-dbt/
+    bind: false
     # Config indicated by + and applies to all files under models/example/
     staging:
-      +materialized: table
+      +materialized: view
     marts:
       +materialized: table
