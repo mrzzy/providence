@@ -12,7 +12,7 @@ inputs:
     description: Suffix appended this subproject's Makefile rules
   python-version:
     description: Version of Python to use.
-    default: 3.10.6
+    required: true
 runs:
   using: composite
   steps:
