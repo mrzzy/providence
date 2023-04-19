@@ -120,9 +120,12 @@ models:
         tests:
           - not_null
       - name: travel_date_id
-        description: Date on which the Trip Leg was made.
+        description: Date ID on which the Trip Leg was made.
         tests:
           - not_null
+          - relationships:
+              to: ref("dim_date")
+              field: id
       - name: cost_sgd
         description: Cost of the Trip Leg in SGD.
         tests:
@@ -246,6 +249,9 @@ models:
         destination: Date dimension ID of the year-month the budget allocation is made for.
         tests:
           - not_null
+          - relationships:
+              to: ref("dim_date")
+              field: id
       - name: budget_id
         description: ID of Budget this budget allocation is made within.
         tests:

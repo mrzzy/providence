@@ -8,11 +8,12 @@ with
         select date_trunc('day', scraped_on) as "date"
         from {{ ref("stg_simplygo_trip_leg") }}
         union
-        distinct
         select traveled_on as "date"
         from {{ ref("stg_simplygo_trip_leg") }}
+        union
+        select budget_month as "date"
+        from {{ ref("stg_ynab_budget_category") }}
     )
-
 select
     "date" as "id",
     "date",
