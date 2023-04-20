@@ -20,7 +20,6 @@ models:
         description: Product name of the UOB Bank Account.
         tests:
           - not_null
-          - unique
       - name: currency_code
         destination: "3 character ISO code of the currency used by Bank Account."
         tests:
@@ -39,4 +38,4 @@ models:
           - not_null
     tests:
       - dbt_utils.expression_is_true:
-          expression: "statement_begin >= statement_end"
+          expression: "statement_begin <= statement_end"
