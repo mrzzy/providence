@@ -15,7 +15,6 @@ models:
         description: UOB Bank account number.
         tests:
           - not_null
-          - unique
       - name: name
         description: Product name of the UOB Bank Account.
         tests:

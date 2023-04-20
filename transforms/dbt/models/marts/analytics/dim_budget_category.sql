@@ -27,9 +27,9 @@ with
     )
 
 select
-    {{ dbt_utils.generate_surrogate_key(["c.category_id", "c.budget_month"]) }} as id,
+    {{ dbt_utils.generate_surrogate_key(["c.category_id", "c.budget_month"]) }} as "id",
     c.*,
     g.name as category_group
-from unique_categories c
+from unique_categories as c
 inner join
     {{ ref("stg_ynab_budget_category_group") }} as g on g.id = c.category_group_id
