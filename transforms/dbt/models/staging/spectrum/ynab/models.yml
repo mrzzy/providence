@@ -140,7 +140,7 @@ models:
         tests:
           - not_null
       - name: is_closed
-        description: Whether the account has been used.
+        description: Whether the account has been closed.
         tests:
           - not_null
       - name: is_deleted
