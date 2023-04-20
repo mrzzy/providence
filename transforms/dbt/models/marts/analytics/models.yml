@@ -195,6 +195,10 @@ models:
         destination: Symbol used to denote the currency (eg. $ for dollar)
         tests:
           - not_null
+      - name: updated_at
+        description: Timestamp when the data was last updated / refreshed.
+        tests:
+          - not_null
     tests:
       - dbt_utils.expression_is_true:
           expression: "len(currency_code) = 3"
@@ -207,7 +211,7 @@ models:
         tests:
           - not_null
           - unique
-      - name: ynab_id
+      - name: category_id
         description: YNAB assigned Category ID.
         tests:
           - not_null
