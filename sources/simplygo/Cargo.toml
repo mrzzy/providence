@@ -24,5 +24,5 @@ url = "2.3.1"
 
 [dev-dependencies]
 assert_cmd = { version = "2.0.11", features = ["color", "color-auto"] }
-assert_fs = "1.0.12"
+assert_fs = "1.0.13"
 serial_test = "2.0.0"
