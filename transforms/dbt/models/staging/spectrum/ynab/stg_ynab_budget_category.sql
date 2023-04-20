@@ -4,7 +4,7 @@
 -- DBT Staging: YNAB budget category
 --
 select
-    cast(c.id as varchar) as id,
+    cast(c.id as varchar) as "id",
     cast(c.name as varchar) as "name",
     cast(s.id as varchar) as budget_id,
     cast(c.category_group_id as varchar) as category_group_id,

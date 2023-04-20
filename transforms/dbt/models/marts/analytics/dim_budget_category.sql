@@ -6,7 +6,7 @@
 with
     flat_categories as (
         select
-            {{ dbt_utils.generate_surrogate_key(["c.id", "c.budget_month"]) }} as id,
+            {{ dbt_utils.generate_surrogate_key(["c.id", "c.budget_month"]) }} as "id",
             {{
                 dbt_utils.star(
                     ref("stg_ynab_budget_category"),
