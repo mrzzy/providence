@@ -170,6 +170,12 @@ models:
         description: User assigned name of the Payee
         tests:
           - not_null
+      - name: transfer_account_id
+        description: Optional. YNAB Budget Account that the Payee represents in transfer transaction.
+        tests:
+          - relationships:
+              to: ref("stg_ynab_account")
+              field: id
       - name: scraped_on
         destination: Timestamp when the data was last scraped from YNAB.
         tests:

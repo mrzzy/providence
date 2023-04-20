@@ -305,6 +305,12 @@ models:
         destination: Name of the Payee.
         tests:
           - not_null
+      - name: transfer_account_id
+        description: Optional. Account that the Payee represents in transfer transaction.
+        tests:
+          - relationships:
+              to: ref("stg_ynab_account")
+              field: id
       - name: updated_at
         description: Timestamp when the data was last updated / refreshed.
         tests:
