@@ -18,7 +18,7 @@ with
         from
             (
                 {{
-                    dbt_utils.deduplicate(
+                    deduplicate(
                         relation=ref("stg_ynab_account"),
                         partition_by="id",
                         order_by="scraped_on desc",
@@ -32,7 +32,7 @@ with
         from
             (
                 {{
-                    dbt_utils.deduplicate(
+                    deduplicate(
                         relation=ref("stg_uob_account"),
                         partition_by="account_no",
                         order_by="statement_end desc",

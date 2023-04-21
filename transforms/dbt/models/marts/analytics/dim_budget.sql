@@ -9,7 +9,7 @@ select
 from
     (
         {{
-            dbt_utils.deduplicate(
+            deduplicate(
                 relation=ref("stg_ynab_budget"),
                 partition_by="id",
                 order_by="scraped_on desc",
