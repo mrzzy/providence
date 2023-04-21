@@ -191,7 +191,7 @@ models:
       - name: amount
         destination: >-
           Monetary Amount transferred from the associated account to the payee
-          in the transaction. Negative values signify a withdrawal from the
+          in the Transaction. Negative values signify a withdrawal from the
           account while spositive values signfiy a deposit from the payee.
         tests:
           - not_null
@@ -221,6 +221,8 @@ models:
           - relationships:
               to: ref("stg_ynab_budget")
               field: id
+      - name: category_id
+        destination: YNAB assigned ID of the Category this Transaction belongs to.
       - name: account_id
         description: ID of the YNAB Account this Transaction was made on.
         tests:
@@ -236,7 +238,7 @@ models:
               field: id
       - name: transfer_account_id
         description: >-
-          Optional. Only set when this Transaction is a transfer between Accounts
+          Optional. Only set when this Transaction is a transfer between Accounts.
           ID of the target YNAB Account this Transaction transfers to.
         tests:
           - relationships:

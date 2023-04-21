@@ -1,7 +1,7 @@
 --
 -- Providence
 -- Transforms
--- DBT Analytics: Monthly budget Facts
+-- DBT Analytics: Monthly Budget Fact table
 --
 -- grain 1 row: 1 monthly budget snapshot
 

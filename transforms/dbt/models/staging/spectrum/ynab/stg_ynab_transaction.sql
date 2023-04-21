@@ -10,6 +10,7 @@ select
     cast(t.approved as boolean) as is_approved,
     cast(t.deleted as boolean) as is_deleted,
     cast(s.id as varchar) as budget_id,
+    cast(t.category_id as varchar) as category_id,
     cast(t.account_id as varchar) as account_id,
     cast(t.payee_id as varchar) as payee_id,
     cast(t.transfer_account_id as varchar) as transfer_account_id,

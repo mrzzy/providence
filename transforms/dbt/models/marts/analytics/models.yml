@@ -224,7 +224,7 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref("stg_ynab_budget")
+              to: ref("dim_budget")
               field: id
       - name: category_group_id
         destination: ID of the Category Group this Category is grouped within.
@@ -315,7 +315,7 @@ models:
         description: Optional. Account that the Payee represents in transfer transaction.
         tests:
           - relationships:
-              to: ref("stg_ynab_account")
+              to: ref("dim_account")
               field: id
       - name: updated_at
         description: Timestamp when the data was last updated / refreshed.
@@ -326,7 +326,7 @@ models:
     description: An Account hosted by a vendor containing assets tracked in the accounting budget.
     columns:
       - name: id
-        description: Surrogate key the Account.
+        description: Surrogate key of the Account.
         tests:
           - not_null
           - unique
@@ -363,6 +363,80 @@ models:
                 - otherDebt
       - name: is_liquid
         description: Whether the funds in this account is budgetable.
+        tests:
+          - not_null
+      - name: updated_at
+        description: Timestamp when the data was last updated / refreshed.
+        tests:
+          - not_null
+
+  - name: fact_accounting_transaction
+    description: Accounting Transactions
+    columns:
+      - name: id
+        description: Surrogate key of the Accounting Transaction.
+        tests:
+          - not_null
+          - unique
+      - name: amount
+        destination: >-
+          Monetary Amount transferred from the associated account to the payee
+          in the Accounting Transaction. Negative values signify a withdrawal from the
+          account while spositive values signfiy a deposit from the payee.
+        tests:
+          - not_null
+      - name: description
+        description: User assigned description to the Accounting Transaction.
+      - name: clearing_status
+        description: Reconciliation status of this Account Transaction.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - cleared
+                - uncleared
+                - reconciled
+      - name: is_approved
+        destination: Whether the Accounting Transaction was approved.
+        tests:
+          - not_null
+      - name: is_deleted
+        destination: Whether the Accounting Transaction was deleted.
+        tests:
+          - not_null
+      - name: budget_id
+        description: ID of the Budget the Accounting Transaction was made within.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("dim_budget")
+              field: id
+      - name: account_id
+        description: ID of the Account this Accounting Transaction was made on.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("dim_account")
+              field: id
+      - name: category_id
+        description: ID of Budget Category this Accounting Transaction was assigned.
+        tests:
+      - name: payee_id
+        description: ID of the Payee this Accounting Transaction was made to.
+        tests:
+          - relationships:
+              to: ref("dim_payee")
+              field: id
+      - name: transfer_account_id
+        description: >-
+          Optional. Only set when this Accounting Transaction is a transfer
+          between Accounts. ID of the target Account this Transaction transfers to.
+        tests:
+          - relationships:
+              to: ref("dim_account")
+              field: id
+      - name: date_id
+        description: ID of the Date when this Accounting Transaction was made.
         tests:
           - not_null
       - name: updated_at
