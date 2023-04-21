@@ -46,5 +46,7 @@ models:
       # in downstream transformations.
       spectrum:
         +materialized: table
+    intermediate:
+      +materialized: view
     marts:
       +materialized: table

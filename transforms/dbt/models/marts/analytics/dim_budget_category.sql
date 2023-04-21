@@ -3,44 +3,30 @@
 -- Transforms
 -- DBT Analytics: Budget Category dimension
 --
-
-
 -- use type 2 SCD to track changes to budget category's goals over time
 with
-    duplicated_categories as (
+    category_scd as (
         select
-            {{ dbt_utils.generate_surrogate_key(["id", "budget_month"]) }}
-            as "id",
-            id as category_id,
             {{
                 dbt_utils.star(
-                    ref("stg_ynab_budget_category"),
-                    except=["id", "budget_month", "budgeted"],
+                    ref("int_unique_budget_category"),
+                    except=["budget_month", "budgeted_amount"],
                 )
             }},
-            scraped_on as updated_at,
-            cast(budget_month as timestamp) as effective_at
-        from {{ ref("stg_ynab_budget_category") }}
+            cast(budget_month as timestamp) as effective_at,
+            -- dimension row expire when the next dimension row becomes effective
+            coalesce(
+                cast(
+                    lead(budget_month) over (
+                        partition by category_id order by budget_month asc
+                    ) as timestamp
+                ),
+                {{ timestamp_max() }}
+            ) as expired_at
+        from {{ ref("int_unique_budget_category") }}
     ),
 
-unique_categories as (
-        select *,
-        coalesce(
-            lead(effective_at) over (partition by category_id order by effective_at asc),
-            {{ timestamp_max() }}
-        ) as expired_at
-        from (
-        {{
-            deduplicate(
-                relation="duplicated_categories",
-                partition_by="id",
-                order_by="updated_at desc",
-            )
-        }}
-    )
-    ),
-
-unique_groups as (
+    unique_groups as (
         {{
             deduplicate(
                 relation=ref("stg_ynab_budget_category_group"),
@@ -50,9 +36,6 @@ unique_groups as (
         }}
     )
 
-select
-    c.*,
-    c.expired_at is null as is_current,
-    g.name as category_group
-from unique_categories as c
+select c.*, g.name as category_group, c.expired_at is null as is_current
+from category_scd as c
 inner join unique_groups as g on g.id = c.category_group_id
