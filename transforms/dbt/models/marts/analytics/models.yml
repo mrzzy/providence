@@ -89,7 +89,6 @@ models:
         description: Timestamp when the data was last updated / refreshed.
         tests:
           - not_null
-
     tests:
       - dbt_utils.expression_is_true:
           expression: "len(month_short) = 3"
@@ -120,6 +119,7 @@ models:
         description: Surrogate key for the Trip leg.
         tests:
           - not_null
+          - unique
       - name: traveled_on
         description: Timestamp when the Trip Leg was made.
         tests:
@@ -204,15 +204,15 @@ models:
           expression: "len(currency_code) = 3"
 
   - name: dim_budget_category
-    description: Budget allocation category where funds are allocated in budget.
+    description: Budget Category where funds are allocated in budget.
     columns:
       - name: id
-        description: Unique Surrogate key for Category.
+        description: Unique Surrogate key for Category dimension.
         tests:
           - not_null
           - unique
       - name: category_id
-        description: YNAB assigned Category ID.
+        description: ID identfying the Budget Category across dimension updates.
         tests:
           - not_null
       - name: name
@@ -238,14 +238,25 @@ models:
         destination: Whether the Category was deleted.
         tests:
           - not_null
-      - name: budget_month
-        destination: The month this budget allocation was effective.
-        tests:
-          - not_null
       - name: updated_at
         description: Timestamp when the data was last updated / refreshed.
         tests:
           - not_null
+      - name: effective_at
+        description: Timestamp when this dimension row became effective.
+        tests:
+          - not_null
+      - name: expired_at
+        description: Timestamp when this dimension row expired (exclusive).
+        tests:
+          - not_null
+      - name: is_current
+        description: Whether this dimension row is currently effective.
+        tests:
+          - not_null
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "effective_at < expired_at"
 
   - name: fact_monthly_budget
     description: Snapshots of the Monthly Budget allocation.
