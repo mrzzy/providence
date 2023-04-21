@@ -38,4 +38,4 @@ with
 
 select c.*, g.name as category_group, c.expired_at is null as is_current
 from category_scd as c
-inner join unique_groups as g on g.id = c.category_group_id
+left join unique_groups as g on g.id = c.category_group_id
