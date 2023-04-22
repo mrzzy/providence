@@ -4,7 +4,7 @@
 -- DBT Staging: UOB Bank Account Transaction
 --
 select
-    cast("transaction date" as varchar) as transacted_on,  -- noqa: RF05
+    cast("transaction date" as date) as transacted_on,  -- noqa: RF05
     cast("transaction description" as varchar) as description,  -- noqa: RF05
     cast("withdrawal" as decimal(10, 2)) as withdrawal,  -- noqa: RF05
     cast("deposit" as decimal(10, 2)) as deposit,  -- noqa: RF05

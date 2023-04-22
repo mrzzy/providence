@@ -44,7 +44,8 @@ models:
         tests:
           - not_null
       - name: processed_on
-
+        tests:
+          - not_null
     tests:
       - dbt_utils.expression_is_true:
           expression: "statement_begin <= statement_end"

@@ -445,7 +445,45 @@ models:
         description: ID of the Date when this Accounting Transaction was made.
         tests:
           - not_null
+          - relationships:
+              to: ref("dim_date")
+              field: id
       - name: updated_at
         description: Timestamp when the data was last updated / refreshed.
         tests:
           - not_null
+
+  - name: fact_bank_transaction
+    description: Bank Transactions
+    columns:
+      - name: id
+        description: Unique surrogate key for the Bank Transaction.
+        tests:
+          - unique
+          - not_null
+      - name: description
+        description: Bank assigned description of the Bank Transaction.
+        tests:
+          - not_null
+      - name: date_id
+        description: ID of the Date when this Bank Transaction was made.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("dim_date")
+              field: id
+      - name: account_id
+        description: ID of the Account this Bank Transaction was made on.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("dim_account")
+              field: id
+      - name: amount
+        description: >-
+          Amount transacted. Negative values deduct from the balance of  the
+          bank account while Positive values credit to its balance.
+      - name: updated_at
+        description: Timestamp when the data was last updated / refreshed.
+        tests:
+        - not_null
