@@ -513,9 +513,47 @@ models:
               field: id
       - name: amount
         description: >-
-          Amount transacted. Negative values deduct from the balance of  the
+          Amount transacted. Negative values deduct from the balance of the
           bank account while Positive values credit to its balance.
       - name: updated_at
         description: Timestamp when the data was last updated / refreshed.
         tests:
         - not_null
+
+  - name: fact_bank_statement
+    description: Periodic Bank Statement snapshot.
+    columns:
+      - name: id
+        description: Unique surrogate key for the Bank Statement.
+        tests:
+          - unique
+          - not_null
+      - name: begin_date_id
+        description: Id of the Date beginning the period that the Bank Statement covers.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("dim_date")
+              field: id
+      - name: end_date_id
+        description: Id of the Date ending the period that the Bank Statement covers.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("dim_date")
+              field: id
+      - name: account_id
+        description: ID of the Account for which this Bank Statement derived.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("dim_account")
+              field: id
+      - name: balance
+        description: Current Balance of the Bank account.
+        tests:
+          - not_null
+      - name: updated_at
+        description: Timestamp when the data was last updated / refreshed.
+        tests:
+          - not_null
