@@ -19,7 +19,7 @@ models:
         description: User assigned budget name.
         tests:
           - not_null
-      - name: modified_on
+      - name: modified_at
         description: Timestamp when the budget was last modified / changed.
         tests:
           - not_null
