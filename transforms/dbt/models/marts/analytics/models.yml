@@ -180,19 +180,19 @@ models:
           - unique
           - not_null
       - name: name
-        destination: User assigned budget name.
+        description: User assigned budget name.
         tests:
           - not_null
       - name: modified_on
-        destination: Timestamp when the budget was last modified / changed.
+        description: Timestamp when the budget was last modified / changed.
         tests:
           - not_null
       - name: currency_code
-        destination: "3 character ISO code of the currency used by the budget."
+        description: "3 character ISO code of the currency used by the budget."
         tests:
           - not_null
       - name: currency_symbol
-        destination: Symbol used to denote the currency (eg. $ for dollar)
+        description: Symbol used to denote the currency (eg. $ for dollar)
         tests:
           - not_null
       - name: updated_at
@@ -216,7 +216,7 @@ models:
         tests:
           - not_null
       - name: name
-        destination: User assigned Category name.
+        description: User assigned Category name.
         tests:
           - not_null
       - name: budget_id
@@ -227,18 +227,18 @@ models:
               to: ref("dim_budget")
               field: id
       - name: category_group_id
-        destination: ID of the Category Group this Category is grouped within.
+        description: ID of the Category Group this Category is grouped within.
         tests:
           - not_null
           - relationships:
               to: ref("stg_ynab_budget_category_group")
               field: id
       - name: category_group
-        destination: User assigned name of the Category Group.
+        description: User assigned name of the Category Group.
         tests:
           - not_null
       - name: is_deleted
-        destination: Whether the Category was deleted.
+        description: Whether the Category was deleted.
         tests:
           - not_null
       - name: updated_at
@@ -270,7 +270,7 @@ models:
           - not_null
           - unique
       - name: month_date_id
-        destination: Date ID of the year-month the budget allocation is made for.
+        description: Date ID of the year-month the budget allocation is made for.
         tests:
           - not_null
           - relationships:
@@ -308,7 +308,7 @@ models:
           - unique
           - not_null
       - name: name
-        destination: Name of the Payee.
+        description: Name of the Payee.
         tests:
           - not_null
       - name: transfer_account_id
@@ -385,7 +385,7 @@ models:
               to: ref("stg_ynab_transaction")
               field: id
       - name: amount
-        destination: >-
+        description: >-
           Monetary Amount transferred from the associated account to the payee
           in the Accounting Transaction. Negative values signify a withdrawal from the
           account while spositive values signfiy a deposit from the payee.
@@ -403,11 +403,11 @@ models:
                 - uncleared
                 - reconciled
       - name: is_approved
-        destination: Whether the Accounting Transaction was approved.
+        description: Whether the Accounting Transaction was approved.
         tests:
           - not_null
       - name: is_deleted
-        destination: Whether the Accounting Transaction was deleted.
+        description: Whether the Accounting Transaction was deleted.
         tests:
           - not_null
       - name: budget_id
