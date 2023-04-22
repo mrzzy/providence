@@ -12,4 +12,4 @@ select
     category_id,
     budget_amount as amount,
     updated_at
-from {{ ref("int_unique_budget_category") }} as u
+from {{ ref("int_unique_budget_category") }}

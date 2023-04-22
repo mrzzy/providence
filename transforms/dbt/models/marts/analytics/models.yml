@@ -378,6 +378,12 @@ models:
         tests:
           - not_null
           - unique
+      - name: super_id
+        description: ID of super / parent Transaction of this transaction if one exists.
+        tests:
+          - relationships:
+              to: ref("stg_ynab_transaction")
+              field: id
       - name: amount
         destination: >-
           Monetary Amount transferred from the associated account to the payee

@@ -192,7 +192,7 @@ models:
         destination: >-
           Monetary Amount transferred from the associated account to the payee
           in the Transaction. Negative values signify a withdrawal from the
-          account while spositive values signfiy a deposit from the payee.
+          account while positive values signfiy a deposit from the payee.
         tests:
           - not_null
       - name: description
@@ -246,6 +246,55 @@ models:
               field: id
       - name: date
         description: Date when this Transaction was made.
+        tests:
+          - not_null
+      - name: scraped_on
+        destination: Timestamp when the data was last scraped from YNAB.
+        tests:
+          - not_null
+
+  - name: stg_ynab_subtransaction
+    description: A YNAB accounting Subtransaction.
+    columns:
+      - name: id
+        description: YNAB assigned Subtransaction ID.
+        tests:
+          - not_null
+      - name: super_id
+        description: ID of super / parent Transaction of this Subtransaction
+        tests:
+          - not_null
+          - relationships:
+              to: ref("stg_ynab_transaction")
+              field: id
+      - name: description
+        description: User assigned description to the Subtransaction.
+      - name: category_id
+        destination: YNAB assigned ID of the Category this Subtransaction belongs to.
+      - name: payee_id
+        description: ID of the YNAB Payee this Subtransaction was made to.
+        tests:
+          - relationships:
+              to: ref("stg_ynab_payee")
+              field: id
+      - name: transfer_account_id
+        description: >-
+          Optional. Only set when this Subtransaction is a transfer between Accounts.
+          ID of the target YNAB Account this Subtransaction transfers to.
+        tests:
+          - relationships:
+              to: ref("stg_ynab_account")
+              field: id
+      - name: is_deleted
+        destination: Whether the Subtransaction was deleted.
+        tests:
+          - not_null
+      - name: amount
+        destination: >-
+          Monetary Amount transferred from the associated account to the payee
+          in the Subtransaction. Negative values signify a withdrawal from the
+          account (of the super/parent Transaction of this Subtransaction)
+          while positive values signfiy a deposit from the payee.
         tests:
           - not_null
       - name: scraped_on
