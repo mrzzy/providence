@@ -69,7 +69,7 @@ deps-dbt: $(DBT_DIR)
 
 $(eval $(call PHONY_RULE,fmt,dbt))
 fmt-dbt: $(DBT_DIR)
-	cd $< && sqlfluff fix .
+	cd $< && sqlfluff fix -f .
 	cd $< && sqlfmt .
 
 $(eval $(call PHONY_RULE,lint,dbt))
