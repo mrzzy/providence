@@ -28,10 +28,7 @@ with
     ),
 
     unique_uob_accounts as (
-        select
-            account_no,
-            "name",
-            processed_on
+        select account_no, "name", processed_on
         from
             (
                 {{
