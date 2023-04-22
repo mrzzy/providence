@@ -36,6 +36,21 @@ with
         }}
     )
 
-select c.*, g.name as category_group, c.expired_at is null as is_current
+select
+    c."id",
+    c.category_id,
+    c.name,
+    c.budget_id,
+    -- use unique_group's id instead to resolve dangling category_group_id as null
+    g."id" as category_group_id,
+    g.name as category_group,
+    c.goal_type,
+    c.goal_amount,
+    c.goal_due,
+    c.is_deleted,
+    c.updated_at,
+    c.effective_at,
+    c.expired_at,
+    c.expired_at is null as is_current
 from category_scd as c
 left join unique_groups as g on g.id = c.category_group_id

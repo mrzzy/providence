@@ -235,14 +235,11 @@ models:
       - name: category_group_id
         description: ID of the Category Group this Category is grouped within.
         tests:
-          - not_null
           - relationships:
               to: ref("stg_ynab_budget_category_group")
               field: id
       - name: category_group
         description: User assigned name of the Category Group.
-        tests:
-          - not_null
       - name: goal_type
         description: Type of goal setting selected for this budget category.
         tests:
@@ -310,7 +307,6 @@ models:
       - name: category_id
         description: ID of Budget Category this budget allocation applies to.
         tests:
-          - not_null
           - relationships:
               to: ref("dim_budget_category")
               field: category_id
