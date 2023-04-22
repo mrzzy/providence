@@ -84,6 +84,6 @@ dag(
     schedule="@once",
 )(ingest_mapping_dag)(
     redshift_table="map_account",
-    create_table_sql="create_map_account.sql",
+    create_table_sql="map_account.sql",
     mapping_path="providence/manual/mapping/account.csv",
 )
