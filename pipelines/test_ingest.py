@@ -49,6 +49,8 @@ def test_ingest_dag_import():
     with mock.patch.dict(
         "os.environ",
         PYTHON_PATH=str(DAGS_DIR),
+        # disable loading of example dags
+        AIRFLOW__CORE__LOAD_EXAMPLES="False",
         **{f"AIRFLOW_CONN_{c.conn_id.upper()}": c.get_uri() for c in connections},  # type: ignore
     ):
         dagbag = DagBag(DAGS_DIR)
