@@ -8,9 +8,17 @@
 version: 2
 
 models:
-  - name: stg_uob_account
-    description: A UOB Bank account.
+  - name: stg_uob_transaction
+    description: A UOB Bank Account Transaction
     columns:
+      - name: transacted_on
+        description: Date on which the Bank Transaction was made.
+        tests:
+          - not_null
+      - name: description
+        description: Date on which the Bank Transaction was made.
+        tests:
+          - not_null
       - name: account_no
         description: UOB Bank account number.
         tests:
@@ -20,21 +28,25 @@ models:
         tests:
           - not_null
       - name: currency_code
-        destination: "3 character ISO code of the currency used by Bank Account."
+        description: "3 character ISO code of the currency used by Bank Account."
         tests:
           - not_null
       - name: statement_begin
-        destination: >-
+        description: >-
           Timestamp denoting the start the date range of the bank statement form
           the Bank Account information was derived.
         tests:
           - not_null
       - name: statement_end
-        destination: >-
+        description: >-
           Timestamp denoting the end (inclusive) the date range of the bank statement
           from which the Bank Account information was derived.
         tests:
           - not_null
+      - name: processed_on
+
     tests:
       - dbt_utils.expression_is_true:
           expression: "statement_begin <= statement_end"
+      - dbt_utils.expression_is_true:
+          expression: "statement_end <= processed_on"

@@ -33,7 +33,7 @@ with
             (
                 {{
                     deduplicate(
-                        relation=ref("stg_uob_account"),
+                        relation=ref("stg_uob_transaction"),
                         partition_by="account_no",
                         order_by="statement_end desc",
                     )

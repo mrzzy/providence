@@ -4,7 +4,6 @@
 -- DBT Analytics: Monthly Budget Fact table
 --
 -- grain 1 row: 1 monthly budget snapshot
-
 select
     "id",
     budget_month as month_date_id,
