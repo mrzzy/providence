@@ -88,8 +88,8 @@ models:
       # if goal_type is set, goal_amount must also be set and vice versa.
       - dbt_utils.expression_is_true:
           expression: |
-            not (goal_type is null or goal_amount is null) or
-            (goal_type is null and goal_amount is null)
+            (goal_type is null and goal_amount = 0) or
+            not (goal_type is null and goal_amount = 0)
 
   - name: stg_ynab_budget_category_group
     description: Grouping for budget categories.

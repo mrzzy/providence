@@ -282,8 +282,8 @@ models:
       # if goal_type is set, goal_amount must also be set and vice versa.
       - dbt_utils.expression_is_true:
           expression: |
-            not (goal_type is null or goal_amount is null) or
-            (goal_type is null and goal_amount is null)
+            not (goal_type is null and goal_amount = 0) or
+            (goal_type is null and goal_amount = 0)
 
   - name: fact_monthly_budget
     description: Snapshots of the Monthly Budget allocation.
@@ -403,8 +403,8 @@ models:
       # all or none of the vendor fields should be set
       - dbt_utils.expression_is_true:
           expression: |
-            not (vendor_id is null or vendor_type is null or vendor_id is null) or
-            (vendor_id is null and vendor_type is null and vendor_id is null)
+            (vendor_id is null and vendor_type is null and vendor_id is null) or
+            not (vendor_id is null and vendor_type is null and vendor_id is null)
 
   - name: fact_accounting_transaction
     description: Accounting Transactions
