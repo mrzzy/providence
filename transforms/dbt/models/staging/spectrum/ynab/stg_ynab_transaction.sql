@@ -17,5 +17,5 @@ select
     cast(t.date as date) as "date",
     cast(s._ynab_src_scraped_on as timestamp) as scraped_on,
     -- ynab expresses amounts in milliunits: 1000 milliunits = $1
-    cast(t.amount as decimal(10, 2)) / 1000 as amount
+    cast(t.amount as decimal(13, 2)) / 1000 as amount
 from {{ source("ynab", "source_ynab") }} as s, s.transactions as t

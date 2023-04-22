@@ -3,7 +3,6 @@
 -- Transforms
 -- DBT Staging: YNAB Accounting Subtransaction
 --
-
 select
     cast(t.id as varchar) as "id",
     cast(t.transaction_id as varchar) as super_id,
@@ -15,5 +14,5 @@ select
     cast(t.deleted as boolean) as is_deleted,
     cast(s._ynab_src_scraped_on as timestamp) as scraped_on,
     -- ynab expresses amounts in milliunits: 1000 milliunits = $1
-    cast(t.amount as decimal(10, 2)) / 1000 as amount
+    cast(t.amount as decimal(13, 2)) / 1000 as amount
 from {{ source("ynab", "source_ynab") }} as s, s.subtransactions as t
