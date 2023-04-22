@@ -1,0 +1,32 @@
+#
+# Providence
+# Transforms
+# DBT Staging Manual Mappings Models
+#
+
+version: 2
+
+models:
+  - name: stg_map_budget_account
+    description:
+      Manually crafted mapping between YNAB Budget Account & a Vendor Account.
+    columns:
+      - name: id
+        description: Surrogate key for the Account mapping
+        tests:
+          - unique
+      - name: budget_account_id
+        description: YNAB Budget Account ID to associate with the Vendor Account.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("stg_ynab_account")
+              field: id
+      - name: vendor
+        description: Name of the Vendor hosting the .
+        tests:
+          - not_null
+      - name: vendor_id
+        description: Vendor assigned ID to the Account associated with the YNAB Budget Account.
+        tests:
+          - not_null

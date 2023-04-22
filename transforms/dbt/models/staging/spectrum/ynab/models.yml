@@ -1,0 +1,309 @@
+#
+# Providence
+# Transforms
+# Staging Models Config
+# DBT Staging: YNAB Models
+#
+
+version: 2
+
+models:
+  - name: stg_ynab_budget
+    description: A YNAB accounting budget.
+    columns:
+      - name: id
+        description: YNAB assigned budget ID.
+        tests:
+          - not_null
+      - name: name
+        description: User assigned budget name.
+        tests:
+          - not_null
+      - name: modified_at
+        description: Timestamp when the budget was last modified / changed.
+        tests:
+          - not_null
+      - name: currency_code
+        description: "3 character ISO code of the currency used by the budget."
+        tests:
+          - not_null
+      - name: currency_symbol
+        description: Symbol used to denote the currency (eg. $ for dollar)
+        tests:
+          - not_null
+      - name: scraped_on
+        description: Timestamp when the data was last scraped from YNAB.
+        tests:
+          - not_null
+
+  - name: stg_ynab_budget_category
+    description: Budget allocation category where funds are allocated in budget.
+    columns:
+      - name: id
+        description: YNAB assigned Category ID.
+        tests:
+          - not_null
+      - name: name
+        description: User assigned Category name.
+        tests:
+          - not_null
+      - name: budget_id
+        description: YNAB assigned ID of the Budget this Category belongs to.
+        tests:
+          - not_null
+      - name: category_group_id
+        description: YNAB assigned ID of the Category Group this Category belongs to.
+        tests:
+          - not_null
+      - name: budget_amount
+        description: Amount of money budgeted into this budget category.
+        tests:
+          - not_null
+      - name: budget_month
+        description: The month this budget allocation was effective.
+        tests:
+          - not_null
+      - name: goal_type
+        description: Type of goal setting selected for this budget category.
+        tests:
+          - accepted_values:
+              values:
+                - "Target Category Balance"
+                - "Target Category Balance by Date"
+                - "Monthly Funding"
+                - "Plan Your Spending"
+      - name: goal_amount
+        description: Target amount the user aims to set aside for this budget category.
+      - name: goal_due
+        description: Due date by when user aims to set aside the money for the goal.
+      - name: is_deleted
+        description: Whether the Category was deleted.
+        tests:
+          - not_null
+      - name: scraped_on
+        description: Timestamp when the data was last scraped from YNAB.
+        tests:
+          - not_null
+    tests:
+      # if goal_type is set, goal_amount must also be set and vice versa.
+      - dbt_utils.expression_is_true:
+          expression: |
+            (goal_type is null and goal_amount = 0) or
+            not (goal_type is null and goal_amount = 0)
+
+  - name: stg_ynab_budget_category_group
+    description: Grouping for budget categories.
+    columns:
+      - name: id
+        description: YNAB assigned Category Group ID.
+        tests:
+          - not_null
+      - name: name
+        description: User assigned name of the Category Group.
+        tests:
+          - not_null
+      - name: is_deleted
+        description: Whether the Category Group was deleted.
+        tests:
+          - not_null
+      - name: scraped_on
+        description: Timestamp when the data was last scraped from YNAB.
+        tests:
+          - not_null
+
+  - name: stg_ynab_account
+    description: A YNAB Budget Account.
+    columns:
+      - name: id
+        description: YNAB assigned Budget Account ID.
+        tests:
+          - not_null
+      - name: name
+        description: User assigned name of the Budget Account.
+        tests:
+          - not_null
+      - name: type
+        description: Type of Budget Account.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - checking
+                - savings
+                - cash
+                - creditCard
+                - lineOfCredit
+                - otherAsset
+                - otherLiability
+                - mortgage
+                - autoLoan
+                - studentLoan
+                - personalLoan
+                - medicalDebt
+                - otherDebt
+      - name: on_budget
+        description: Whether the funds in this account is budgetable.
+        tests:
+          - not_null
+      - name: is_closed
+        description: Whether the account has been closed.
+        tests:
+          - not_null
+      - name: is_deleted
+        description: Whether the account has been deleted.
+        tests:
+          - not_null
+      - name: payee_id
+        description: ID of the YNAB payee that credits this account.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("stg_ynab_payee")
+              field: id
+      - name: scraped_on
+        description: Timestamp when the data was last scraped from YNAB.
+        tests:
+          - not_null
+
+  - name: stg_ynab_payee
+    description: A YNAB Budget payee.
+    columns:
+      - name: id
+        description: YNAB assigned Payee ID.
+        tests:
+          - not_null
+      - name: name
+        description: User assigned name of the Payee
+        tests:
+          - not_null
+      - name: transfer_account_id
+        description: Optional. YNAB Budget Account that the Payee represents in transfer transaction.
+        tests:
+          - relationships:
+              to: ref("stg_ynab_account")
+              field: id
+      - name: scraped_on
+        description: Timestamp when the data was last scraped from YNAB.
+        tests:
+          - not_null
+
+  - name: stg_ynab_transaction
+    description: A YNAB accounting Transaction.
+    columns:
+      - name: id
+        description: YNAB assigned Transaction ID.
+        tests:
+          - not_null
+      - name: amount
+        description: >-
+          Monetary Amount transferred from the associated account to the payee
+          in the Transaction. Negative values signify a withdrawal from the
+          account while positive values signfiy a deposit from the payee.
+        tests:
+          - not_null
+      - name: description
+        description: User assigned description to the transaction.
+      - name: clearing_status
+        description: Reconciliation status of this transaction.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - cleared
+                - uncleared
+                - reconciled
+      - name: is_approved
+        description: Whether the Transaction was approved.
+        tests:
+          - not_null
+      - name: is_deleted
+        description: Whether the Transaction was deleted.
+        tests:
+          - not_null
+      - name: budget_id
+        description: ID of the YNAB Budget the Transaction was made within.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("stg_ynab_budget")
+              field: id
+      - name: category_id
+        description: YNAB assigned ID of the Category this Transaction belongs to.
+      - name: account_id
+        description: ID of the YNAB Account this Transaction was made on.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("stg_ynab_account")
+              field: id
+      - name: payee_id
+        description: ID of the YNAB Payee this Transaction was made to.
+        tests:
+          - relationships:
+              to: ref("stg_ynab_payee")
+              field: id
+      - name: transfer_account_id
+        description: >-
+          Optional. Only set when this Transaction is a transfer between Accounts.
+          ID of the target YNAB Account this Transaction transfers to.
+        tests:
+          - relationships:
+              to: ref("stg_ynab_account")
+              field: id
+      - name: date
+        description: Date when this Transaction was made.
+        tests:
+          - not_null
+      - name: scraped_on
+        description: Timestamp when the data was last scraped from YNAB.
+        tests:
+          - not_null
+
+  - name: stg_ynab_subtransaction
+    description: A YNAB accounting Subtransaction.
+    columns:
+      - name: id
+        description: YNAB assigned Subtransaction ID.
+        tests:
+          - not_null
+      - name: super_id
+        description: ID of super / parent Transaction of this Subtransaction
+        tests:
+          - not_null
+          - relationships:
+              to: ref("stg_ynab_transaction")
+              field: id
+      - name: description
+        description: User assigned description to the Subtransaction.
+      - name: category_id
+        description: YNAB assigned ID of the Category this Subtransaction belongs to.
+      - name: payee_id
+        description: ID of the YNAB Payee this Subtransaction was made to.
+        tests:
+          - relationships:
+              to: ref("stg_ynab_payee")
+              field: id
+      - name: transfer_account_id
+        description: >-
+          Optional. Only set when this Subtransaction is a transfer between Accounts.
+          ID of the target YNAB Account this Subtransaction transfers to.
+        tests:
+          - relationships:
+              to: ref("stg_ynab_account")
+              field: id
+      - name: is_deleted
+        description: Whether the Subtransaction was deleted.
+        tests:
+          - not_null
+      - name: amount
+        description: >-
+          Monetary Amount transferred from the associated account to the payee
+          in the Subtransaction. Negative values signify a withdrawal from the
+          account (of the super/parent Transaction of this Subtransaction)
+          while positive values signfiy a deposit from the payee.
+        tests:
+          - not_null
+      - name: scraped_on
+        description: Timestamp when the data was last scraped from YNAB.
+        tests:
+          - not_null

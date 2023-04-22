@@ -23,24 +23,6 @@ models:
           - dbt_utils.accepted_range:
               min_value: 1
               max_value: 31
-      - name: month_of_year
-        description: Numeric month of the year.
-        tests:
-          - not_null
-          - dbt_utils.accepted_range:
-              min_value: 1
-              max_value: 12
-      - name: month_name
-        description: Long name of the month.
-        tests:
-          - not_null
-      - name: month_short
-        description: "3 character abbreviation of the name of the month."
-        tests:
-          - not_null
-      - name: year
-        tests:
-          - not_null
       - name: day_of_week
         description: Numeric day of the week (Sunday is 0).
         tests:
@@ -54,6 +36,8 @@ models:
           - not_null
       - name: weekday_short
         description: "3 character abbreviation of the name of the weekday."
+        test:
+          - not_null
       - name: day_of_year
         description: Numeric day of the year
         test:
@@ -75,6 +59,21 @@ models:
           - dbt_utils.accepted_range:
               min_value: 1
               max_value: 52
+      - name: month_of_year
+        description: Numeric month of the year.
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 12
+      - name: month_name
+        description: Long name of the month.
+        tests:
+          - not_null
+      - name: month_short
+        description: "3 character abbreviation of the name of the month."
+        tests:
+          - not_null
       - name: quarter
         description: Quarter no. of the year.
         test:
@@ -84,6 +83,17 @@ models:
               max_value: 52
       - name: year_month
         test:
+          - not_null
+      - name: year
+        tests:
+          - not_null
+      - name: is_weekend
+        description: Whether the date is a weekend.
+        tests:
+          - not_null
+      - name: updated_at
+        description: Timestamp when the data was last updated / refreshed.
+        tests:
           - not_null
     tests:
       - dbt_utils.expression_is_true:
@@ -113,16 +123,20 @@ models:
     columns:
       - name: id
         description: Surrogate key for the Trip leg.
-      - name: posting_ref
-        description: Posting / billing reference assigned once the Trip Leg is billed.
+        tests:
+          - not_null
+          - unique
       - name: traveled_on
         description: Timestamp when the Trip Leg was made.
         tests:
           - not_null
       - name: travel_date_id
-        description: Date on which the Trip Leg was made.
+        description: Date ID on which the Trip Leg was made.
         tests:
           - not_null
+          - relationships:
+              to: ref("dim_date")
+              field: id
       - name: cost_sgd
         description: Cost of the Trip Leg in SGD.
         tests:
@@ -152,7 +166,356 @@ models:
           - relationships:
               to: ref("dim_bank_card")
               field: id
+      - name: billing_ref
+        description: Billing reference assigned once the Trip Leg is billed.
+      - name: is_billed
+        description: Whether the fare for the Trip has been billed & deducted.
+        tests:
+          - not_null
       - name: updated_at
         description: Timestamp when the data was last updated / refreshed.
         tests:
           - not_null
+
+  - name: dim_budget
+    description: An accounting budget.
+    columns:
+      - name: id
+        description: ID that uniquely identifies the budget.
+        tests:
+          - unique
+          - not_null
+      - name: name
+        description: User assigned budget name.
+        tests:
+          - not_null
+      - name: modified_at
+        description: Timestamp when the budget was last modified / changed.
+        tests:
+          - not_null
+      - name: currency_code
+        description: "3 character ISO code of the currency used by the budget."
+        tests:
+          - not_null
+      - name: currency_symbol
+        description: Symbol used by render the currency used by the budget (eg. $ for dollar)
+        tests:
+          - not_null
+      - name: updated_at
+        description: Timestamp when the data was last updated / refreshed.
+        tests:
+          - not_null
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "len(currency_code) = 3"
+
+  - name: dim_budget_category
+    description: Budget Category where funds are allocated in budget.
+    columns:
+      - name: id
+        description: Unique Surrogate key for Category dimension.
+        tests:
+          - not_null
+          - unique
+      - name: category_id
+        description: ID identfying the Budget Category across dimension updates.
+        tests:
+          - not_null
+      - name: name
+        description: User assigned Category name.
+        tests:
+          - not_null
+      - name: budget_id
+        description: ID of the Budget that contains this Budget Category.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("dim_budget")
+              field: id
+      - name: category_group_id
+        description: ID of the Category Group this Category is grouped within.
+        tests:
+          - relationships:
+              to: ref("stg_ynab_budget_category_group")
+              field: id
+      - name: category_group
+        description: User assigned name of the Category Group.
+      - name: goal_type
+        description: Type of goal setting selected for this budget category.
+        tests:
+          - accepted_values:
+              values:
+                - "Target Category Balance"
+                - "Target Category Balance by Date"
+                - "Monthly Funding"
+                - "Plan Your Spending"
+      - name: goal_amount
+        description: Target amount the user aims to set aside for this budget category.
+      - name: goal_due
+        description: Due date by when user aims to set aside the money for the goal.
+      - name: is_deleted
+        description: Whether the Category was deleted.
+        tests:
+          - not_null
+      - name: updated_at
+        description: Timestamp when the data was last updated / refreshed.
+        tests:
+          - not_null
+      - name: effective_at
+        description: Timestamp when this dimension row became effective.
+        tests:
+          - not_null
+      - name: expired_at
+        description: Timestamp when this dimension row expired (exclusive).
+        tests:
+          - not_null
+      - name: is_current
+        description: Whether this dimension row is currently effective.
+        tests:
+          - not_null
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "effective_at < expired_at"
+      # if goal_type is set, goal_amount must also be set and vice versa.
+      - dbt_utils.expression_is_true:
+          expression: |
+            not (goal_type is null and goal_amount = 0) or
+            (goal_type is null and goal_amount = 0)
+
+  - name: fact_monthly_budget
+    description: Snapshots of the Monthly Budget allocation.
+    columns:
+      - name: id
+        description: Surrogate key the Monthly Budget snapshot
+        tests:
+          - not_null
+          - unique
+      - name: month_date_id
+        description: Date ID of the year-month the budget allocation is made for.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("dim_date")
+              field: id
+      - name: budget_id
+        description: ID of Budget this budget allocation is made within.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("dim_budget")
+              field: id
+      - name: category_id
+        description: ID of Budget Category this budget allocation applies to.
+        tests:
+          - relationships:
+              to: ref("dim_budget_category")
+              field: category_id
+      - name: amount
+        description: Amount allocated to the Budget Category for the year-month.
+        tests:
+          - not_null
+      - name: updated_at
+        description: Timestamp when the data was last updated / refreshed.
+        tests:
+          - not_null
+
+  - name: dim_payee
+    description: A Payee in transaction.
+    columns:
+      - name: id
+        description: ID that uniquely identifies the payee.
+        tests:
+          - unique
+          - not_null
+      - name: name
+        description: Name of the Payee.
+        tests:
+          - not_null
+      - name: transfer_account_id
+        description: Optional. Account that the Payee represents in transfer transaction.
+        tests:
+          - relationships:
+              to: ref("dim_account")
+              field: id
+      - name: updated_at
+        description: Timestamp when the data was last updated / refreshed.
+        tests:
+          - not_null
+
+  - name: dim_account
+    description: An Account hosted by a vendor containing assets tracked in the accounting budget.
+    columns:
+      - name: id
+        description: Surrogate key of the Account.
+        tests:
+          - not_null
+          - unique
+      - name: name
+        description: User assigned name of the Account.
+        tests:
+          - not_null
+      - name: is_closed
+        description: Whether the account has been closed in the accounting budget.
+        tests:
+          - not_null
+      - name: is_deleted
+        description: Whether the account has been deleted in the accounting budget.
+        tests:
+        - not_null
+      - name: is_liquid
+        description: Whether the funds in this account is budgetable.
+        tests:
+          - not_null
+      - name: budget_type
+        description: Account type as assigned in the accounting budget.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - checking
+                - savings
+                - cash
+                - creditCard
+                - lineOfCredit
+                - otherAsset
+                - otherLiability
+                - mortgage
+                - autoLoan
+                - studentLoan
+                - personalLoan
+                - medicalDebt
+                - otherDebt
+      - name: vendor
+        description: Name of the Vendor hosting the Account.
+      - name: vendor_id
+        description: Vendor assigned ID to the Account.
+      - name: vendor_type
+        description: Vendor assigned Account type.
+      - name: updated_at
+        description: Timestamp when the data was last updated / refreshed.
+        tests:
+          - not_null
+    tests:
+      # all or none of the vendor fields should be set
+      - dbt_utils.expression_is_true:
+          expression: |
+            (vendor_id is null and vendor_type is null and vendor_id is null) or
+            not (vendor_id is null and vendor_type is null and vendor_id is null)
+
+  - name: fact_accounting_transaction
+    description: Accounting Transactions
+    columns:
+      - name: id
+        description: Surrogate key of the Accounting Transaction.
+        tests:
+          - not_null
+          - unique
+      - name: super_id
+        description: ID of super / parent Transaction of this transaction if one exists.
+        tests:
+          - relationships:
+              to: ref("stg_ynab_transaction")
+              field: id
+      - name: amount
+        description: >-
+          Monetary Amount transferred from the associated account to the payee
+          in the Accounting Transaction. Negative values signify a withdrawal from the
+          account while spositive values signfiy a deposit from the payee.
+        tests:
+          - not_null
+      - name: description
+        description: User assigned description to the Accounting Transaction.
+      - name: clearing_status
+        description: Reconciliation status of this Account Transaction.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - cleared
+                - uncleared
+                - reconciled
+      - name: is_approved
+        description: Whether the Accounting Transaction was approved.
+        tests:
+          - not_null
+      - name: is_deleted
+        description: Whether the Accounting Transaction was deleted.
+        tests:
+          - not_null
+      - name: budget_id
+        description: ID of the Budget the Accounting Transaction was made within.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("dim_budget")
+              field: id
+      - name: account_id
+        description: ID of the Account this Accounting Transaction was made on.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("dim_account")
+              field: id
+      - name: category_id
+        description: ID of Budget Category this Accounting Transaction was assigned.
+        tests:
+      - name: payee_id
+        description: ID of the Payee this Accounting Transaction was made to.
+        tests:
+          - relationships:
+              to: ref("dim_payee")
+              field: id
+      - name: transfer_account_id
+        description: >-
+          Optional. Only set when this Accounting Transaction is a transfer
+          between Accounts. ID of the target Account this Transaction transfers to.
+        tests:
+          - relationships:
+              to: ref("dim_account")
+              field: id
+      - name: date_id
+        description: ID of the Date when this Accounting Transaction was made.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("dim_date")
+              field: id
+      - name: updated_at
+        description: Timestamp when the data was last updated / refreshed.
+        tests:
+          - not_null
+
+  - name: fact_bank_transaction
+    description: Bank Transactions
+    columns:
+      - name: id
+        description: Unique surrogate key for the Bank Transaction.
+        tests:
+          - unique
+          - not_null
+      - name: description
+        description: Bank assigned description of the Bank Transaction.
+        tests:
+          - not_null
+      - name: date_id
+        description: ID of the Date when this Bank Transaction was made.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("dim_date")
+              field: id
+      - name: account_id
+        description: ID of the Account this Bank Transaction was made on.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("dim_account")
+              field: id
+      - name: amount
+        description: >-
+          Amount transacted. Negative values deduct from the balance of  the
+          bank account while Positive values credit to its balance.
+      - name: updated_at
+        description: Timestamp when the data was last updated / refreshed.
+        tests:
+        - not_null
