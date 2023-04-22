@@ -28,12 +28,15 @@ with
     ),
 
     unique_uob_accounts as (
-        select *
+        select
+            account_no,
+            "name",
+            processed_on
         from
             (
                 {{
                     deduplicate(
-                        relation=ref("stg_uob_transaction"),
+                        relation=ref("stg_uob_statement"),
                         partition_by="account_no",
                         order_by="statement_end desc",
                     )

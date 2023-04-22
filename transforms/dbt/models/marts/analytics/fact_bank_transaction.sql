@@ -11,7 +11,7 @@ with
                     ["account_no", "transacted_on", "description"]
                 )
             }} as "id", *
-        from {{ ref("stg_uob_transaction") }}
+        from {{ ref("stg_uob_statement") }}
     ),
 
     unique_transactions as (

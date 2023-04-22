@@ -1,0 +1,5 @@
+--
+-- Providence
+-- Transforms
+-- DBT Analytics: Bank Statement Fact table
+--

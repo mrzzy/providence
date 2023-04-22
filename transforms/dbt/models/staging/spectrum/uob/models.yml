@@ -8,8 +8,8 @@
 version: 2
 
 models:
-  - name: stg_uob_transaction
-    description: A UOB Bank Account Transaction
+  - name: stg_uob_statement
+    description: A UOB Bank Account Statement
     columns:
       - name: transacted_on
         description: Date on which the Bank Transaction was made.
@@ -25,6 +25,22 @@ models:
           - not_null
       - name: name
         description: Product name of the UOB Bank Account.
+        tests:
+          - not_null
+      - name: deposit
+        description: Monetary amount credited to the UOB Bank Account in the Transaction.
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0.0
+      - name: withdrawal
+        description: Monetary amount deducted from the UOB Bank Account in the Transaction.
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0.0
+      - name: balance
+        description: Current Balance of the UOB Bank account.
         tests:
           - not_null
       - name: currency_code
