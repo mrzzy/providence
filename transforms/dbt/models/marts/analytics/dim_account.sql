@@ -38,7 +38,7 @@ with
                     deduplicate(
                         relation=ref("stg_uob_statement"),
                         partition_by="account_no",
-                        order_by="statement_end desc",
+                        order_by="processed_on desc",
                     )
                 }}
             )
@@ -55,7 +55,7 @@ with
             m.vendor,
             m.vendor_id,
             v.name as vendor_type,
-            greatest(b.scraped_on, v.statement_end) as updated_at
+            greatest(b.scraped_on, v.processed_on) as updated_at
         from map_uob_account as m
         inner join unique_ynab_accounts as b on b.id = m.budget_account_id
         inner join unique_uob_accounts as v on v.account_no = m.vendor_id

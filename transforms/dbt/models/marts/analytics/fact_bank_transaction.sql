@@ -26,6 +26,7 @@ with
         )
     )
 
+-- grain: 1 row = 1 bank transaction
 select
     t.id,
     t.transacted_on as date_id,
