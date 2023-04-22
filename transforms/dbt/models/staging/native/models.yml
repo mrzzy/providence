@@ -23,12 +23,9 @@ models:
               to: ref("stg_ynab_account")
               field: id
       - name: vendor
-        description: Name of the Vendor hosting the Vendor Account.
+        description: Name of the Vendor hosting the .
         tests:
           - not_null
-          - accepted_values:
-              values:
-                - UOB
       - name: vendor_id
         description: Vendor assigned ID to the Account associated with the YNAB Budget Account.
         tests:

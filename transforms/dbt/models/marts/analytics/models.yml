@@ -87,7 +87,7 @@ models:
       - name: year
         tests:
           - not_null
-      - name: is_approved
+      - name: is_weekend
         description: Whether the date is a weekend.
         tests:
           - not_null
@@ -193,12 +193,12 @@ models:
         description: Timestamp when the budget was last modified / changed.
         tests:
           - not_null
-      - name: currency_code budget field to 'modified_at'
+      - name: currency_code
         description: "3 character ISO code of the currency used by the budget."
         tests:
           - not_null
       - name: currency_symbol
-        description: Symbol used to denote the currency (eg. $ for dollar)
+        description: Symbol used by render the currency used by the budget (eg. $ for dollar)
         tests:
           - not_null
       - name: updated_at
@@ -243,6 +243,19 @@ models:
         description: User assigned name of the Category Group.
         tests:
           - not_null
+      - name: goal_type
+        description: Type of goal setting selected for this budget category.
+        tests:
+          - accepted_values:
+              values:
+                - "Target Category Balance"
+                - "Target Category Balance by Date"
+                - "Monthly Funding"
+                - "Plan Your Spending"
+      - name: goal_amount
+        description: Target amount the user aims to set aside for this budget category.
+      - name: goal_due
+        description: Due date by when user aims to set aside the money for the goal.
       - name: is_deleted
         description: Whether the Category was deleted.
         tests:
@@ -266,6 +279,11 @@ models:
     tests:
       - dbt_utils.expression_is_true:
           expression: "effective_at < expired_at"
+      # if goal_type is set, goal_amount must also be set and vice versa.
+      - dbt_utils.expression_is_true:
+          expression: |
+            not (goal_type is null or goal_amount is null) or
+            (goal_type is null and goal_amount is null)
 
   - name: fact_monthly_budget
     description: Snapshots of the Monthly Budget allocation.
@@ -348,6 +366,10 @@ models:
         description: Whether the account has been deleted in the accounting budget.
         tests:
         - not_null
+      - name: is_liquid
+        description: Whether the funds in this account is budgetable.
+        tests:
+          - not_null
       - name: budget_type
         description: Account type as assigned in the accounting budget.
         tests:
@@ -367,14 +389,22 @@ models:
                 - personalLoan
                 - medicalDebt
                 - otherDebt
-      - name: is_liquid
-        description: Whether the funds in this account is budgetable.
-        tests:
-          - not_null
+      - name: vendor
+        description: Name of the Vendor hosting the Account.
+      - name: vendor_id
+        description: Vendor assigned ID to the Account.
+      - name: vendor_type
+        description: Vendor assigned Account type.
       - name: updated_at
         description: Timestamp when the data was last updated / refreshed.
         tests:
           - not_null
+    tests:
+      # all or none of the vendor fields should be set
+      - dbt_utils.expression_is_true:
+          expression: |
+            not (vendor_id is null or vendor_type is null or vendor_id is null) or
+            (vendor_id is null and vendor_type is null and vendor_id is null)
 
   - name: fact_accounting_transaction
     description: Accounting Transactions
