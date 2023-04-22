@@ -6,19 +6,20 @@
 select
     date_day as "id",
     date_day as "date",
+    extract(day from date_day) as day_of_month,
+    extract(dayofweek from date_day) as day_of_week,
+    extract(dayofyear from date_day) as day_of_year,
     cast(to_char(date_day, 'W') as int) as week_of_month,
     cast(to_char(date_day, 'WW') as int) as week_of_year,
-    cast(to_char(date_day, 'Q') as int) as "quarter",
-    extract(day from date_day) as day_of_month,
+    to_char(date_day, 'day') as weekday_name,
+    to_char(date_day, 'dy') as weekday_short,
     extract(month from date_day) as month_of_year,
     to_char(date_day, 'month') as month_name,
     to_char(date_day, 'mon') as month_short,
-    extract(year from date_day) as "year",
-    extract(dayofweek from date_day) as day_of_week,
-    to_char(date_day, 'day') as weekday_name,
-    to_char(date_day, 'dy') as weekday_short,
-    extract(dayofyear from date_day) as day_of_year,
+    cast(to_char(date_day, 'Q') as int) as "quarter",
     date_trunc('month', date_day) as year_month,
+    extract(year from date_day) as "year",
+    -- 0: sunday, 6: saturday
     coalesce(extract(dayofweek from date_day) in (0, 6), false) as is_weekend,
     date_trunc('day', sysdate) as updated_at
 from
