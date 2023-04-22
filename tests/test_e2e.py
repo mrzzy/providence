@@ -89,7 +89,7 @@ def redshift_schema(e2e_suffix: str) -> Iterator[str]:
 
     # clean up test schema
     redshift.batch_execute_statement(
-        Sqls=[f"DROP SCHEMA {e2e_schema}"],
+        Sqls=[f"DROP SCHEMA {e2e_schema} CASCADE"],
         **db_params,
     )
 
