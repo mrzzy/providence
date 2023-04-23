@@ -27,4 +27,4 @@ PARTITIONED BY (date varchar) ROW
 FORMAT
   SERDE 'org.openx.data.jsonserde.JsonSerDe'
   STORED AS TEXTFILE
-    LOCATION 's3://{{ params.s3_bucket }}/providence/grade=raw/source=uob/'
+    LOCATION 's3://{{ params.s3_bucket }}/providence/grade=raw/source=ynab/'
