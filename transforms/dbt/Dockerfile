@@ -12,4 +12,4 @@ COPY packages.yml dbt_project.yml ./
 RUN dbt deps
 
 # copy dbt project
-COPY . /usr/app/dbt/
+COPY profiles.yml analyses macros models seeds snapshots tests /usr/app/dbt/
