@@ -104,4 +104,4 @@ fmt-pipelines-sql: $(PIPELINES_DIR)
 lint-pipelines: lint-pipelines-sql
 
 lint-pipelines-sql: $(PIPELINES_DIR)
-	cd $< && sqllint .
+	cd $< && sqlfmt --check .
