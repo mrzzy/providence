@@ -160,6 +160,7 @@ def test_ingest_dag(
                             "s3_bucket": s3_bucket,
                             "redshift_schema": redshift_schema,
                             "redshift_external_schema": redshift_external_schema,
+                            "dbt_target": "dev",
                         }
                     ),
                 ],

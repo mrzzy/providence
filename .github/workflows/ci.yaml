@@ -140,6 +140,7 @@ jobs:
       matrix:
         transform:
           - pandas-etl
+          - dbt
     name: "${{ matrix.transform }} Transform: Publish Container image"
     runs-on: ubuntu-22.04
     # add permissions needed to push containers to GHCR with GITHUB_TOKEN

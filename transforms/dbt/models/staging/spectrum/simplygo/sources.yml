@@ -9,7 +9,7 @@ version: 2
 sources:
   - name: simplygo
     description: Public transport data scraped from SimplyGo on AWS S3 data lake.
-    schema: lake
+    schema: "{{ var('external_schema') }}"
     tables:
       - name: source_simplygo
         description: Public transport trips data scraped from SimplyGo.
