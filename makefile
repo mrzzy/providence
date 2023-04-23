@@ -95,3 +95,13 @@ deps-pipelines: $(PIPELINES_DIR)
 	airflow db init
 
 $(eval $(call PYTHON_RULES,pipelines,$(PIPELINES_DIR)))
+
+fmt-pipelines: fmt-pipelines-sql
+
+fmt-pipelines-sql: $(PIPELINES_DIR)
+	cd $< && sqlfmt .
+
+lint-pipelines: lint-pipelines-sql
+
+lint-pipelines-sql: $(PIPELINES_DIR)
+	cd $< && sqlfmt --check .

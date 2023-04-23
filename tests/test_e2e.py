@@ -24,6 +24,11 @@ DAG_IDS = [
 ]
 RESOURCE_DIR = Path(__file__).parent / "resources"
 
+REDSHIFT_DB_PARAMS = {
+    "WorkgroupName": "main",
+    "Database": "dev",
+}
+
 
 def random_suffix(n=8) -> str:
     """Generate a random suffix of the given length"""
@@ -35,7 +40,6 @@ def random_suffix(n=8) -> str:
 @pytest.fixture
 def e2e_suffix() -> str:
     suffix = random_suffix()
-    print(f"random suffix for e2e test: {suffix}")
     return suffix
 
 
@@ -58,10 +62,10 @@ def s3_bucket(e2e_suffix: str) -> Iterator[str]:
     )
     bucket.Object(key).upload_file(str(RESOURCE_DIR / "ACC_TXN_test.xls"))
 
-    # copy account mapping from dev bucket to test bucket
+    # copy account mapping from lake bucket to test bucket
     account_map_key = "providence/manual/mapping/account.csv"
     bucket.Object(account_map_key).copy_from(
-        CopySource={"Bucket": "mrzzy-co-dev", "Key": account_map_key}
+        CopySource={"Bucket": "mrzzy-co-data-lake", "Key": account_map_key}
     )
 
     yield bucket.name
@@ -76,13 +80,9 @@ def redshift_schema(e2e_suffix: str) -> Iterator[str]:
     # create redshift schema within 'dev' database for e2e test
     redshift = boto3.client("redshift-data")
     e2e_schema = f"providence_e2e_{e2e_suffix}"
-    db_params = {
-        "WorkgroupName": "main",
-        "Database": "dev",
-    }
     redshift.batch_execute_statement(
         Sqls=[f"CREATE SCHEMA {e2e_schema}"],
-        **db_params,
+        **REDSHIFT_DB_PARAMS,
     )
 
     yield e2e_schema
@@ -90,12 +90,42 @@ def redshift_schema(e2e_suffix: str) -> Iterator[str]:
     # clean up test schema
     redshift.batch_execute_statement(
         Sqls=[f"DROP SCHEMA {e2e_schema} CASCADE"],
-        **db_params,
+        **REDSHIFT_DB_PARAMS,
     )
 
 
-def test_ingest_dag(s3_bucket: str, redshift_schema: str):
-    """End to End Test Providence Data Pipeline by performing 1 DAG run.
+@pytest.fixture
+def redshift_external_schema(e2e_suffix: str) -> Iterator[str]:
+    redshift = boto3.client("redshift-data")
+    e2e_schema = f"providence_e2e_lake_{e2e_suffix}"
+
+    # create test external schema backed by test glue data catalog
+    redshift.batch_execute_statement(
+        Sqls=[
+            f"""
+            CREATE EXTERNAL SCHEMA IF NOT EXISTS {e2e_schema}
+            FROM DATA CATALOG
+            DATABASE '{e2e_schema}'
+            IAM_ROLE 'arn:aws:iam::132307318913:role/warehouse'
+            CREATE EXTERNAL DATABASE IF NOT EXISTS
+        """
+        ],
+        **REDSHIFT_DB_PARAMS,
+    )
+
+    yield e2e_schema
+
+    # clean up test schema & catalog
+    redshift.batch_execute_statement(
+        Sqls=[f"DROP SCHEMA {e2e_schema} DROP EXTERNAL DATABASE CASCADE"],
+        **REDSHIFT_DB_PARAMS,
+    )
+
+
+def test_ingest_dag(
+    s3_bucket: str, redshift_schema: str, redshift_external_schema: str
+):
+    """End to End Test Providence Data Pipelines by performing 1 DAG run.
 
     Expects the following test environment:
     - docker-compose: to run Airflow in docker.
@@ -129,6 +159,7 @@ def test_ingest_dag(s3_bucket: str, redshift_schema: str):
                         {
                             "s3_bucket": s3_bucket,
                             "redshift_schema": redshift_schema,
+                            "redshift_external_schema": redshift_external_schema,
                         }
                     ),
                 ],
