@@ -33,10 +33,9 @@ def ingest_mapping_dag(
 
     Parameters:
     - `mapping_path`: Path to the Mapping CSV on the bucket to ingest.
-    - `redshift_table`: Name of the Redshift table to populate with mapping.
     - `create_table_sql`: SQL DDL Jinja template used to create Redshift table.
-    - `redshift_schema`: Schema that contains the table to populate. Not to be
-        confused with `redshift_default` connection's schema, which refers to a Redshift Database.
+    - `redshift_table`: Name of the Redshift table to populate with mapping.
+    - `redshift_schema`: Schema that will contain the mapping table & DBT tables.
     - `s3_bucket`: Name of a existing S3 bucket to that contains the mapping to ingest.
     - `dbt_tag`: Tag specifying the version of the DBT transform container to use.
     - `dbt_target`: Target DBT output profile to use for building DBT models.

@@ -55,6 +55,10 @@ def build_dbt_task(task_id: str, select: str) -> BaseOperator:
             https://docs.getdbt.com/reference/node-selection/syntax.
 
     Params:
+    - `redshift_external_schema`: Optional. External Schema that will contains the external
+        tables exposing the ingested data in Redshift. Defaults to 'lake'.
+    - `redshift_schema`: Schema that will contain DBT model tables.
+    - `redshift_table`: Name of the External Table exposing the ingested data.
     - `dbt_tag`: Tag specifying the version of the DBT transform container to use.
     - `dbt_target`: Target DBT output profile to use for building DBT models.
 
@@ -69,7 +73,13 @@ def build_dbt_task(task_id: str, select: str) -> BaseOperator:
         pool="dbt",
         image="ghcr.io/mrzzy/pvd-dbt-tfm:{{ params.dbt_tag }}",
         image_pull_policy="Always",
-        arguments=["build", "--select", select],
+        arguments=[
+            "build",
+            "--select",
+            select,
+            "--vars",
+            '{"schema": "{{ params.redshift_schema }}", "external_schema": "{{ params.redshift_external_schema }}"}',
+        ],
         labels=K8S_LABELS
         | {
             "app.kubernetes.io/name": "dbt",

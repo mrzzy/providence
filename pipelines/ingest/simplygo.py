@@ -36,6 +36,7 @@ def ingest_simplygo_dag(
     s3_bucket: str = "mrzzy-co-data-lake",
     simplygo_src_tag: str = "latest",
     redshift_external_schema: str = "lake",
+    redshift_schema: str = "public",
     redshift_table: str = "source_simplygo",
     dbt_tag: str = "latest",
     dbt_target: str = "prod",
@@ -48,7 +49,8 @@ def ingest_simplygo_dag(
     - `s3_bucket`: Name of a existing S3 bucket to stage data.
     - `simplygo_src_tag`: Tag specifying the version of the SimplyGo Source container to use.
     - `redshift_external_schema`: External Schema that will contains the external
-        table exposing the ingested data in Redshift.
+        tables exposing the ingested data in Redshift.
+    - `redshift_schema`: Schema that will contain DBT model tables.
     - `redshift_table`: Name of the External Table exposing the ingested data.
     - `dbt_tag`: Tag specifying the version of the DBT transform container to use.
     - `dbt_target`: Target DBT output profile to use for building DBT models.

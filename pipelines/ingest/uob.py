@@ -40,6 +40,7 @@ def ingest_uob_dag(
     export_prefix="providence/manual/uob/ACC_TXN_History_",
     pandas_etl_tag: str = "latest",
     redshift_external_schema: str = "lake",
+    redshift_schema: str = "public",
     redshift_table: str = "source_uob",
     dbt_tag: str = "latest",
     dbt_target: str = "prod",
@@ -56,7 +57,8 @@ def ingest_uob_dag(
     - `export_prefix` Path prefix under which UOB export is manually stored in the bucket.
     - `pandas_etl_tag`: Tag specifying the version of the Pandas ETL container to use.
     - `redshift_external_schema`: External Schema that will contains the external
-        table exposing the ingested data in Redshift.
+        tables exposing the ingested data in Redshift.
+    - `redshift_schema`: Schema that will contain DBT model tables.
     - `redshift_table`: Name of the External Table exposing the ingested data.
     - `dbt_tag`: Tag specifying the version of the DBT transform container to use.
     - `dbt_target`: Target DBT output profile to use for building DBT models.
