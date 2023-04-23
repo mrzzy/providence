@@ -10,7 +10,7 @@ version: 2
 sources:
   - name: ynab
     description: YNAB accounting software data export on AWS S3 data lake.
-    schema: "{{ env_var('AWS_REDSHIFT_EXTERNAL_SCHEMA', 'lake') }}"
+    schema: "{{ var('external_schema') }}"
     tables:
       - name: source_ynab
         description: YNAB accounting software data export.

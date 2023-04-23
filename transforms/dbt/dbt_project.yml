@@ -11,6 +11,12 @@ name: 'providence'
 version: '1.0.0'
 config-version: 2
 
+vars:
+  # schema to source external data
+  external_schema: "lake"
+  # schema to source native data & write dbt model objects
+  schema: "public"
+
 # This setting configures which "profile" dbt uses for this project.
 profile: 'providence'
 
