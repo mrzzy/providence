@@ -93,4 +93,6 @@ def build_dbt_task(task_id: str, select: str) -> BaseOperator:
                 "DBT_TARGET": "{{ params.dbt_target }}",
             }
         ),
+        is_delete_operator_pod=False,
+        log_events_on_failure=True,
     )

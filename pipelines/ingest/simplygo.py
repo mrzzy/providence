@@ -80,12 +80,6 @@ def ingest_simplygo_dag(
         pool="simplygo_web",
         image="ghcr.io/mrzzy/pvd-simplygo-src:{{ params.simplygo_src_tag }}",
         image_pull_policy="Always",
-        labels=K8S_LABELS
-        | {
-            "app.kubernetes.io/name": "simplygo_src",
-            "app.kubernetes.io/component": "source",
-            "app.kubernetes.io/version": "{{ params.simplygo_src_tag }}",
-        },
         arguments=[
             "--trips-from",
             "{{ ds }}",
@@ -94,6 +88,12 @@ def ingest_simplygo_dag(
             "--output",
             "s3://{{ params.s3_bucket }}/providence/grade=raw/source=simplygo/date={{ ds }}/simplygo.json",
         ],
+        labels=K8S_LABELS
+        | {
+            "app.kubernetes.io/name": "simplygo_src",
+            "app.kubernetes.io/component": "source",
+            "app.kubernetes.io/version": "{{ params.simplygo_src_tag }}",
+        },
         env_vars=k8s_env_vars(
             {
                 "SIMPLYGO_SRC_USERNAME": simplygo.login,
@@ -101,6 +101,8 @@ def ingest_simplygo_dag(
             }
             | get_aws_env(AWS_CONNECTION_ID)
         ),
+        is_delete_operator_pod=False,
+        log_events_on_failure=True,
     )
 
     # expose ingest data via redshift external table
