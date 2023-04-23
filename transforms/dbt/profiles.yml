@@ -12,7 +12,7 @@ providence:
       user: "{{ env_var('AWS_REDSHIFT_USER') }}"
       password: "{{ env_var('AWS_REDSHIFT_PASSWORD') }}"
       port: 5439
-      schema: "public"
+      schema: public
       threads: 8
       type: redshift
     prod:
@@ -21,7 +21,7 @@ providence:
       user: "{{ env_var('AWS_REDSHIFT_USER') }}"
       password: "{{ env_var('AWS_REDSHIFT_PASSWORD') }}"
       port: 5439
-      schema: "public"
+      schema: public
       threads: 8
       type: redshift
   target: "{{ env_var('DBT_TARGET', 'dev') }}"
