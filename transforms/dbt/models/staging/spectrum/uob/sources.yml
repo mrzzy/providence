@@ -9,7 +9,7 @@ version: 2
 sources:
   - name: uob
     description: UOB Bank statement export stored on AWS S3 data lake.
-    schema: lake
+    schema: "{{ env_var('AWS_REDSHIFT_EXTERNAL_SCHEMA', 'lake') }}"
     tables:
       - name: source_uob
         description: UOB Bank statement export.
