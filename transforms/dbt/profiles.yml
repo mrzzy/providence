@@ -24,4 +24,4 @@ providence:
       schema: public
       threads: 8
       type: redshift
-  target: dev
+  target: "{{ env_var('DBT_TARGET', 'dev') }}"
