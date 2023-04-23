@@ -14,7 +14,7 @@ from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOp
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 from airflow.configuration import conf
 
-from common import K8S_LABELS, SQL_DIR, k8s_env_vars
+from common import K8S_LABELS, SQL_DIR, build_dbt_task, k8s_env_vars
 
 
 def ingest_mapping_dag(
@@ -28,6 +28,7 @@ def ingest_mapping_dag(
 ):
     dedent(
         """Ingest manually uploaded Mapping CSV to AWS Redshift.
+
     Refreshes DBT models that depend on the Mapping CSV.
 
     Parameters:
@@ -37,7 +38,7 @@ def ingest_mapping_dag(
     - `redshift_schema`: Schema that contains the table to populate. Not to be
         confused with `redshift_default` connection's schema, which refers to a Redshift Database.
     - `s3_bucket`: Name of a existing S3 bucket to that contains the mapping to ingest.
-    - `dbt_redshift_image`: Tag specifying the version of the dbt-redshift container to use.
+    - `dbt_tag`: Tag specifying the version of the DBT transform container to use.
     - `dbt_target`: Target DBT output profile to use for building DBT models.
 
     Connections by expected id:
@@ -82,28 +83,8 @@ def ingest_mapping_dag(
         task_id="commit", conn_id="redshift_default", sql="COMMIT"
     )
 
-    build_dbt = KubernetesPodOperator(
-        task_id="build_dbt",
-        # guard with concurrency pool to prevent db conflicts with multiple dbt runs
-        pool="dbt",
-        image="ghcr.io/mrzzy/pvd-dbt-tfm:{{ params.dbt_tag }}",
-        image_pull_policy="Always",
-        # rebuild all dbt models that depend on ingested mapping
-        arguments=["build", "--select", "source:mapping+"],
-        labels=K8S_LABELS
-        | {
-            "app.kubernetes.io/name": "dbt",
-            "app.kubernetes.io/component": "transform",
-            "app.kubernetes.io/version": "{{ params.dbt_tag }}",
-        },
-        env_vars=k8s_env_vars(
-            {
-                "AWS_REDSHIFT_USER": "{{ conn.redshift_default.login }}",
-                "AWS_REDSHIFT_PASSWORD": "{{ conn.redshift_default.password }}",
-                "DBT_TARGET": "{{ params.dbt_target }}",
-            }
-        ),
-    )
+    build_dbt = build_dbt_task(task_id="build_dbt", select="source:mapping+")
+
     begin >> drop_table >> create_table >> copy_s3_table >> commit >> build_dbt  # type: ignore
 
 
