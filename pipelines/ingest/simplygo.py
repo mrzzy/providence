@@ -116,7 +116,7 @@ def ingest_simplygo_dag(
         autocommit=True,
     )
 
-    # rebuild all dbt models that depend on ingested mapping
+    # rebuild all dbt models that depend on ingested data
     build_dbt = build_dbt_task(task_id="build_dbt", select="source:simplygo+")
     ingest_simplygo >> drop_table >> create_table >> build_dbt  # type: ignore
 
