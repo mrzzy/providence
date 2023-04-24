@@ -62,10 +62,18 @@ jobs:
         run: make deps-dbt
       - name: Lint
         run: make lint-dbt
-      - name: Build
-        run: make build-dbt
-      - name: Test
-        run: make test-dbt
+      # Deploy DBT model to development env
+      - name: Build development
+        run: make build-dbt DBT_TARGET=dev
+      - name: Test development
+        run: make test-dbt DBT_TARGET=dev
+      # Deploy DBT model to production env
+      - name: Build production
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: make build-dbt DBT_TARGET=prod
+      - name: Test production
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: make test-dbt DBT_TARGET=prod
 
   dbt-docs:
     name: "DBT Docs"
