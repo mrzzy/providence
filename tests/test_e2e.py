@@ -56,15 +56,14 @@ def s3_bucket(e2e_suffix: str) -> Iterator[str]:
         },
     )
 
-    # upload test uob export into test bucket
-    bucket.Object("providence/manual/uob/ACC_TXN_History_test.xls").upload_file(
-        str(RESOURCE_DIR / "ACC_TXN_test.xls")
+    # copy test data to test bucket
+    uob_export_key = "providence/manual/uob/ACC_TXN_History_09042023114932.xls"
+    bucket.Object(uob_export_key).copy_from(
+        CopySource={"Bucket": "mrzzy-co-data-lake", "key": uob_export_key},
     )
-
-    # copy account mapping from lake bucket to test bucket
     account_map_key = "providence/manual/mapping/account.csv"
     bucket.Object(account_map_key).copy_from(
-        CopySource={"Bucket": "mrzzy-co-data-lake", "Key": account_map_key}
+        CopySource={"Bucket": "mrzzy-co-data-lake", "Key": account_map_key},
     )
 
     yield bucket.name
