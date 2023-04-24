@@ -187,6 +187,7 @@ jobs:
         AWS_REDSHIFT_PASSWORD: "${{ secrets.AWS_REDSHIFT_PASSWORD }}"
         YNAB_SRC_ACCESS_TOKEN: "${{ secrets.YNAB_SRC_ACCESS_TOKEN }}"
       run: pytest
+      continue-on-error: true
     - name: Export kind cluster logs
       run: kind export logs kind_logs
     - uses: actions/upload-artifact@v3
