@@ -12,7 +12,9 @@ select
     cast(c.goal_target_month as date) as goal_due,
     cast(c.deleted as boolean) as is_deleted,
     cast(m.month as date) as budget_month,
-    coalesce(cast(s._ynab_src_scraped_on as timestamp), {{ timestamp_min() }}) as scraped_on,
+    coalesce(
+        cast(s._ynab_src_scraped_on as timestamp), {{ timestamp_min() }}
+    ) as scraped_on,
     cast(c.budgeted as decimal(13, 2)) / 1000 as budget_amount,
     case
         cast(c.goal_type as varchar)

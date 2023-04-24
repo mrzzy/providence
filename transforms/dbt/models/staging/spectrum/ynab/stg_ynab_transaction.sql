@@ -15,7 +15,9 @@ select
     cast(t.payee_id as varchar) as payee_id,
     cast(t.transfer_account_id as varchar) as transfer_account_id,
     cast(t.date as date) as "date",
-    coalesce(cast(s._ynab_src_scraped_on as timestamp), {{ timestamp_min() }}) as scraped_on,
+    coalesce(
+        cast(s._ynab_src_scraped_on as timestamp), {{ timestamp_min() }}
+    ) as scraped_on,
     -- ynab expresses amounts in milliunits: 1000 milliunits = $1
     cast(t.amount as decimal(13, 2)) / 1000 as amount
 from {{ source("ynab", "source_ynab") }} as s, s.transactions as t

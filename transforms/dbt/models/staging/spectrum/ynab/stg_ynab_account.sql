@@ -11,5 +11,7 @@ select
     cast(a.closed as boolean) as is_closed,
     cast(a.deleted as boolean) as is_deleted,
     cast(a.transfer_payee_id as varchar) as payee_id,
-    coalesce(cast(s._ynab_src_scraped_on as timestamp), {{ timestamp_min() }}) as scraped_on
+    coalesce(
+        cast(s._ynab_src_scraped_on as timestamp), {{ timestamp_min() }}
+    ) as scraped_on
 from {{ source("ynab", "source_ynab") }} as s, s.accounts as a

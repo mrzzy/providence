@@ -19,5 +19,7 @@ select
     cast(
         split_part("statement period", ' To ', 2) as date  -- noqa: RF05
     ) as statement_end,
-    coalesce(cast(_pandas_etl_transformed_on as timestamp), {{ timestamp_min() }} as processed_on
+    coalesce(
+        cast(_pandas_etl_transformed_on as timestamp), {{ timestamp_min() }}
+    ) as processed_on
 from {{ source("uob", "source_uob") }}
