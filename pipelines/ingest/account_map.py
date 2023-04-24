@@ -17,7 +17,6 @@ from common import (
     DATASET_MAP_ACCOUNT,
     K8S_LABELS,
     SQL_DIR,
-    build_dbt_task,
     k8s_env_vars,
 )
 
@@ -38,6 +37,7 @@ def ingest_mapping_dag(
     - `create_table_sql`: SQL DDL Jinja template used to create Redshift table.
     - `redshift_schema`: Schema that will contain the mapping table.
     - `s3_bucket`: Name of a existing S3 bucket to that contains the mapping to ingest.
+
     Connections by expected id:
     - `redshift_default`:
         - `host`: Redshift DB endpoint.
@@ -47,6 +47,7 @@ def ingest_mapping_dag(
         - `schema`: Database to use by default.
         - `extra`:
             - `role_arn`: Instruct Redshift to assume this AWS IAM role when making AWS requests.
+
     Datasets:
     - Outputs `{DATASET_MAP_ACCOUNT.uri}`.
     """

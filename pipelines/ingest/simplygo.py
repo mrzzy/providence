@@ -50,6 +50,7 @@ def ingest_simplygo_dag(
     - `redshift_external_schema`: External Schema that will contain the external
         table exposing the ingested data in Redshift.
     - `redshift_table`: Name of the External Table exposing the ingested data.
+
     Connections by expected id:
     - `pvd_simplygo_src`:
         - `login`: SimplyGo username.
@@ -67,6 +68,7 @@ def ingest_simplygo_dag(
         - `schema`: Database to use by default.
         - `extra`:
             - `role_arn`: Instruct Redshift to assume this AWS IAM role when making AWS requests.
+
     Datasets:
     - Outputs `{DATASET_SIMPLYGO.uri}`.
     """

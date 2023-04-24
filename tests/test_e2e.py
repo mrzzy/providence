@@ -21,6 +21,7 @@ DAG_IDS = [
     "pvd_ingest_simplygo",
     "pvd_ingest_ynab",
     "pvd_ingest_uob",
+    "pvd_transform_dbt",
 ]
 RESOURCE_DIR = Path(__file__).parent / "resources"
 

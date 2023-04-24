@@ -55,6 +55,7 @@ def ingest_uob_dag(
     - `redshift_external_schema`: External Schema that will contain the external
         table exposing the ingested data in Redshift.
     - `redshift_table`: Name of the External Table exposing the ingested data.
+
     Connections by expected id:
     - `aws_default`:
         - `login`: AWS Access Key ID.
