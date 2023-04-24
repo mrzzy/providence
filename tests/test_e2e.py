@@ -17,10 +17,10 @@ import pytest
 from testcontainers.compose import DockerCompose
 
 DAG_IDS = [
+    "pvd_ingest_account_map",
     "pvd_ingest_simplygo",
     "pvd_ingest_ynab",
     "pvd_ingest_uob",
-    "pvd_ingest_account_map",
 ]
 RESOURCE_DIR = Path(__file__).parent / "resources"
 
