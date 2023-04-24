@@ -17,4 +17,10 @@ COPY packages.yml dbt_project.yml ./
 RUN dbt deps
 
 # copy dbt project
-COPY profiles.yml analyses macros models seeds snapshots tests ./
+COPY profiles.yml ./
+COPY analyses ./analyses
+COPY macros ./macros
+COPY models ./models
+COPY seeds ./seeds
+COPY snapshots ./snapshots
+COPY tests ./tests
