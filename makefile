@@ -61,6 +61,7 @@ $(eval $(call PYTHON_RULES,pandas-etl,$(PANDAS_ETL_DIR)))
 
 # DBT transform
 DBT_DIR := transforms/dbt
+DBT_TARGET := dev
 
 $(eval $(call PHONY_RULE,deps,dbt))
 deps-dbt: $(DBT_DIR)
@@ -79,11 +80,11 @@ lint-dbt: $(DBT_DIR)
 
 $(eval $(call PHONY_RULE,build,dbt))
 build-dbt: $(DBT_DIR)
-	cd $< && dbt run
+	cd $< && dbt run --select $(DBT_TARGET)
 
 $(eval $(call PHONY_RULE,test,dbt))
-test-dbt: $(DBT_DIR) build-dbt
-	cd $< && dbt test
+test-dbt: $(DBT_DIR)
+	cd $< && dbt test --select $(DBT_TARGET)
 
 # Airflow Pipelines
 # NOTE: run 'airflow db init' before running 'make test-pipeline'
