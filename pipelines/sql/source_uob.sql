@@ -18,4 +18,4 @@ CREATE EXTERNAL TABLE {{ params.redshift_external_schema }}.{{ params.redshift_t
 ROW FORMAT
   SERDE 'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
   STORED AS PARQUET
-    LOCATION 's3://mrzzy-co-dev/providence/grade=raw/source=uob/'
+    LOCATION 's3://{{ params.s3_bucket }}/providence/grade=raw/source=uob/'
