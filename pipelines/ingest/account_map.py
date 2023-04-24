@@ -83,6 +83,7 @@ def ingest_mapping_dag(
         task_id="commit",
         conn_id="redshift_default",
         sql="COMMIT",
+        outlets=[DATASET_MAP_ACCOUNT],
     )
 
     begin >> drop_table >> create_table >> copy_s3_table >> commit  # type: ignore
