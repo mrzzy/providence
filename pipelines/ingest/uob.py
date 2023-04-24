@@ -31,8 +31,8 @@ from common import (
 
 @dag(
     dag_id="pvd_ingest_uob",
-    schedule=timedelta(weeks=1),
-    # 1300hrs UTC -> 2300hrs in Asia/Singapore
+    # 1300hrs Sunday UTC -> 2300hrs Sunday in Asia/Singapore
+    schedule="0 13 * * 0",
     start_date=datetime(2023, 4, 2, 13, 0, tz="utc"),
     template_searchpath=[SQL_DIR],
     **DAG_ARGS,
