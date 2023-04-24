@@ -56,11 +56,9 @@ def s3_bucket(e2e_suffix: str) -> Iterator[str]:
     )
 
     # upload test uob export into test bucket
-    # dag finds uob exports by end of data interval so we include today + day's date in the s3 key
-    key = (date.today() + timedelta(days=7)).strftime(
-        "providence/manual/uob/ACC_TXN_History_%d%m%Ytest.xls"
+    bucket.Object("providence/manual/uob/ACC_TXN_History_test.xls").upload_file(
+        str(RESOURCE_DIR / "ACC_TXN_test.xls")
     )
-    bucket.Object(key).upload_file(str(RESOURCE_DIR / "ACC_TXN_test.xls"))
 
     # copy account mapping from lake bucket to test bucket
     account_map_key = "providence/manual/mapping/account.csv"
