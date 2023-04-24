@@ -29,9 +29,7 @@ from common import (
 )
 def transform_dbt(
     dbt_tag: str = "latest",
-    # TODO(mrzzy): revert before merge
-    # dbt_target: str = "prod",
-    dbt_target: str = "dev",
+    dbt_target: str = "prod",
     dbt_select: str = "*",
     redshift_schema: str = "public",
     redshift_external_schema: str = "lake",
