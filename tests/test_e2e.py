@@ -59,7 +59,7 @@ def s3_bucket(e2e_suffix: str) -> Iterator[str]:
     # copy test data to test bucket
     uob_export_key = "providence/manual/uob/ACC_TXN_History_09042023114932.xls"
     bucket.Object(uob_export_key).copy_from(
-        CopySource={"Bucket": "mrzzy-co-data-lake", "key": uob_export_key},
+        CopySource={"Bucket": "mrzzy-co-data-lake", "Key": uob_export_key},
     )
     account_map_key = "providence/manual/mapping/account.csv"
     bucket.Object(account_map_key).copy_from(
