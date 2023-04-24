@@ -5,6 +5,7 @@
 #
 
 
+from datetime import timedelta
 from pathlib import Path
 from typing import Dict, List
 
@@ -20,6 +21,11 @@ DAG_ARGS = {
     "tags": ["providence"],
     # common args passed to all tasks
     "default_args": {
+        # retry with exponential backoff on task failure
+        "retries": 3,
+        "retry_delay": timedelta(minutes=3),
+        "retry_exponential_backoff": True,
+        # email notification on task failure
         "email": ["program.nom@gmail.com"],
         "email_on_failure": True,
         "tags": ["providence"],
