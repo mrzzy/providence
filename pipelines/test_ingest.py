@@ -15,10 +15,11 @@ from airflow.models import Connection, DagBag
 
 DAGS_DIR = Path(__file__).parent
 DAG_IDS = [
+    "pvd_ingest_account_map",
     "pvd_ingest_simplygo",
     "pvd_ingest_ynab",
     "pvd_ingest_uob",
-    "pvd_ingest_account_map",
+    "pvd_transform_dbt",
 ]
 
 
