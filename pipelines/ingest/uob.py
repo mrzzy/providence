@@ -23,7 +23,6 @@ from common import (
     DAG_ARGS,
     K8S_LABELS,
     SQL_DIR,
-    build_dbt_task,
     get_aws_env,
     k8s_env_vars,
 )
@@ -41,28 +40,20 @@ def ingest_uob_dag(
     export_prefix="providence/manual/uob/ACC_TXN_History_",
     pandas_etl_tag: str = "latest",
     redshift_external_schema: str = "lake",
-    redshift_schema: str = "public",
     redshift_table: str = "source_uob",
-    dbt_tag: str = "latest",
-    dbt_target: str = "prod",
 ):
     dedent(
         """Ingests manual UOB transaction export into AWS S3, exposing it as
     external Table in AWS Redshift.
-
-    Refreshes DBT models that depend on the UOB transaction export.
 
     Parameters:
     - `s3_bucket`: Name of a existing S3 bucket to that contains the UOB export to ingest.
             The bucket is also used to stage data for load into Redshift.
     - `export_prefix` Path prefix under which UOB export is manually stored in the bucket.
     - `pandas_etl_tag`: Tag specifying the version of the Pandas ETL container to use.
-    - `redshift_external_schema`: External Schema that will contains the external
-        tables exposing the ingested data in Redshift.
-    - `redshift_schema`: Schema that will contain DBT model tables.
+    - `redshift_external_schema`: External Schema that will contain the external
+        table exposing the ingested data in Redshift.
     - `redshift_table`: Name of the External Table exposing the ingested data.
-    - `dbt_tag`: Tag specifying the version of the DBT transform container to use.
-    - `dbt_target`: Target DBT output profile to use for building DBT models.
     Connections by expected id:
     - `aws_default`:
         - `login`: AWS Access Key ID.
@@ -126,10 +117,7 @@ def ingest_uob_dag(
         sql="{% include 'source_uob.sql' %}",
         autocommit=True,
     )
-
-    # rebuild all dbt models that depend on ingested data
-    build_dbt = build_dbt_task(task_id="build_dbt", select="source:uob+")
-    convert_uob_pq >> drop_table >> create_table >> build_dbt  # type: ignore
+    convert_uob_pq >> drop_table >> create_table  # type: ignore
 
 
 ingest_uob_dag()

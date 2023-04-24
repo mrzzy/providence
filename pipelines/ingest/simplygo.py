@@ -21,7 +21,6 @@ from common import (
     DAG_ARGS,
     K8S_LABELS,
     SQL_DIR,
-    build_dbt_task,
     get_aws_env,
     k8s_env_vars,
 )
@@ -38,24 +37,16 @@ def ingest_simplygo_dag(
     s3_bucket: str = "mrzzy-co-data-lake",
     simplygo_src_tag: str = "latest",
     redshift_external_schema: str = "lake",
-    redshift_schema: str = "public",
     redshift_table: str = "source_simplygo",
-    dbt_tag: str = "latest",
-    dbt_target: str = "prod",
 ):
     """Ingests SimplyGo data into AWS S3, exposing it as external table in Redshift.
-
-    Refreshes DBT models that depend on the SimplyGo data.
 
     Parameters:
     - `s3_bucket`: Name of a existing S3 bucket to stage data.
     - `simplygo_src_tag`: Tag specifying the version of the SimplyGo Source container to use.
-    - `redshift_external_schema`: External Schema that will contains the external
-        tables exposing the ingested data in Redshift.
-    - `redshift_schema`: Schema that will contain DBT model tables.
+    - `redshift_external_schema`: External Schema that will contain the external
+        table exposing the ingested data in Redshift.
     - `redshift_table`: Name of the External Table exposing the ingested data.
-    - `dbt_tag`: Tag specifying the version of the DBT transform container to use.
-    - `dbt_target`: Target DBT output profile to use for building DBT models.
     Connections by expected id:
     - `pvd_simplygo_src`:
         - `login`: SimplyGo username.
@@ -121,10 +112,7 @@ def ingest_simplygo_dag(
         sql="{% include 'source_simplygo.sql' %}",
         autocommit=True,
     )
-
-    # rebuild all dbt models that depend on ingested data
-    build_dbt = build_dbt_task(task_id="build_dbt", select="source:simplygo+")
-    ingest_simplygo >> drop_table >> create_table >> build_dbt  # type: ignore
+    ingest_simplygo >> drop_table >> create_table  # type: ignore
 
 
 ingest_simplygo_dag()

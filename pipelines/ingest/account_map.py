@@ -4,9 +4,6 @@
 # Ingest Mapping
 #
 from textwrap import dedent
-from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
-    KubernetesPodOperator,
-)
 
 from pendulum import datetime
 from airflow.decorators import dag
@@ -23,22 +20,16 @@ def ingest_mapping_dag(
     create_table_sql: str,
     redshift_schema: str = "public",
     s3_bucket: str = "mrzzy-co-data-lake",
-    dbt_tag: str = "latest",
-    dbt_target: str = "prod",
 ):
     dedent(
         """Ingest manually uploaded Mapping CSV to AWS Redshift.
 
-    Refreshes DBT models that depend on the Mapping CSV.
-
     Parameters:
     - `mapping_path`: Path to the Mapping CSV on the bucket to ingest.
-    - `create_table_sql`: SQL DDL Jinja template used to create Redshift table.
     - `redshift_table`: Name of the Redshift table to populate with mapping.
-    - `redshift_schema`: Schema that will contain the mapping table & DBT tables.
+    - `create_table_sql`: SQL DDL Jinja template used to create Redshift table.
+    - `redshift_schema`: Schema that will contain the mapping table.
     - `s3_bucket`: Name of a existing S3 bucket to that contains the mapping to ingest.
-    - `dbt_tag`: Tag specifying the version of the DBT transform container to use.
-    - `dbt_target`: Target DBT output profile to use for building DBT models.
 
     Connections by expected id:
     - `redshift_default`:
@@ -82,9 +73,7 @@ def ingest_mapping_dag(
         task_id="commit", conn_id="redshift_default", sql="COMMIT"
     )
 
-    build_dbt = build_dbt_task(task_id="build_dbt", select="source:mapping+")
-
-    begin >> drop_table >> create_table >> copy_s3_table >> commit >> build_dbt  # type: ignore
+    begin >> drop_table >> create_table >> copy_s3_table >> commit  # type: ignore
 
 
 dag(

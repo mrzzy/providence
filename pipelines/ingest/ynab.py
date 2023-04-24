@@ -13,15 +13,7 @@ from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
 )
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 from pendulum import datetime
-from common import (
-    AWS_CONNECTION_ID,
-    DAG_ARGS,
-    K8S_LABELS,
-    SQL_DIR,
-    build_dbt_task,
-    get_aws_env,
-    k8s_env_vars,
-)
+from common import AWS_CONNECTION_ID, K8S_LABELS, SQL_DIR, get_aws_env, k8s_env_vars
 
 
 @dag(
@@ -29,32 +21,23 @@ from common import (
     schedule=timedelta(days=1),
     start_date=datetime(2023, 4, 4, tz="utc"),
     template_searchpath=[SQL_DIR],
-    **DAG_ARGS,
 )
 def ingest_ynab_dag(
     ynab_src_tag: str = "latest",
     ynab_budget_id: str = "f3f15316-e48c-4235-8d5d-1aa3191b3b8c",
     s3_bucket: str = "mrzzy-co-data-lake",
     redshift_external_schema: str = "lake",
-    redshift_schema: str = "public",
     redshift_table: str = "source_ynab",
-    dbt_tag: str = "latest",
-    dbt_target: str = "prod",
 ):
     """Ingests YNAB budget data into AWS Redshift.
-
-    Refreshes DBT models that depend on the YNAB budget data.
 
     Parameters:
     - `s3_bucket`: Name of a existing S3 bucket to stage data.
     - `ynab_budget_id`: ID specifying the YNAB Budget to retrieve data for.
     - `ynab_src_tag`: Tag specifying the version of the YNAB Source container to use.
-    - `redshift_external_schema`: External Schema that will contains the external
-        tables exposing the ingested data in Redshift.
-    - `redshift_schema`: Schema that will contain DBT model tables.
+    - `redshift_external_schema`: External Schema that will contain the external
+        table exposing the ingested data in Redshift.
     - `redshift_table`: Name of the External Table exposing the ingested data.
-    - `dbt_tag`: Tag specifying the version of the DBT transform container to use.
-    - `dbt_target`: Target DBT output profile to use for building DBT models.
 
     Connections by expected id:
     - `pvd_ynab_src`:
@@ -116,11 +99,7 @@ def ingest_ynab_dag(
         sql="{% include 'source_ynab.sql' %}",
         autocommit=True,
     )
-
-    # rebuild all dbt models that depend on ingested data
-    build_dbt = build_dbt_task(task_id="build_dbt", select="source:ynab+")
-
-    ingest_ynab >> drop_table >> create_table >> build_dbt  # type: ignore
+    ingest_ynab >> drop_table >> create_table  # type: ignore
 
 
 ingest_ynab_dag()
