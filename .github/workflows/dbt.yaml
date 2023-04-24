@@ -4,6 +4,8 @@
 #
 
 name: Providence DBT CI
+env:
+  PYTHON_VERSION: 3.10.6
 on:
   push:
     paths:
