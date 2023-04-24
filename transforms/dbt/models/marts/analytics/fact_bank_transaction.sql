@@ -35,4 +35,4 @@ select
     t.processed_on as updated_at,
     t.deposit - t.withdrawal as amount
 from unique_transactions as t
-left join dim_account as a on a.vendor_id = t.account_no
+left join {{ ref("dim_account") }} as a on a.vendor_id = t.account_no
