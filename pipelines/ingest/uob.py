@@ -31,8 +31,7 @@ from common import (
 
 @dag(
     dag_id="pvd_ingest_uob",
-    # 1300hrs Sunday UTC -> 2300hrs Sunday in Asia/Singapore
-    schedule="0 13 * * 0",
+    schedule=timedelta(days=1),
     start_date=datetime(2023, 4, 2, 13, 0, tz="utc"),
     template_searchpath=[SQL_DIR],
     **DAG_ARGS,
@@ -81,13 +80,13 @@ def ingest_uob_dag(
     """
     )
 
-    # Find UOB export for the dag data interval
+    # Find latest UOB export
     @task
     def find_uob_export(params: Dict[str, Any] = None, data_interval_end: DateTime = None):  # type: ignore
         s3 = S3Hook()
         export_keys = s3.list_keys(
             bucket_name=params["s3_bucket"],
-            prefix=f"{params['export_prefix']}{data_interval_end.strftime('%d%m%Y')}",
+            prefix=f"{params['export_prefix']}",
         )
         # exports are given a increasing numeric suffix, use max() to return the last one
         return f"s3://{params['s3_bucket']}/{max(export_keys)}"
