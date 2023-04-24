@@ -44,40 +44,14 @@ with
     -- enrich budget account with uob bank account info.
     map_uob_account as (
         select * from {{ ref("stg_map_budget_account") }} where vendor = 'UOB'
-    ),
-
-    merged_uob_accounts as (
-        select
-            b.*,
-            m.vendor,
-            m.vendor_id,
-            v.name as vendor_type,
-            greatest(b.scraped_on, v.processed_on) as updated_at
-        from map_uob_account as m
-        inner join unique_ynab_accounts as b on b.id = m.budget_account_id
-        inner join unique_uob_accounts as v on v.account_no = m.vendor_id
-    ),
-
-    unmapped_accounts as (
-        -- derive rest of the budget accounts not mapped to a vendor accounts
-        -- via anti-join
-        select
-            b.*,
-            null as vendor,
-            null as vendor_id,
-            null as vendor_type,
-            b.scraped_on as updated_at
-        from unique_ynab_accounts as b
-        where
-            not exists (
-                select 1
-                from {{ ref("stg_map_budget_account") }} as m
-                where m.budget_account_id = b.id
-            )
     )
 
-select *
-from merged_uob_accounts
-union all
-select *
-from unmapped_accounts
+select
+    b.*,
+    m.vendor,
+    m.vendor_id,
+    v.name as vendor_type,
+    greatest(b.scraped_on, v.processed_on) as updated_at
+from unique_ynab_accounts as b
+left join map_uob_account as m ON m.budget_account_id = b.id
+left join unique_uob_accounts as v on v.account_no = m.vendor_id
