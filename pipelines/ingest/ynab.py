@@ -94,8 +94,6 @@ def ingest_ynab_dag(
             }
             | get_aws_env(AWS_CONNECTION_ID)
         ),
-        is_delete_operator_pod=False,
-        log_events_on_failure=True,
     )
 
     # expose ingest data via redshift external table

@@ -102,8 +102,6 @@ def ingest_uob_dag(
             "s3://{{ params.s3_bucket }}/providence/grade=raw/source=uob/date={{ ds }}/export.pq",
         ],
         env_vars=k8s_env_vars(get_aws_env(AWS_CONNECTION_ID)),
-        is_delete_operator_pod=False,
-        log_events_on_failure=True,
     )
 
     # expose ingested data via redshift external table
