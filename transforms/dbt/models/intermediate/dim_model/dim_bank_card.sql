@@ -1,16 +1,14 @@
 --
 -- Providence
 -- Transforms
--- DBT Analytics: Payee Dimension
+-- DBT Intermediate: Bank Card Dimension
 --
-select
-    {{ dbt_utils.star(ref("stg_ynab_payee"), except=["scraped_on"]) }},
-    scraped_on as updated_at
+select id, name, scraped_on as updated_at
 from
     (
         {{
             deduplicate(
-                relation=ref("stg_ynab_payee"),
+                relation=ref("stg_simplygo_card"),
                 partition_by="id",
                 order_by="scraped_on desc",
             )

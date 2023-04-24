@@ -1,7 +1,7 @@
 --
 -- Providence
 -- Transforms
--- DBT Analytics: Date Dimension
+-- DBT Intermediate: Date Dimension
 --
 select
     date_day as "id",

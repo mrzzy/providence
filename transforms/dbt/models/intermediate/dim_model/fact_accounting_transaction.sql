@@ -1,7 +1,7 @@
 --
 -- Providence
 -- Transforms
--- DBT Analytics: Accounting Transaction Fact table
+-- DBT Intermediate: Accounting Transaction Fact table
 --
 with
     unique_transactions as (

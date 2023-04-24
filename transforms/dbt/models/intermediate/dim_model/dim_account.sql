@@ -1,7 +1,7 @@
 --
 -- Providence
 -- Transforms
--- DBT Analytics: Account Dimension
+-- DBT Intermediate: Account Dimension
 --
 with
     -- deduplicate ynab & uob account rows

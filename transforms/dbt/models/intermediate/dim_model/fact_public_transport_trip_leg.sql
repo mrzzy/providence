@@ -1,7 +1,7 @@
 --
 -- Providence
 -- Transforms
--- DBT Analytics: Public Transport Trip Legs Facts
+-- DBT Intermediate: Public Transport Trip Legs Facts
 --
 -- grain: 1 row = 1 trip leg snapshot
 with

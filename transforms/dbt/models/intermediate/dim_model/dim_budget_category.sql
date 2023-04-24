@@ -1,7 +1,7 @@
 --
 -- Providence
 -- Transforms
--- DBT Analytics: Budget Category dimension
+-- DBT Intermediate: Budget Category dimension
 --
 -- use type 2 SCD to track changes to budget category's goals over time
 with

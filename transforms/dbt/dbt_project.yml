@@ -53,6 +53,12 @@ models:
       spectrum:
         +materialized: table
     intermediate:
-      +materialized: view
+      # adhoc transforms
+      transforms:
+        +materialized: view
+      # dimensional model
+      dim_model:
+        +materialized: table
     marts:
+      # purpose-built materializations
       +materialized: table

@@ -1,7 +1,7 @@
 --
 -- Providence
 -- Transforms
--- DBT Analytics: Bank Statement Fact table
+-- DBT Intermediate: Bank Statement Fact table
 --
 with
     keyed_statement as (

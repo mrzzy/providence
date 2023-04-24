@@ -1,7 +1,7 @@
 --
 -- Providence
 -- Transforms
--- DBT Analytics: Budget Dimension
+-- DBT Intermediate: Budget Dimension
 --
 select
     {{ dbt_utils.star(ref("stg_ynab_budget"), except=["scraped_on"]) }},
