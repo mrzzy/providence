@@ -18,6 +18,7 @@ from kubernetes.client import models as k8s
 
 from common import (
     AWS_CONNECTION_ID,
+    DAG_ARGS,
     K8S_LABELS,
     SQL_DIR,
     build_dbt_task,
@@ -31,6 +32,7 @@ from common import (
     schedule=timedelta(days=1),
     start_date=datetime(2023, 4, 4, tz="utc"),
     template_searchpath=[SQL_DIR],
+    **DAG_ARGS,
 )
 def ingest_simplygo_dag(
     s3_bucket: str = "mrzzy-co-data-lake",

@@ -20,6 +20,7 @@ from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
 
 from common import (
     AWS_CONNECTION_ID,
+    DAG_ARGS,
     K8S_LABELS,
     SQL_DIR,
     build_dbt_task,
@@ -34,6 +35,7 @@ from common import (
     # 1300hrs UTC -> 2300hrs in Asia/Singapore
     start_date=datetime(2023, 4, 2, 13, 0, tz="utc"),
     template_searchpath=[SQL_DIR],
+    **DAG_ARGS,
 )
 def ingest_uob_dag(
     s3_bucket: str = "mrzzy-co-data-lake",

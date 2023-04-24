@@ -14,7 +14,7 @@ from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOp
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 from airflow.configuration import conf
 
-from common import K8S_LABELS, SQL_DIR, build_dbt_task, k8s_env_vars
+from common import DAG_ARGS, K8S_LABELS, SQL_DIR, build_dbt_task, k8s_env_vars
 
 
 def ingest_mapping_dag(
@@ -92,6 +92,7 @@ dag(
     start_date=datetime(2023, 4, 18),
     template_searchpath=[SQL_DIR],
     schedule="@once",
+    **DAG_ARGS,
 )(ingest_mapping_dag)(
     redshift_table="map_account",
     create_table_sql="map_account.sql",
