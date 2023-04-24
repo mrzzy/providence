@@ -6,6 +6,7 @@
 
 from os import path
 from datetime import timedelta
+from textwrap import dedent
 from typing import Any, Dict, List
 from airflow.decorators import dag, task
 from airflow.hooks.base import BaseHook
@@ -23,6 +24,7 @@ from common import (
     SQL_DIR,
     get_aws_env,
     k8s_env_vars,
+    DATASET_SIMPLYGO,
 )
 
 
@@ -39,7 +41,8 @@ def ingest_simplygo_dag(
     redshift_external_schema: str = "lake",
     redshift_table: str = "source_simplygo",
 ):
-    """Ingests SimplyGo data into AWS S3, exposing it as external table in Redshift.
+    dedent(
+        f"""Ingests SimplyGo data into AWS S3, exposing it as external table in Redshift.
 
     Parameters:
     - `s3_bucket`: Name of a existing S3 bucket to stage data.
@@ -64,7 +67,10 @@ def ingest_simplygo_dag(
         - `schema`: Database to use by default.
         - `extra`:
             - `role_arn`: Instruct Redshift to assume this AWS IAM role when making AWS requests.
+    Datasets:
+    - Outputs `{DATASET_SIMPLYGO.uri}`.
     """
+    )
     # Extract & load SimplyGo data with SimplyGo source into S3 as JSON
     simplygo = BaseHook.get_connection("pvd_simplygo_src")
     ingest_simplygo = KubernetesPodOperator(
@@ -111,6 +117,7 @@ def ingest_simplygo_dag(
         conn_id="redshift_default",
         sql="{% include 'source_simplygo.sql' %}",
         autocommit=True,
+        outlets=[DATASET_SIMPLYGO],
     )
     ingest_simplygo >> drop_table >> create_table  # type: ignore
 

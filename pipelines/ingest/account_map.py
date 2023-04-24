@@ -4,6 +4,7 @@
 # Ingest Mapping
 #
 from textwrap import dedent
+from airflow.datasets import Dataset
 
 from pendulum import datetime
 from airflow.decorators import dag
@@ -11,7 +12,14 @@ from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOp
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 from airflow.configuration import conf
 
-from common import DAG_ARGS, K8S_LABELS, SQL_DIR, build_dbt_task, k8s_env_vars
+from common import (
+    DAG_ARGS,
+    DATASET_MAP_ACCOUNT,
+    K8S_LABELS,
+    SQL_DIR,
+    build_dbt_task,
+    k8s_env_vars,
+)
 
 
 def ingest_mapping_dag(
@@ -22,7 +30,7 @@ def ingest_mapping_dag(
     s3_bucket: str = "mrzzy-co-data-lake",
 ):
     dedent(
-        """Ingest manually uploaded Mapping CSV to AWS Redshift.
+        f"""Ingest manually uploaded Mapping CSV to AWS Redshift.
 
     Parameters:
     - `mapping_path`: Path to the Mapping CSV on the bucket to ingest.
@@ -30,7 +38,6 @@ def ingest_mapping_dag(
     - `create_table_sql`: SQL DDL Jinja template used to create Redshift table.
     - `redshift_schema`: Schema that will contain the mapping table.
     - `s3_bucket`: Name of a existing S3 bucket to that contains the mapping to ingest.
-
     Connections by expected id:
     - `redshift_default`:
         - `host`: Redshift DB endpoint.
@@ -40,6 +47,8 @@ def ingest_mapping_dag(
         - `schema`: Database to use by default.
         - `extra`:
             - `role_arn`: Instruct Redshift to assume this AWS IAM role when making AWS requests.
+    Datasets:
+    - Outputs `{DATASET_MAP_ACCOUNT.uri}`.
     """
     )
     begin = SQLExecuteQueryOperator(
@@ -70,7 +79,9 @@ def ingest_mapping_dag(
     )
 
     commit = SQLExecuteQueryOperator(
-        task_id="commit", conn_id="redshift_default", sql="COMMIT"
+        task_id="commit",
+        conn_id="redshift_default",
+        sql="COMMIT",
     )
 
     begin >> drop_table >> create_table >> copy_s3_table >> commit  # type: ignore

@@ -25,6 +25,7 @@ from common import (
     SQL_DIR,
     get_aws_env,
     k8s_env_vars,
+    DATASET_UOB,
 )
 
 
@@ -43,7 +44,7 @@ def ingest_uob_dag(
     redshift_table: str = "source_uob",
 ):
     dedent(
-        """Ingests manual UOB transaction export into AWS S3, exposing it as
+        f"""Ingests manual UOB transaction export into AWS S3, exposing it as
     external Table in AWS Redshift.
 
     Parameters:
@@ -68,6 +69,8 @@ def ingest_uob_dag(
         - `schema`: Database to use by default.
         - `extra`:
             - `role_arn`: Instruct Redshift to assume this AWS IAM role when making AWS requests.
+    Datasets:
+    - Outputs `{DATASET_UOB.uri}`.
     """
     )
 
@@ -116,6 +119,7 @@ def ingest_uob_dag(
         conn_id="redshift_default",
         sql="{% include 'source_uob.sql' %}",
         autocommit=True,
+        outlets=[DATASET_UOB],
     )
     convert_uob_pq >> drop_table >> create_table  # type: ignore
 

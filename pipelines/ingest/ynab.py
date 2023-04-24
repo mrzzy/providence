@@ -6,6 +6,7 @@
 
 
 from datetime import timedelta
+from textwrap import dedent
 from airflow.decorators import dag
 from airflow.hooks.base import BaseHook
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
@@ -13,7 +14,14 @@ from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
 )
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 from pendulum import datetime
-from common import AWS_CONNECTION_ID, K8S_LABELS, SQL_DIR, get_aws_env, k8s_env_vars
+from common import (
+    AWS_CONNECTION_ID,
+    K8S_LABELS,
+    SQL_DIR,
+    get_aws_env,
+    k8s_env_vars,
+    DATASET_YNAB,
+)
 
 
 @dag(
@@ -29,7 +37,8 @@ def ingest_ynab_dag(
     redshift_external_schema: str = "lake",
     redshift_table: str = "source_ynab",
 ):
-    """Ingests YNAB budget data into AWS Redshift.
+    dedent(
+        f"""Ingests YNAB budget data into AWS Redshift.
 
     Parameters:
     - `s3_bucket`: Name of a existing S3 bucket to stage data.
@@ -55,7 +64,10 @@ def ingest_ynab_dag(
         - `schema`: Database to use by default.
         - `extra`:
             - `role_arn`: Instruct Redshift to assume this AWS IAM role when making AWS requests.
+    Datasets:
+    - Outputs `{DATASET_YNAB.uri}`.
     """
+    )
 
     # Extract & load budget data with YNAB source into S3 as JSON
     ynab = BaseHook.get_connection("pvd_ynab_src")
@@ -98,6 +110,7 @@ def ingest_ynab_dag(
         conn_id="redshift_default",
         sql="{% include 'source_ynab.sql' %}",
         autocommit=True,
+        outlets=[DATASET_YNAB],
     )
     ingest_ynab >> drop_table >> create_table  # type: ignore
 

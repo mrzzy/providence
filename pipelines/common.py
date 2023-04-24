@@ -8,6 +8,7 @@
 from datetime import timedelta
 from pathlib import Path
 from typing import Dict, List
+from airflow.datasets import Dataset
 
 from airflow.hooks.base import BaseHook
 from airflow.models import BaseOperator
@@ -16,6 +17,12 @@ from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
 )
 from kubernetes.client import models as k8s
 
+AWS_CONNECTION_ID = "aws_default"
+K8S_LABELS = {
+    "app.kubernetes.io/part-of": "providence",
+    "app.kubernetes.io/managed-by": "airflow",
+}
+SQL_DIR = str(Path(__file__).parent / "sql")
 # common args passed to all dags
 DAG_ARGS = {
     "tags": ["providence"],
@@ -31,12 +38,11 @@ DAG_ARGS = {
         "tags": ["providence"],
     },
 }
-AWS_CONNECTION_ID = "aws_default"
-K8S_LABELS = {
-    "app.kubernetes.io/part-of": "providence",
-    "app.kubernetes.io/managed-by": "airflow",
-}
-SQL_DIR = str(Path(__file__).parent / "sql")
+# datasets for data-aware dag scheduling
+DATASET_MAP_ACCOUNT = Dataset("redshift://map_account")
+DATASET_SIMPLYGO = Dataset("redshift://simplygo")
+DATASET_YNAB = Dataset("redshift://ynab")
+DATASET_UOB = Dataset("redshift://uob")
 
 
 def get_aws_env(conn_id: str) -> Dict[str, str]:
