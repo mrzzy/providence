@@ -93,8 +93,7 @@ def ingest_uob_dag(
         image_pull_policy="Always",
         labels=K8S_LABELS
         | {
-            "app.kubernetes.io/name": "pandas-etl",
-            "app.kubernetes.io/component": "transform",
+            "app.kubernetes.io/name": "pvd-pandas-etl-tfm",
             "app.kubernetes.io/version": "{{ params.pandas_etl_tag }}",
         },
         arguments=[

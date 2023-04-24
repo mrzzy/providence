@@ -72,8 +72,7 @@ def transform_dbt(
         ],
         labels=K8S_LABELS
         | {
-            "app.kubernetes.io/name": "dbt",
-            "app.kubernetes.io/component": "transform",
+            "app.kubernetes.io/name": "pvd-dbt-tfm",
             "app.kubernetes.io/version": "{{ params.dbt_tag }}",
         },
         env_vars=k8s_env_vars(

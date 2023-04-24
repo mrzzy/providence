@@ -91,8 +91,7 @@ def ingest_simplygo_dag(
         ],
         labels=K8S_LABELS
         | {
-            "app.kubernetes.io/name": "simplygo_src",
-            "app.kubernetes.io/component": "source",
+            "app.kubernetes.io/name": "pvd-simplygo-src",
             "app.kubernetes.io/version": "{{ params.simplygo_src_tag }}",
         },
         env_vars=k8s_env_vars(

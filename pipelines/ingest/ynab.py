@@ -81,8 +81,7 @@ def ingest_ynab_dag(
         image_pull_policy="Always",
         labels=K8S_LABELS
         | {
-            "app.kubernetes.io/name": "ynab",
-            "app.kubernetes.io/component": "source",
+            "app.kubernetes.io/name": "pvd-ynab-src",
             "app.kubernetes.io/version": "{{ params.ynab_src_tag }}",
         },
         arguments=[

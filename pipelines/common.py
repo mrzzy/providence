@@ -21,6 +21,8 @@ AWS_CONNECTION_ID = "aws_default"
 K8S_LABELS = {
     "app.kubernetes.io/part-of": "providence",
     "app.kubernetes.io/managed-by": "airflow",
+    "app.kubernetes.io/component": "{{ dag.dag_id }}",
+    "app.kubernetes.io/instance": "{{ task.task_id }}",
 }
 SQL_DIR = str(Path(__file__).parent / "sql")
 # common args passed to all dags
