@@ -363,8 +363,9 @@ models:
         description: Whether the account has been deleted in the accounting budget.
         tests:
           - not_null
-      - name: is_liquid
-        description: Whether the funds in this account is budgetable.
+      - name: is_cash
+        description: >-
+           Whether the funds in this account is has cash-like liquidity & is budgetable.
         tests:
           - not_null
       - name: budget_type

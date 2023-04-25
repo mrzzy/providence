@@ -14,7 +14,7 @@ with
                 )
             }},
             "type" as budget_type,
-            on_budget as is_liquid
+            on_budget as is_cash
         from
             (
                 {{
