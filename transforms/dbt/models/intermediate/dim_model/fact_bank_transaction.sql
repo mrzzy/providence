@@ -3,53 +3,23 @@
 -- Transforms
 -- DBT Intermediate: Bank Transaction Fact table
 --
-with
-    keyed_transactions as (
-        select
-            {{
-                dbt_utils.generate_surrogate_key(
-                    ["account_no", "transacted_on", "description"]
-                )
-            }} as "id", *
-        from {{ ref("stg_uob_statement") }}
-    ),
-
-    unique_transactions as (
-        (
-            {{
-                deduplicate(
-                    relation="keyed_transactions",
-                    partition_by="id",
-                    order_by="processed_on desc",
-                )
-            }}
+-- insert initial balance transaction so that sum of transaction amount will
+-- tally with account balance
+with initial_balances as (
+    select
+        account_id,
+        statement_begin,
+        balance as balance,
+        processed_on
+    from ({{
+        deduplicate(
+            relation=ref("int_unique_enriched_bank_statement"),
+            partition_by="account_id",
+            order_by="processed_on asc",
+            n_row_col="_n_row_account",
         )
-    ),
-
-    -- enrich transactions with account dimension
-    enriched_transactions as (
-        select t.*, a.id as account_id
-        from unique_transactions as t
-        left join {{ ref("dim_account") }} as a on a.vendor_id = t.account_no
-    ),
-
-    -- insert initial balance transaction so that sum of transaction amount will
-    -- tally with account balance
-    initial_balances as (
-        select
-            account_id,
-            statement_begin,
-            balance as balance,
-            processed_on
-        from ({{
-            deduplicate(
-                relation="enriched_transactions",
-                partition_by="account_id",
-                order_by="processed_on asc",
-                n_row_col="_n_row_account",
-            )
-        }})
-    ),
+    }})
+),
 
 initial_transaction as (
         select
@@ -72,4 +42,4 @@ select
     description,
     processed_on as updated_at,
     deposit - withdrawal as amount
-from enriched_transactions
+from {{ ref("int_unique_enriched_bank_statement") }}
