@@ -33,3 +33,7 @@ models:
           - not_null
           - dbt_utils.accepted_range:
               min_value: 0
+      - name: year_month
+        description: Year-month when the Transaction was made.
+        tests:
+          - not_null

@@ -4,6 +4,7 @@
 -- DBT Marts: Finance Dashboard
 --
 select
+    d.year_month,
     -- transaction info
     t.amount as transaction_amount,
     t.date_id as transaction_date,
@@ -21,3 +22,4 @@ select
     ) as income
 from {{ ref("fact_accounting_transaction") }} as t
 left join {{ ref("dim_account") }} as a on a.id = t.account_id
+left join {{ ref("dim_date") }} as d on d.id = t.date_id
