@@ -8,6 +8,7 @@ select
     -- transaction info
     t.amount as transaction_amount,
     t.date_id as transaction_date,
+    t.description as transaction_description,
     a.is_cash as account_is_cash,
     -- income / spending
     (
