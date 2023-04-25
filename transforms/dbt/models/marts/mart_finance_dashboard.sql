@@ -5,6 +5,7 @@
 --
 select
     d.year_month,
+    d.year_month_week,
     -- transaction info
     t.amount as transaction_amount,
     t.date_id as transaction_date,

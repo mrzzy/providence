@@ -13,6 +13,10 @@ models:
         description: Year-month when the Transaction was made.
         tests:
           - not_null
+      - name: year_month_week
+        description: Year-month-week when the Transaction was made.
+        tests:
+          - not_null
       - name: transaction_amount
         description: Amount transacted in the Transaction.
         tests:
