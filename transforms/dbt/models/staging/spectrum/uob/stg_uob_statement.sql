@@ -7,8 +7,9 @@ select
     cast("transaction date" as date) as transacted_on,  -- noqa: RF05
     -- replace newlines in transaction description with spaces
     replace(
-        cast("transaction description" as varchar), -- noqa: RF05
-        '\n', ' '
+        cast("transaction description" as varchar),  -- noqa: RF05
+        '\n',
+        ' '
     ) as description,
     cast(withdrawal as decimal(10, 2)) as withdrawal,
     cast(deposit as decimal(10, 2)) as deposit,

@@ -3,7 +3,6 @@
 -- Transforms
 -- DBT Intermediate: Unique Enriched Bank Statement
 --
-
 with
     keyed_statement as (
         select
@@ -26,7 +25,6 @@ with
             }}
         )
     )
-
 
 -- enrich statement with account dimension
 select t.*, a.id as account_id

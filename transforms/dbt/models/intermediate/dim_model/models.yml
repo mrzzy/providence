@@ -519,6 +519,8 @@ models:
         description: >-
           Amount transacted. Negative values deduct from the balance of the
           bank account while Positive values credit to its balance.
+        tests:
+          - not_null
       - name: updated_at
         description: Timestamp when the data was last updated / refreshed.
         tests:
