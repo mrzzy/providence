@@ -17,3 +17,7 @@ models:
         description: Date when the Transaction was made.
         tests:
           - not_null
+      - name: account_is_cash
+        description: Whether the asset tracked by the Account has cash-like liquidity.
+        tests:
+          - not_null
