@@ -21,6 +21,10 @@ models:
         description: Amount transacted in the Transaction.
         tests:
           - not_null
+      - name: cash_amount
+        description: Amount transacted in the Transactions on cash-like Accounts only.
+        tests:
+          - not_null
       - name: transaction_date
         description: Date when the Transaction was made.
         tests:

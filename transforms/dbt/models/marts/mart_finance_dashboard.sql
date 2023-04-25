@@ -8,16 +8,18 @@ select
     d.year_month_week,
     -- transaction info
     t.amount as transaction_amount,
+    (case when a.is_cash then t.amount else 0 end) as cash_amount,
     t.date_id as transaction_date,
     t.description as transaction_description,
     a.is_cash as account_is_cash,
+    -- TODO(mrzzy): pushdown is_passive, is_unaccounted to fact_accounting_transaction
     -- spending
     (
         case
             when t.amount < 0 and t.transfer_account_id is null and a.is_cash then t.amount else 0
         end
     ) as spending,
-    -- unaccounted Spending: any spending associated with the ynab adjustment payee_id
+    -- unaccounted Spending: any spending associated with the adjustment payee
     coalesce(
         p.id in (
             '10339a7c-b54b-46a8-9141-a793d5bdfb1a',  -- Manual Balance Adjustment
@@ -32,7 +34,7 @@ select
             when t.amount > 0 and t.transfer_account_id is null and a.is_cash then t.amount else 0
         end
     ) as income,
-    -- passive income: any income derived from the following financial insitutionun
+    -- passive income: any income derived from the following financial institution
     coalesce(
         p.id in (
             '3304a058-a21e-4dd6-8545-1f19102f8f9a',  -- Standard Charted Bank
