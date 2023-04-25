@@ -1,7 +1,7 @@
 #
 # Providence
 # Transforms
-# DBT Intermediate Models
+# DBT Intermediate: Dimensional Model
 #
 
 version: 2
@@ -362,7 +362,7 @@ models:
       - name: is_deleted
         description: Whether the account has been deleted in the accounting budget.
         tests:
-        - not_null
+          - not_null
       - name: is_liquid
         description: Whether the funds in this account is budgetable.
         tests:
