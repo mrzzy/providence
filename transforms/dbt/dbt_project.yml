@@ -55,7 +55,7 @@ models:
     intermediate:
       # adhoc transforms
       transforms:
-        +materialized: view
+        +materialized: ephemeral
       # dimensional model
       dim_model:
         +materialized: table

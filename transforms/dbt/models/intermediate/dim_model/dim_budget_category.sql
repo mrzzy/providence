@@ -7,12 +7,7 @@
 with
     category_scd as (
         select
-            {{
-                dbt_utils.star(
-                    ref("int_unique_budget_category"),
-                    except=["budget_month", "budgeted_amount"],
-                )
-            }},
+            *,
             cast(budget_month as timestamp) as effective_at,
             -- dimension row expire when the next dimension row becomes effective
             coalesce(
