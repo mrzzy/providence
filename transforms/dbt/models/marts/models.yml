@@ -21,3 +21,15 @@ models:
         description: Whether the asset tracked by the Account has cash-like liquidity.
         tests:
           - not_null
+      - name: spending
+        description: Amount spent in the Transaction
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              max_value: 0
+      - name: income
+        description: Amount gained in the Transaction.
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
