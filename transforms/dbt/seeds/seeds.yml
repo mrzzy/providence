@@ -1,0 +1,37 @@
+#
+# Providence
+# Transforms
+# DBT Seeds
+#
+
+version: 2
+
+seeds:
+  - name: ynab_payee_flag
+    description: Flags associated transactions made with specific YNAB Payees
+    config:
+      column_types:
+        payee_id: varchar
+        payee_name: varchar
+        is_unaccounted: boolean
+        is_passive: boolean
+    columns:
+      - name: payee_id
+        description: ID of the associated YNAB Payee
+        tests:
+          - not_null
+          - relationships:
+              to: ref("stg_ynab_payee")
+              field: id
+      - name: payee_name
+        description: >-
+          Name of the YNAB payee for documentation purposes only. The name in the
+          stg_ynab_payee model is considered to source of truth.
+      - name: is_unaccounted
+        description: Whether transactions made with this YNAB Payee is considered unaccounted.
+        tests:
+          - not_null
+      - name: is_passive
+        description: Whether transactions made this YNAB Payee is considered passive income.
+        tests:
+          - not_null

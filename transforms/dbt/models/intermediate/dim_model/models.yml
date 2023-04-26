@@ -345,6 +345,14 @@ models:
         description: Timestamp when the data was last updated / refreshed.
         tests:
           - not_null
+      - name: is_unaccounted
+        description: Whether transactions made with this YNAB Payee is considered unaccounted.
+        tests:
+          - not_null
+      - name: is_passive
+        description: Whether transactions made this YNAB Payee is considered passive income.
+        tests:
+          - not_null
 
   - name: dim_account
     description: An Account hosted by a vendor containing assets tracked in the accounting budget.
