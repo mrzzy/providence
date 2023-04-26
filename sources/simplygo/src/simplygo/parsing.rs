@@ -13,6 +13,8 @@ use crate::models::{Card, Leg, Mode, Trip};
 #[cfg(test)]
 mod tests;
 
+const TRIP_CSS_SELECTOR: &str = ".form-record > table > tbody > tr";
+
 /// Parse the Bank Cards from the given /Cards/Transactions page html
 pub fn parse_cards(html: &str) -> Vec<Card> {
     let card_sel =
@@ -46,7 +48,7 @@ fn parse_date(date_str: &str) -> NaiveDate {
 /// Parse Posting Ref in format: '[Posting Ref No : <POSTING_REF>]'
 fn parse_posting(posting_str: &str) -> Option<&str> {
     let trim_posting = posting_str.trim();
-    if trim_posting.len() == 0 {
+    if trim_posting.is_empty() {
         None
     } else {
         Some(
@@ -137,24 +139,26 @@ fn parse_trip_legs(tr: &ElementRef) -> Vec<Leg> {
         })
         .collect()
 }
+
+/// Predicate that all matches all elements execept the Payment Posting Statement
+/// table in the given element.
+fn unmatch_posting_table(element: &ElementRef) -> bool {
+    let posting_table_sel = Selector::parse(".Table-payment-statement-post").unwrap();
+    element.select(&posting_table_sel).count() == 0
+}
+
 /// Parse Trips from the given /Card/GetTransactions html
 pub fn parse_trips(card_id: &str, html: &str) -> Vec<Trip> {
     // css selectors for parsing trip
     // extra <tbody> automatically inserted on html parsing
-    let trip_record_sel = Selector::parse(".form-record > table > tbody > tr").unwrap();
+    let trip_record_sel = Selector::parse(TRIP_CSS_SELECTOR).unwrap();
     let statement_sel = Selector::parse(".journey_p_collapse").unwrap();
     let date_sel = Selector::parse("td.col1").unwrap();
-    let posting_table_sel = Selector::parse(".Table-payment-statement-post").unwrap();
     let posting_sel = Selector::parse("td.col2 > div").unwrap();
     let document = Html::parse_document(html);
     document
         .select(&trip_record_sel)
-        // skip payment posting statement table if it exists
-        .skip(if document.select(&posting_table_sel).count() > 0 {
-            1
-        } else {
-            0
-        })
+        .filter(unmatch_posting_table)
         .map(|tr| {
             // parse trip from payment statement
             let statement = tr

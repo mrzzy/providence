@@ -10,8 +10,7 @@ use chrono::NaiveDate;
 
 use super::*;
 
-const TRIP_CSS_SELECTOR: &str = ".form-record > table > tbody > tr";
-const LEG_CSS_SELECTOR: &str = ".data-p-row-item-01 tbody > tr";
+const LEG_CSS_SELECTOR: &str = ".data-p-row-item-02 tbody > tr";
 
 // Load HTML page from resources for testing
 fn load_html(filename: &str) -> Html {
@@ -105,7 +104,8 @@ fn parse_trip_legs_test() {
         // extra <tbody> automatically inserted on html parsing
         &html
             .select(&Selector::parse(TRIP_CSS_SELECTOR).unwrap())
-            // skip first <tr>: trip posting record
+            .filter(unmatch_posting_table)
+            // skip the first trip as are matching against second trip in this test
             .skip(1)
             .next()
             .unwrap(),
@@ -138,8 +138,7 @@ fn parse_trips_test() {
     let html = load_html("simplygo_card_gettransactions.html");
     let trip_trs: Vec<_> = html
         .select(&Selector::parse(TRIP_CSS_SELECTOR).unwrap())
-        // skip first <tr>: trip posting record
-        .skip(1)
+        .filter(unmatch_posting_table)
         .collect();
     let card_id = "card-id";
     let trips = parse_trips(card_id, &html.html());
