@@ -1,4 +1,3 @@
-    date_trunc('month', date_day) as year_month,
 --
 -- Providence
 -- Transforms
@@ -10,6 +9,7 @@ select
     cast(to_char(date_day, 'W') as int) as week_of_month,
     cast(to_char(date_day, 'WW') as int) as week_of_year,
     cast(to_char(date_day, 'Q') as int) as "quarter",
+    date_trunc('week', date_day) as year_month_week,
     extract(day from date_day) as day_of_month,
     extract(dayofweek from date_day) as day_of_week,
     extract(dayofyear from date_day) as day_of_year,

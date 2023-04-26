@@ -38,6 +38,9 @@ models:
         description: "3 character abbreviation of the name of the weekday."
         test:
           - not_null
+      - name: year_month_week
+        test:
+          - not_null
       - name: day_of_year
         description: Numeric day of the year
         test:
