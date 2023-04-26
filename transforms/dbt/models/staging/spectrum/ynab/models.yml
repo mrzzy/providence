@@ -237,7 +237,7 @@ models:
               to: ref("stg_ynab_account")
               field: id
       - name: payee_id
-        description: ID of the YNAB Payee this Transaction was made to.
+        description: ID of the YNAB Payee involved in this Transaction.
         tests:
           - relationships:
               to: ref("stg_ynab_payee")
@@ -278,7 +278,7 @@ models:
       - name: category_id
         description: YNAB assigned ID of the Category this Subtransaction belongs to.
       - name: payee_id
-        description: ID of the YNAB Payee this Subtransaction was made to.
+        description: ID of the YNAB Payee involved in this Transaction.
         tests:
           - relationships:
               to: ref("stg_ynab_payee")

@@ -324,7 +324,7 @@ models:
           - not_null
 
   - name: dim_payee
-    description: A Payee in transaction.
+    description: A Payee involved in an transaction.
     columns:
       - name: id
         description: ID that uniquely identifies the payee.
@@ -476,7 +476,7 @@ models:
               to: ref("dim_budget_category")
               field: id
       - name: payee_id
-        description: ID of the Payee this Accounting Transaction was made to.
+        description: ID of the Payee involved in this Accounting Transaction.
         tests:
           - relationships:
               to: ref("dim_payee")
