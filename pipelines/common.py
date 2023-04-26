@@ -29,6 +29,7 @@ SQL_DIR = str(Path(__file__).parent / "sql")
 DAG_ARGS = {
     "catchup": False,
     "tags": ["providence"],
+    "catchup": False,
     # common args passed to all tasks
     "default_args": {
         # retry with exponential backoff on task failure
