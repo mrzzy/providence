@@ -9,6 +9,10 @@ models:
   - name: mart_finance_dashboard
     description: One Big Table of Financial Transactions for populating the Finance Dashboard.
     columns:
+      - name: year_month
+        description: Year-month when the Transaction was made.
+        tests:
+          - not_null
       - name: transaction_amount
         description: Amount transacted in the Transaction.
         tests:
@@ -29,13 +33,17 @@ models:
           - not_null
           - dbt_utils.accepted_range:
               max_value: 0
+      - name: is_unaccounted
+        description: Whether the spending is considered to be unaccounted.
+        tests:
+          - not_null
       - name: income
         description: Amount gained in the Transaction.
         tests:
           - not_null
           - dbt_utils.accepted_range:
               min_value: 0
-      - name: year_month
-        description: Year-month when the Transaction was made.
+      - name: is_passive
+        description: Whether the income is considered to be passively generated.
         tests:
           - not_null
