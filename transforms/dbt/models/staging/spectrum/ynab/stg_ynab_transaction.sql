@@ -5,7 +5,7 @@
 --
 select
     cast(t.id as varchar) as "id",
-    cast(t.memo as varchar) as description,
+    lower(regexp_replace(trim(cast(t.memo as varchar)), ' +', ' ')) as description,
     cast(t.cleared as varchar) as clearing_status,
     cast(t.approved as boolean) as is_approved,
     cast(t.deleted as boolean) as is_deleted,
