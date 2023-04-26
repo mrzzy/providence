@@ -307,9 +307,10 @@ models:
       - name: category_id
         description: ID of Budget Category this budget allocation applies to.
         tests:
+          - not_null
           - relationships:
               to: ref("dim_budget_category")
-              field: category_id
+              field: id
       - name: amount
         description: Amount allocated to the Budget Category for the year-month.
         tests:
@@ -459,6 +460,9 @@ models:
       - name: category_id
         description: ID of Budget Category this Accounting Transaction was assigned.
         tests:
+          - relationships:
+              to: ref("dim_budget_category")
+              field: id
       - name: payee_id
         description: ID of the Payee this Accounting Transaction was made to.
         tests:

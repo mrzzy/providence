@@ -8,7 +8,7 @@ select
     "id",
     budget_month as month_date_id,
     budget_id,
-    category_id,
+    "id" as category_id,
     budget_amount as amount,
     updated_at
 from {{ ref("int_unique_budget_category") }}
