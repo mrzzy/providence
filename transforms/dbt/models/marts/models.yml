@@ -30,13 +30,13 @@ models:
         tests:
           - not_null
       - name: transaction_description
-        description: User assigned description to the Transaction
+        description: User assigned description to the Transaction.
       - name: account_is_cash
         description: Whether the asset tracked by the Account has cash-like liquidity.
         tests:
           - not_null
       - name: spending
-        description: Amount spent in the Transaction
+        description: Amount spent in the Transaction.
         tests:
           - not_null
           - dbt_utils.accepted_range:
