@@ -14,7 +14,7 @@ select
     -- spending
     (
         case
-            when t.amount < 0 and t.transfer_account_id is null then t.amount else 0
+            when t.amount < 0 and t.transfer_account_id is null and a.is_cash then t.amount else 0
         end
     ) as spending,
     -- unaccounted Spending: any spending associated with the ynab adjustment payee_id
@@ -29,7 +29,7 @@ select
     -- income
     (
         case
-            when t.amount > 0 and t.transfer_account_id is null then t.amount else 0
+            when t.amount > 0 and t.transfer_account_id is null and a.is_cash then t.amount else 0
         end
     ) as income,
     -- passive income: any income derived from the following financial insitutionun
