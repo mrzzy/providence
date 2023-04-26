@@ -1,3 +1,4 @@
+    date_trunc('month', date_day) as year_month,
 --
 -- Providence
 -- Transforms
@@ -21,7 +22,7 @@ select
     date_trunc('month', date_day) as year_month,
     -- 0: sunday, 6: saturday
     coalesce(extract(dayofweek from date_day) in (0, 6), false) as is_weekend,
-    date_trunc('day', sysdate) as updated_at
+    sysdate as updated_at
 from
     (
         -- generate next 20 years of date dimension rows
