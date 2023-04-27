@@ -9,7 +9,7 @@ apache-airflow-providers-common-sql==1.4.0
 apache-airflow-providers-ftp==3.3.1
 apache-airflow-providers-http==4.3.0
 apache-airflow-providers-imap==3.1.1
-apache-airflow-providers-sqlite==3.3.1
+apache-airflow-providers-sqlite==3.3.2
 apispec==3.3.2
 argcomplete==2.1.2
 asgiref==3.6.0
