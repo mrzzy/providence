@@ -23,8 +23,6 @@ DAG_IDS = [
     "pvd_ingest_uob",
     "pvd_transform_dbt",
 ]
-RESOURCE_DIR = Path(__file__).parent / "resources"
-
 REDSHIFT_DB_PARAMS = {
     "WorkgroupName": "main",
     "Database": "dev",
@@ -144,6 +142,17 @@ def test_ingest_dag(
     # run standalone airflow with docker compose
     with DockerCompose("..", "docker-compose.yaml") as c:
         c.wait_for("http://localhost:8080")
+
+        # import concurrency pools to reduce e2e failures caused by concurrency
+        stdin, stdout, status = c.exec_in_container(
+            "airflow",
+            ["airflow", "pools", "import", "/opt/airflow/dags/concurrency_pools.json"],
+        )
+        if status != 0:
+            raise AssertionError(
+                f"Could not import concurrency pools from JSON:\n" + stdout
+            )
+
         for dag_id in DAG_IDS:
             stdin, stdout, status = c.exec_in_container(
                 "airflow",
