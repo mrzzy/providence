@@ -31,12 +31,30 @@ models:
           - not_null
       - name: transaction_description
         description: User assigned description to the Transaction.
+      - name: transaction_is_transfer
+        description: Whether the Transaction records a trnasfer between accounts.
+        tests:
+          - not_null
       - name: account_is_cash
         description: Whether the asset tracked by the Account has cash-like liquidity.
         tests:
           - not_null
+      - name: budget_category_group_id
+        description: ID of the Budget Category Group assigned to the Transaction.
+      - name: budget_category_group
+        description: Name of the Budget Category Group assigned to the Transaction.
+        tests:
+          - not_null
+      - name: budget_category
+        description: Name of the Budget Category assigned to the Transaction.
+        tests:
+          - not_null
+      - name: payee_name
+        description: Name of the Payee involved in the Transaction.
+        tests:
+          - not_null
       - name: spending
-        description: Amount spent in the Transaction.
+        description: Amount spent in the Transaction as a negative value.
         tests:
           - not_null
           - dbt_utils.accepted_range:
@@ -55,3 +73,26 @@ models:
         description: Whether the income is considered to be passively generated.
         tests:
           - not_null
+
+  - name: mart_finance_dashboard_cash_flow
+    description: Cash flow adjacency list for rendering Sankey Diagram in Finance Dashboard.
+    columns:
+      - name: year_month
+        description: Year-month the sankey diagram is visualising.
+        tests:
+          - not_null
+      - name: src
+        description: Name of the source node in the sankey diagram link.
+        tests:
+          - not_null
+      - name: dest
+        description: Name of the destination node in the sankey diagram link.
+        tests:
+          - not_null
+      - name: amount
+        description: Width of the link between source & destination nodes.
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              inclusive: false
+              min_value: 0
