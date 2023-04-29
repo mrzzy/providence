@@ -34,35 +34,45 @@ USAGE = dedent(
    AWS_ACCESS_KEY_ID     AWS access key id used to authenticate with AWS.
    AWS_SECRET_ACCESS_KEY AWS access key used to authenticate with AWS.
    AWS_DEFAULT_REGION    AWS Region to use.
-   REST_API_BEARER_TOKEN Optional. Bearer Token pas for authentication to the  REST API.
+   REST_API_BEARER_TOKEN Optional. Bearer Token to pass for authentication.
 """
 )
 
 
 def ingest_api_s3(
-    api_url: ParseResult, s3_url: ParseResult, token: Optional[str] = None
+    api_method: str,
+    api_url: ParseResult,
+    s3_url: ParseResult,
+    api_token: Optional[str] = None,
 ):
     """Ingest the REST API response from the given URL into S3 at the given URL.
 
 
     Args:
+        api_method: HTTP method uused to make the REST API call.
         api_url: URL to make the REST API call & read the response from.
         s3_url: URL in the format s3://<bucket>/<key> of the location in S3 write to.
-        token: Optional. Authorization bearer token to pass to the REST API
+        api_token: Optional. Authorization bearer token to pass to the REST API
             when making the request.
     """
+    # check given urls
+    if api_url.scheme not in ["http", "https"]:
+        raise ValueError(f"Unsupported API URI scheme: {api_url.scheme}://")
+    if s3_url.scheme != "s3":
+        raise ValueError(f"Unsupported S3 URI scheme: {s3_url.scheme}://")
+
     headers = {}
-    if token is not None:
-        headers["Authorization"] = f"Bearer {token}"
+    if api_token is not None:
+        headers["Authorization"] = f"Bearer {api_token}"
     # retrieve response from REST API
-    response = requests.request(args.method, args.api_url.geturl(), headers=headers)
+    response = requests.request(api_method, api_url.geturl(), headers=headers)
     # raise error if request did not return 200 status code.
     response.raise_for_status()
 
     # upload the response to s3
     s3 = boto3.client("s3")
     # [1:] to skip leading '/' in path
-    bucket, key = args.s3_url.hostname, args.s3_url.path[1:]
+    bucket, key = s3_url.hostname, s3_url.path[1:]
     s3.upload_fileobj(BytesIO(response.content), bucket, key)
 
 
@@ -74,10 +84,6 @@ if __name__ == "__main__":
     parser.add_argument("s3_url", type=urlparse)
     args = parser.parse_args()
 
-    args_scheme, s3_scheme = args.api_url.scheme, args.s3_url.scheme
-    if args_scheme != "http" or args_scheme != "https":
-        raise ValueError(f"Unsupported API URI scheme: {args_scheme}://")
-    if s3_scheme != "s3":
-        raise ValueError(f"Unsupported S3 URI scheme: {s3_scheme}://")
-
-    ingest_api_s3(args.api_url, args.s3_url, os.environ.get("REST_API_BEARER_TOKEN"))
+    ingest_api_s3(
+        args.method, args.api_url, args.s3_url, os.environ.get("REST_API_BEARER_TOKEN")
+    )
