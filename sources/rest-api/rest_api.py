@@ -44,16 +44,18 @@ def ingest_api_s3(
     api_url: ParseResult,
     s3_url: ParseResult,
     api_token: Optional[str] = None,
+    scraped_on: datetime = datetime.utcnow(),
 ):
     """Ingest the REST API response from the given URL into S3 at the given URL.
 
 
     Args:
-        api_method: HTTP method uused to make the REST API call.
+        api_method: HTTP method used to make the REST API call.
         api_url: URL to make the REST API call & read the response from.
         s3_url: URL in the format s3://<bucket>/<key> of the location in S3 write to.
         api_token: Optional. Authorization bearer token to pass to the REST API
             when making the request.
+        scraped_on: UTC timestamp defining when the REST API call was made.
     """
     # check given urls
     if api_url.scheme not in ["http", "https"]:
@@ -66,6 +68,10 @@ def ingest_api_s3(
         headers["Authorization"] = f"Bearer {api_token}"
     # retrieve response from REST API
     response = requests.request(api_method, api_url.geturl(), headers=headers)
+    content_type = response.headers.get("Content-Type", "missing")
+    if content_type != "application/json":
+        raise RuntimeError(f"Expected JSON response, got Content-Type: {content_type}")
+
     # raise error if request did not return 200 status code.
     response.raise_for_status()
 

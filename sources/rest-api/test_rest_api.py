@@ -28,10 +28,12 @@ def test_ingest_api_s3(s3_client: Mock, request: Mock):
     # test: mocked rest api request & write to s3
     response = Mock(spec=Response)
     response.content = b"{}"
+    response.headers = {"Content-Type": "application/json"}
     request.return_value = response
+
     s3 = Mock()
     s3_client.return_value = s3
-
+    s3_url = "s3://bucket/key"
     api_method, api_url = "GET", "https://test"
 
     test_cases = [
@@ -41,12 +43,15 @@ def test_ingest_api_s3(s3_client: Mock, request: Mock):
     ]
 
     for api_token, expected_headers in test_cases:
-        ingest_api_s3(
-            api_method, urlparse(api_url), urlparse("s3://bucket/key"), api_token
-        )
+        ingest_api_s3(api_method, urlparse(api_url), urlparse(s3_url), api_token)
 
         request.assert_called_with("GET", api_url, headers=expected_headers)
         s3.upload_fileobj.assert_called()
         call_args = s3.upload_fileobj.call_args[0]
         assert call_args[0].getbuffer() == response.content
         assert call_args[1:] == ("bucket", "key")
+
+    # test: rejects bad content type
+    response.headers = {"Content-Type": "application/x-www-form-urlencoded"}
+    with pytest.raises(RuntimeError):
+        ingest_api_s3(api_method, urlparse(api_url), urlparse(s3_url))
