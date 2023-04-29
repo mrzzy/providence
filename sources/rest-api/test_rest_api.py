@@ -19,7 +19,7 @@ def test_ingest_api_s3(s3_client: Mock, request: Mock):
     # test: rejects bad url schemes
     bad_scheme_urls = [
         ["grpc://test", "s3://test/test"],
-        ["http://test", "gcs://test/test"],
+        ["https://test", "gcs://test/test"],
     ]
     for api_url, s3_url in bad_scheme_urls:
         with pytest.raises(ValueError):
@@ -32,7 +32,7 @@ def test_ingest_api_s3(s3_client: Mock, request: Mock):
     s3 = Mock()
     s3_client.return_value = s3
 
-    api_method, api_url = "GET", "http://test"
+    api_method, api_url = "GET", "https://test"
 
     test_cases = [
         # api_token, expected_headers
