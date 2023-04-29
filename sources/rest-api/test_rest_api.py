@@ -4,6 +4,7 @@
 # Unit Tests
 #
 
+from datetime import datetime
 from io import BytesIO
 from requests import Response
 from unittest.mock import Mock, PropertyMock, patch
@@ -27,7 +28,7 @@ def test_ingest_api_s3(s3_client: Mock, request: Mock):
 
     # test: mocked rest api request & write to s3
     response = Mock(spec=Response)
-    response.content = b"{}"
+    response.json.return_value = {}
     response.headers = {"Content-Type": "application/json"}
     request.return_value = response
 
@@ -36,6 +37,8 @@ def test_ingest_api_s3(s3_client: Mock, request: Mock):
     s3_url = "s3://bucket/key"
     api_method, api_url = "GET", "https://test"
 
+    scraped_on = datetime.min
+
     test_cases = [
         # api_token, expected_headers
         [None, {}],
@@ -43,15 +46,22 @@ def test_ingest_api_s3(s3_client: Mock, request: Mock):
     ]
 
     for api_token, expected_headers in test_cases:
-        ingest_api_s3(api_method, urlparse(api_url), urlparse(s3_url), api_token)
+        ingest_api_s3(
+            api_method, urlparse(api_url), urlparse(s3_url), api_token, scraped_on
+        )
 
         request.assert_called_with("GET", api_url, headers=expected_headers)
         s3.upload_fileobj.assert_called()
         call_args = s3.upload_fileobj.call_args[0]
-        assert call_args[0].getbuffer() == response.content
+        assert (
+            call_args[0].getvalue().decode()
+            == '{"_rest_api_src_scraped_on": "0001-01-01T00:00:00"}'
+        )
         assert call_args[1:] == ("bucket", "key")
 
     # test: rejects bad content type
     response.headers = {"Content-Type": "application/x-www-form-urlencoded"}
     with pytest.raises(RuntimeError):
-        ingest_api_s3(api_method, urlparse(api_url), urlparse(s3_url))
+        ingest_api_s3(
+            api_method, urlparse(api_url), urlparse(s3_url), scraped_on=scraped_on
+        )

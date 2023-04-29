@@ -63,23 +63,26 @@ def ingest_api_s3(
     if s3_url.scheme != "s3":
         raise ValueError(f"Unsupported S3 URI scheme: {s3_url.scheme}://")
 
+    # retrieve response from REST API
     headers = {}
     if api_token is not None:
         headers["Authorization"] = f"Bearer {api_token}"
-    # retrieve response from REST API
     response = requests.request(api_method, api_url.geturl(), headers=headers)
     content_type = response.headers.get("Content-Type", "missing")
     if content_type != "application/json":
         raise RuntimeError(f"Expected JSON response, got Content-Type: {content_type}")
-
     # raise error if request did not return 200 status code.
     response.raise_for_status()
+
+    # splice scraped_on timestamp into response to uploaded into s3
+    content = response.json()
+    content["_rest_api_src_scraped_on"] = scraped_on.isoformat()
 
     # upload the response to s3
     s3 = boto3.client("s3")
     # [1:] to skip leading '/' in path
     bucket, key = s3_url.hostname, s3_url.path[1:]
-    s3.upload_fileobj(BytesIO(response.content), bucket, key)
+    s3.upload_fileobj(BytesIO(json.dumps(content).encode()), bucket, key)
 
 
 if __name__ == "__main__":
