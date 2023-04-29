@@ -35,6 +35,15 @@ models:
         description: Whether the Transaction records a trnasfer between accounts.
         tests:
           - not_null
+      - name: transaction_clearing_status
+        description: Reconciliation status of the Transaction.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - cleared
+                - uncleared
+                - reconciled
       - name: account_is_cash
         description: Whether the asset tracked by the Account has cash-like liquidity.
         tests:
