@@ -33,6 +33,7 @@ from common import (
     schedule=timedelta(days=1),
     start_date=datetime(2023, 4, 4, tz="utc"),
     template_searchpath=[SQL_DIR],
+    catchup=False,
     **DAG_ARGS,
 )
 def ingest_simplygo_dag(

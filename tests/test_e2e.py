@@ -23,10 +23,6 @@ DAG_IDS = [
     "pvd_ingest_uob",
     "pvd_transform_dbt",
 ]
-REDSHIFT_DB_PARAMS = {
-    "WorkgroupName": "main",
-    "Database": "dev",
-}
 
 
 def random_suffix(n=8) -> str:
@@ -72,55 +68,48 @@ def s3_bucket(e2e_suffix: str) -> Iterator[str]:
 
 
 @pytest.fixture
-def redshift_schema(e2e_suffix: str) -> Iterator[str]:
-    # create redshift schema within 'dev' database for e2e test
+def redshift_db(e2e_suffix: str):
+    # create redshift database for e2e test
     redshift = boto3.client("redshift-data")
-    e2e_schema = f"providence_e2e_{e2e_suffix}"
-    redshift.batch_execute_statement(
-        Sqls=[f"CREATE SCHEMA {e2e_schema}"],
-        **REDSHIFT_DB_PARAMS,
+    e2e_db = f"providence_e2e_{e2e_suffix}"
+    redshift.execute_statement(
+        Sql=f"CREATE DATABASE {e2e_db}",
+        # use 'dev' database to bootstrap create db statement
+        Database="dev",
+        WorkgroupName="main",
     )
+    yield e2e_db
 
-    yield e2e_schema
-
-    # clean up test schema
-    redshift.batch_execute_statement(
-        Sqls=[f"DROP SCHEMA {e2e_schema} CASCADE"],
-        **REDSHIFT_DB_PARAMS,
+    # clean up e2e test db
+    redshift.execute_statement(
+        Sql=f"DROP DATABASE {e2e_db}",
+        Database="dev",
+        WorkgroupName="main",
     )
 
 
 @pytest.fixture
-def redshift_external_schema(e2e_suffix: str) -> Iterator[str]:
+def redshift_external_schema(e2e_suffix: str, redshift_db: str) -> str:
     redshift = boto3.client("redshift-data")
     e2e_schema = f"providence_e2e_lake_{e2e_suffix}"
 
     # create test external schema backed by test glue data catalog
-    redshift.batch_execute_statement(
-        Sqls=[
-            f"""
-            CREATE EXTERNAL SCHEMA IF NOT EXISTS {e2e_schema}
-            FROM DATA CATALOG
+    redshift.execute_statement(
+        Sql=f"""
+        CREATE EXTERNAL SCHEMA IF NOT EXISTS lake
+        FROM DATA CATALOG
             DATABASE '{e2e_schema}'
             IAM_ROLE 'arn:aws:iam::132307318913:role/warehouse'
             CREATE EXTERNAL DATABASE IF NOT EXISTS
-        """
-        ],
-        **REDSHIFT_DB_PARAMS,
+        """,
+        Database=redshift_db,
+        WorkgroupName="main",
     )
 
-    yield e2e_schema
-
-    # clean up test schema & catalog
-    redshift.batch_execute_statement(
-        Sqls=[f"DROP SCHEMA {e2e_schema} DROP EXTERNAL DATABASE CASCADE"],
-        **REDSHIFT_DB_PARAMS,
-    )
+    return "lake"
 
 
-def test_ingest_dag(
-    s3_bucket: str, redshift_schema: str, redshift_external_schema: str
-):
+def test_ingest_dag(s3_bucket: str, redshift_db: str, redshift_external_schema: str):
     """End to End Test Providence Data Pipelines by performing 1 DAG run.
 
     Expects the following test environment:
@@ -129,9 +118,10 @@ def test_ingest_dag(
         - AWS_DEFAULT_REGION: AWS Region.
         - AWS_ACCESS_KEY_ID": AWS Access Key.
         - AWS_SECRET_ACCESS_KEY": Secret of AWS Access Key.
-    - AWS Redshift credentials:
-        - AWS_REDSHIFT_USER: RedShift username.
-        - AWS_REDSHIFT_PASSWORD: RedShift password.
+    - AWS Redshift:
+        - AWS_REDSHIFT_USER: Redshift username.
+        - AWS_REDSHIFT_PASSWORD: Redshift password.
+        - AWS_REDSHIFT_DB: Redshift database to use.
     - SimplyGo credentials: SIMPLYGO_SRC_USERNAME & SIMPLYGO_SRC_PASSWORD
     - YNAB credentials: YNAB_SRC_ACCESS_TOKEN
     - access to a Kubernetes cluster configured via a kube config file provided
@@ -139,6 +129,8 @@ def test_ingest_dag(
     """
     # admend permissions of KUBECONFIG to make sure containerized Airflow can read
     os.chmod(os.environ["KUBECONFIG"], stat.S_IROTH)
+    # pass dedicated redshift db via env var to docker-compose
+    os.environ["AWS_REDSHIFT_DB"] = redshift_db
     # run standalone airflow with docker compose
     with DockerCompose("..", "docker-compose.yaml") as c:
         c.wait_for("http://localhost:8080")
@@ -165,7 +157,6 @@ def test_ingest_dag(
                     json.dumps(
                         {
                             "s3_bucket": s3_bucket,
-                            "redshift_schema": redshift_schema,
                             "redshift_external_schema": redshift_external_schema,
                             "dbt_target": "dev",
                         }
