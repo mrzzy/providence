@@ -27,14 +27,14 @@ jobs:
           AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
         run: make test-simplygo
 
-  ynab-src:
-    name: "YNAB Source: Lint & Test"
+  rest-api-src:
+    name: "REST API Source: Lint & Test"
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/python
         with:
-          make-suffix: ynab
+          make-suffix: rest-api
           python-version: "${{ env.PYTHON_VERSION }}"
 
   pandas-etl-transform:
@@ -63,7 +63,7 @@ jobs:
       matrix:
         source:
           - simplygo
-          - ynab
+          - rest-api
     name: "${{ matrix.source }} Source: Publish Container image"
     runs-on: ubuntu-22.04
     # add permissions needed to push containers to GHCR with GITHUB_TOKEN
