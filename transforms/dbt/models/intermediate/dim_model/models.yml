@@ -404,6 +404,8 @@ models:
         description: Vendor assigned ID to the Account.
       - name: vendor_type
         description: Vendor assigned Account type.
+      - name: last_reconciled_at
+        description: Timestamp when the Account was last reconciled with the Vendor.
       - name: updated_at
         description: Timestamp when the data was last updated / refreshed.
         tests:

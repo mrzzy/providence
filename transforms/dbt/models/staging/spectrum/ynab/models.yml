@@ -142,24 +142,26 @@ models:
                 - medicalDebt
                 - otherDebt
       - name: on_budget
-        description: Whether the funds in this account is budgetable.
+        description: Whether the funds in this Budget Account is budgetable.
         tests:
           - not_null
       - name: is_closed
-        description: Whether the account has been closed.
+        description: Whether the Budget Account has been closed.
         tests:
           - not_null
       - name: is_deleted
-        description: Whether the account has been deleted.
+        description: Whether the Budget Account has been deleted.
         tests:
           - not_null
       - name: payee_id
-        description: ID of the YNAB payee that credits this account.
+        description: ID of the YNAB payee that credits this Budget Account.
         tests:
           - not_null
           - relationships:
               to: ref("stg_ynab_payee")
               field: id
+      - name: last_reconciled_at
+        description: Timestamp when the Budget Account was last reconciled with the actual account.
       - name: scraped_on
         description: Timestamp when the data was last scraped from YNAB.
         tests:
@@ -306,4 +308,4 @@ models:
       - name: scraped_on
         description: Timestamp when the data was last scraped from YNAB.
         tests:
-          - not_null
+        - not_null
