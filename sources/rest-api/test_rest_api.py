@@ -29,7 +29,7 @@ def test_ingest_api_s3(s3_client: Mock, request: Mock):
     # test: mocked rest api request & write to s3
     response = Mock(spec=Response)
     response.json.return_value = {}
-    response.headers = {"Content-Type": "application/json"}
+    response.headers = {"Content-Type": "application/json; charset=utf-8"}
     request.return_value = response
 
     s3 = Mock()
