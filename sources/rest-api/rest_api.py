@@ -1,5 +1,5 @@
-#
 # Providence
+# Sources
 # REST API Source
 #
 
@@ -8,8 +8,8 @@ import os
 import sys
 from io import BytesIO
 from datetime import datetime
-from typing import Any, Dict
-from urllib.parse import urlparse
+from typing import Any, Dict, Optional
+from urllib.parse import ParseResult, urlparse
 from dataclasses import asdict, dataclass, make_dataclass
 from textwrap import dedent
 from argparse import ArgumentParser
@@ -26,9 +26,9 @@ USAGE = dedent(
    Ingest the response of a REST API call into AWS S3
 
    Arguments:
-   <method> HTTP method to use in the REST API call.
-   <api_url>    URL of the the REST API call to read the response from.
-   <s3_url> URL in the format s3://<bucket>/<key> to write to.
+   <method>  HTTP method to use in the REST API call.
+   <api_url> URL to make the REST API call & read the response from.
+   <s3_url>  URL in the format s3://<bucket>/<key> of the location in S3 write to.
 
    Environment Variables:
    AWS_ACCESS_KEY_ID     AWS access key id used to authenticate with AWS.
@@ -37,6 +37,34 @@ USAGE = dedent(
    REST_API_BEARER_TOKEN Optional. Bearer Token pas for authentication to the  REST API.
 """
 )
+
+
+def ingest_api_s3(
+    api_url: ParseResult, s3_url: ParseResult, token: Optional[str] = None
+):
+    """Ingest the REST API response from the given URL into S3 at the given URL.
+
+
+    Args:
+        api_url: URL to make the REST API call & read the response from.
+        s3_url: URL in the format s3://<bucket>/<key> of the location in S3 write to.
+        token: Optional. Authorization bearer token to pass to the REST API
+            when making the request.
+    """
+    headers = {}
+    if token is not None:
+        headers["Authorization"] = f"Bearer {token}"
+    # retrieve response from REST API
+    response = requests.request(args.method, args.api_url.geturl(), headers=headers)
+    # raise error if request did not return 200 status code.
+    response.raise_for_status()
+
+    # upload the response to s3
+    s3 = boto3.client("s3")
+    # [1:] to skip leading '/' in path
+    bucket, key = args.s3_url.hostname, args.s3_url.path[1:]
+    s3.upload_fileobj(BytesIO(response.content), bucket, key)
+
 
 if __name__ == "__main__":
     # parse & check command line arguments
@@ -52,16 +80,4 @@ if __name__ == "__main__":
     if s3_scheme != "s3":
         raise ValueError(f"Unsupported S3 URI scheme: {s3_scheme}://")
 
-    # retrieve response from REST API
-    headers = {}
-    if "REST_API_BEARER_TOKEN" in os.environ:
-        headers["Authorization"] = f"Bearer {os.environ['REST_API_BEARER_TOKEN']}"
-    response = requests.request(args.method, args.api_url.geturl(), headers=headers)
-    # raise error if request did not return 200 status code.
-    response.raise_for_status()
-
-    # upload the response to s3
-    s3 = boto3.client("s3")
-    # [1:] to skip leading '/' in path
-    bucket, key = args.s3_url.hostname, args.s3_url.path[1:]
-    s3.upload_fileobj(BytesIO(response.content), bucket, key)
+    ingest_api_s3(args.api_url, args.s3_url, os.environ.get("REST_API_BEARER_TOKEN"))
