@@ -20,7 +20,7 @@ import boto3
 import requests
 
 USAGE = dedent(
-    """Error: Invalid arguments or environment variablevbbbhkjk.
+    """Error: Invalid arguments or environment variable.
 
    Usage: python rest_api.py <method> <api_url> <s3_url>
 
