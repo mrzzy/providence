@@ -41,14 +41,14 @@ $(eval $(call SIMPLYGO_RULE,lint,cargo fmt --check && cargo clippy))
 $(eval $(call SIMPLYGO_RULE,build,cargo build))
 $(eval $(call SIMPLYGO_RULE,test,cargo test))
 
-# YNAB source
-YNAB_DIR := sources/ynab
+# REST API source
+REST_API_DIR := sources/rest-api
 
-$(eval $(call PHONY_RULE,deps,ynab))
-deps-ynab: $(YNAB_DIR)
+$(eval $(call PHONY_RULE,deps,rest-api))
+deps-rest-api: $(REST_API_DIR)
 	cd $< && pip install -r requirements-dev.txt
 
-$(eval $(call PYTHON_RULES,ynab,$(YNAB_DIR)))
+$(eval $(call PYTHON_RULES,rest-api,$(REST_API_DIR)))
 
 # Pandas ETL transform
 PANDAS_ETL_DIR := transforms/pandas-etl

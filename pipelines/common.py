@@ -27,6 +27,7 @@ K8S_LABELS = {
 SQL_DIR = str(Path(__file__).parent / "sql")
 # common args passed to all dags
 DAG_ARGS = {
+    "catchup": False,
     "tags": ["providence"],
     # common args passed to all tasks
     "default_args": {

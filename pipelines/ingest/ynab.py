@@ -33,7 +33,7 @@ from common import (
     **DAG_ARGS,
 )
 def ingest_ynab_dag(
-    ynab_src_tag: str = "latest",
+    rest_api_tag: str = "latest",
     ynab_budget_id: str = "f3f15316-e48c-4235-8d5d-1aa3191b3b8c",
     s3_bucket: str = "mrzzy-co-data-lake",
     redshift_external_schema: str = "lake",
@@ -45,14 +45,14 @@ def ingest_ynab_dag(
     Parameters:
     - `s3_bucket`: Name of a existing S3 bucket to stage data.
     - `ynab_budget_id`: ID specifying the YNAB Budget to retrieve data for.
-    - `ynab_src_tag`: Tag specifying the version of the YNAB Source container to use.
+    - `rest_api_tag`: Tag specifying the version of the REST API Source container to use.
     - `redshift_external_schema`: External Schema that will contain the external
         table exposing the ingested data in Redshift.
     - `redshift_table`: Name of the External Table exposing the ingested data.
 
     Connections by expected id:
     - `pvd_ynab_src`:
-        - `password`: SimplyGo password.
+        - `password`: YNAB API access token.
     - `aws_default`:
         - `login`: AWS Access Key ID.
         - `password`: AWS Access Secret Key.
@@ -77,20 +77,21 @@ def ingest_ynab_dag(
         task_id="ingest_ynab",
         # pool to limit load impact of concurrent requests on the YNAB API
         pool="ynab_api",
-        image="ghcr.io/mrzzy/pvd-ynab-src:{{ params.ynab_src_tag }}",
+        image="ghcr.io/mrzzy/pvd-rest-api-src:{{ params.rest_api_tag }}",
         image_pull_policy="Always",
         labels=K8S_LABELS
         | {
-            "app.kubernetes.io/name": "pvd-ynab-src",
-            "app.kubernetes.io/version": "{{ params.ynab_src_tag }}",
+            "app.kubernetes.io/name": "pvd-rest-api-src",
+            "app.kubernetes.io/version": "{{ params.rest_api_tag }}",
         },
         arguments=[
-            "{{ params.ynab_budget_id }}",
+            "GET",
+            "https://api.ynab.com/v1/budgets/{{ params.ynab_budget_id }}",
             "s3://{{ params.s3_bucket }}/providence/grade=raw/source=ynab/date={{ ds }}/budget.json",
         ],
         env_vars=k8s_env_vars(
             {
-                "YNAB_SRC_ACCESS_TOKEN": ynab.password,
+                "REST_API_BEARER_TOKEN": ynab.password,
             }
             | get_aws_env(AWS_CONNECTION_ID)
         ),

@@ -40,7 +40,7 @@ services:
           "port": 5439,
           "login": "${AWS_REDSHIFT_USER}",
           "password": "${AWS_REDSHIFT_PASSWORD}",
-          "schema": "dev",
+          "schema": "${AWS_REDSHIFT_DB}",
           "extra": {
             "role_arn": "arn:aws:iam::132307318913:role/warehouse"
           }
