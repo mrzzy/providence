@@ -58,6 +58,10 @@ models:
         description: Name of the Budget Category assigned to the Transaction.
         tests:
           - not_null
+      - name: budget_is_expense
+        description: Whether the a Expense Budget Category was assigned to the Transaction.
+        tests:
+          - not_null
       - name: payee_name
         description: Name of the Payee involved in the Transaction.
         tests:

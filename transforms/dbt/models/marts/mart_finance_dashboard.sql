@@ -19,6 +19,7 @@ select
     c.category_group_id as budget_category_group_id,
     coalesce(c.category_group, 'Unknown Category Group') as budget_category_group,
     coalesce(c.name, 'Unknown Category') as budget_category,
+    coalesce(c.is_expense, false) as budget_is_expense,
     -- payee
     coalesce(p.name, 'Unknown Payee') as payee_name,
     -- spending

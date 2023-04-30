@@ -43,6 +43,7 @@ select
     c.goal_amount,
     c.goal_due,
     c.is_deleted,
+    coalesce(g.name like 'Expenses%', false) as is_expense,
     c.updated_at,
     c.effective_at,
     c.expired_at,
