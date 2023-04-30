@@ -1,7 +1,7 @@
 --
 -- Providence
 -- Transforms
--- DBT Marts: Finance Dashboard: CasCash Flow for Sankey Diagram
+-- DBT Marts: Finance Dashboard: Cash Flow for Sankey Diagram
 --
 with
     statistics as (
@@ -14,8 +14,7 @@ with
     ),
 
     income_payees as (
-        select
-            year_month, payee_name as src, 'Income' as dest, sum(income) as amount
+        select year_month, payee_name as src, 'Income' as dest, sum(income) as amount
         from {{ ref("mart_finance_dashboard") }}
         group by 1, 2, 3
     ),
@@ -48,11 +47,11 @@ with
         from statistics
     ),
 
-    spending_categories as (
+    spending_groups as (
         select
             year_month,
             'Spending' as src,
-            budget_category as dest,
+            budget_category_group as dest,
             abs(sum(spending)) as amount
         from {{ ref("mart_finance_dashboard") }}
         group by 1, 2, 3
@@ -72,7 +71,7 @@ with
             budget_category_group_id = '4b8aa46d-bed8-4dba-bee5-d438640d2d9d'
             and account_is_cash
             and transaction_is_transfer
-        group by 1,2,3
+        group by 1, 2, 3
         union all
         -- savings saved as cash
         select
@@ -82,12 +81,12 @@ with
             sum(transaction_amount) as amount
         from {{ ref("mart_finance_dashboard") }}
         where account_is_cash
-        group by 1,2,3
+        group by 1, 2, 3
     )
 
 -- compile src-dest columns for sankey diagram:
 -- income payees \ spent savings \     /> savings-> savings categories
--- income payees -> income -> spending -> spending categories
+-- income payees -> income -> spending -> spending category groups
 select *
 from
     (
@@ -101,7 +100,7 @@ from
         from income_savings
         union all
         select *
-        from spending_categories
+        from spending_groups
         union all
         select *
         from savings_categories
