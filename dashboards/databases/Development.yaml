@@ -1,0 +1,14 @@
+database_name: Development
+sqlalchemy_uri: redshift+psycopg2://mrzzy:XXXXXXXXXX@main.132307318913.ap-southeast-1.redshift-serverless.amazonaws.com:5439/dev?sslmode=verify-ca
+cache_timeout: null
+expose_in_sqllab: true
+allow_run_async: true
+allow_ctas: true
+allow_cvas: true
+allow_dml: true
+allow_file_upload: false
+extra:
+  allows_virtual_table_explore: true
+  cost_estimate_enabled: true
+uuid: e553206f-b046-4a46-bfa8-ced510821c72
+version: 1.0.0

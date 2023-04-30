@@ -1,0 +1,76 @@
+slice_name: Cash
+description: null
+certified_by: null
+certification_details: null
+viz_type: big_number
+params:
+  datasource: 4__table
+  viz_type: big_number
+  slice_id: 3
+  granularity_sqla: transaction_date
+  time_grain_sqla: P1M
+  time_range: No filter
+  metric:
+    aggregate: SUM
+    column:
+      advanced_data_type: null
+      certification_details: null
+      certified_by: null
+      column_name: transaction_amount
+      description: null
+      expression: null
+      filterable: true
+      groupby: true
+      id: 43
+      is_certified: false
+      is_dttm: false
+      python_date_format: null
+      type: NUMERIC(18, 7)
+      type_generic: 0
+      verbose_name: null
+      warning_markdown: null
+    datasourceWarning: false
+    expressionType: SIMPLE
+    hasCustomLabel: false
+    label: SUM(transaction_amount)
+    optionName: metric_absyp6arfxt_0490fh4sd1bj
+    sqlExpression: null
+  adhoc_filters:
+  - clause: WHERE
+    comparator: true
+    datasourceWarning: false
+    expressionType: SIMPLE
+    filterOptionName: filter_toog9lfpyzm_320p8sxrmuw
+    isExtra: false
+    isNew: false
+    operator: ==
+    operatorId: IS_TRUE
+    sqlExpression: null
+    subject: account_is_cash
+  compare_lag: 1
+  compare_suffix: MoM
+  show_trend_line: true
+  start_y_axis_at_zero: true
+  color_picker:
+    a: 1
+    b: 135
+    g: 122
+    r: 0
+  header_font_size: 0.5
+  subheader_font_size: 0.125
+  y_axis_format: $.3s
+  time_format: smart_date
+  rolling_type: cumsum
+  rolling_periods: ''
+  extra_form_data: {}
+  dashboards:
+  - 2
+query_context: '{"datasource":{"id":4,"type":"table"},"force":false,"queries":[{"time_range":"No
+  filter","granularity":"transaction_date","filters":[{"col":"account_is_cash","op":"==","val":true}],"extras":{"time_grain_sqla":"P1M","having":"","where":""},"applied_time_extras":{},"columns":[],"metrics":[{"aggregate":"SUM","column":{"advanced_data_type":null,"certification_details":null,"certified_by":null,"column_name":"transaction_amount","description":null,"expression":null,"filterable":true,"groupby":true,"id":43,"is_certified":false,"is_dttm":false,"python_date_format":null,"type":"NUMERIC(18,
+  7)","type_generic":0,"verbose_name":null,"warning_markdown":null},"datasourceWarning":false,"expressionType":"SIMPLE","hasCustomLabel":false,"label":"SUM(transaction_amount)","optionName":"metric_absyp6arfxt_0490fh4sd1bj","sqlExpression":null}],"annotation_layers":[],"series_limit":0,"order_desc":true,"url_params":{},"custom_params":{},"custom_form_data":{},"is_timeseries":true,"post_processing":[{"operation":"pivot","options":{"index":["__timestamp"],"columns":[],"aggregates":{"SUM(transaction_amount)":{"operator":"mean"}},"drop_missing_columns":true}},{"operation":"cum","options":{"operator":"sum","columns":{"SUM(transaction_amount)":"SUM(transaction_amount)"}}},{"operation":"flatten"}]}],"form_data":{"datasource":"4__table","viz_type":"big_number","slice_id":3,"granularity_sqla":"transaction_date","time_grain_sqla":"P1M","time_range":"No
+  filter","metric":{"aggregate":"SUM","column":{"advanced_data_type":null,"certification_details":null,"certified_by":null,"column_name":"transaction_amount","description":null,"expression":null,"filterable":true,"groupby":true,"id":43,"is_certified":false,"is_dttm":false,"python_date_format":null,"type":"NUMERIC(18,
+  7)","type_generic":0,"verbose_name":null,"warning_markdown":null},"datasourceWarning":false,"expressionType":"SIMPLE","hasCustomLabel":false,"label":"SUM(transaction_amount)","optionName":"metric_absyp6arfxt_0490fh4sd1bj","sqlExpression":null},"adhoc_filters":[{"clause":"WHERE","comparator":true,"datasourceWarning":false,"expressionType":"SIMPLE","filterOptionName":"filter_toog9lfpyzm_320p8sxrmuw","isExtra":false,"isNew":false,"operator":"==","operatorId":"IS_TRUE","sqlExpression":null,"subject":"account_is_cash"}],"compare_lag":1,"compare_suffix":"MoM","show_trend_line":true,"start_y_axis_at_zero":true,"color_picker":{"a":1,"b":135,"g":122,"r":0},"header_font_size":0.5,"subheader_font_size":0.125,"y_axis_format":"$.3s","time_format":"smart_date","rolling_type":"cumsum","rolling_periods":"","extra_form_data":{},"dashboards":[2],"force":false,"result_format":"json","result_type":"full"},"result_format":"json","result_type":"full"}'
+cache_timeout: null
+uuid: ade5ec5f-719d-49a7-8e26-1ede2179b046
+version: 1.0.0
+dataset_uuid: 4874b9d9-f7d7-459b-a131-1dc18351c0da

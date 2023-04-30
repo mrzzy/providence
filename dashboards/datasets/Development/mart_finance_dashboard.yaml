@@ -1,0 +1,269 @@
+table_name: mart_finance_dashboard
+main_dttm_col: transaction_date
+description: null
+default_endpoint: ''
+offset: 0
+cache_timeout: null
+schema: public
+sql: ''
+params: null
+template_params: null
+filter_select_enabled: false
+fetch_values_predicate: null
+extra: null
+uuid: 4874b9d9-f7d7-459b-a131-1dc18351c0da
+metrics:
+- metric_name: <new metric>
+  verbose_name: sum_abs_amount
+  metric_type: null
+  expression: abs(sum(transaction_amount))
+  description: null
+  d3format: null
+  extra:
+    warning_markdown: ''
+  warning_text: null
+- metric_name: count
+  verbose_name: COUNT(*)
+  metric_type: null
+  expression: COUNT(*)
+  description: null
+  d3format: null
+  extra:
+    warning_markdown: ''
+  warning_text: null
+columns:
+- column_name: year_month_week
+  verbose_name: null
+  is_dttm: true
+  is_active: null
+  type: TIMESTAMP WITHOUT TIME ZONE
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra:
+    warning_markdown: null
+- column_name: year_month
+  verbose_name: null
+  is_dttm: true
+  is_active: null
+  type: TIMESTAMP WITHOUT TIME ZONE
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra:
+    warning_markdown: null
+- column_name: transaction_amount
+  verbose_name: null
+  is_dttm: false
+  is_active: null
+  type: NUMERIC(18, 7)
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra:
+    warning_markdown: null
+- column_name: cash_amount
+  verbose_name: null
+  is_dttm: false
+  is_active: null
+  type: NUMERIC(18, 7)
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra:
+    warning_markdown: null
+- column_name: income
+  verbose_name: null
+  is_dttm: false
+  is_active: null
+  type: NUMERIC(18, 7)
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra:
+    warning_markdown: null
+- column_name: spending
+  verbose_name: null
+  is_dttm: false
+  is_active: null
+  type: NUMERIC(18, 7)
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra:
+    warning_markdown: null
+- column_name: transaction_description
+  verbose_name: null
+  is_dttm: false
+  is_active: null
+  type: VARCHAR(771)
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra:
+    warning_markdown: null
+- column_name: budget_category_group_id
+  verbose_name: null
+  is_dttm: false
+  is_active: null
+  type: VARCHAR(256)
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra:
+    warning_markdown: null
+- column_name: transaction_clearing_status
+  verbose_name: null
+  is_dttm: false
+  is_active: null
+  type: VARCHAR(256)
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra:
+    warning_markdown: null
+- column_name: budget_category_group
+  verbose_name: null
+  is_dttm: false
+  is_active: null
+  type: VARCHAR(256)
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra:
+    warning_markdown: null
+- column_name: payee_name
+  verbose_name: null
+  is_dttm: false
+  is_active: null
+  type: VARCHAR(256)
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra:
+    warning_markdown: null
+- column_name: budget_category
+  verbose_name: null
+  is_dttm: false
+  is_active: null
+  type: VARCHAR(256)
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra:
+    warning_markdown: null
+- column_name: transaction_is_transfer
+  verbose_name: null
+  is_dttm: false
+  is_active: null
+  type: BOOLEAN
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra:
+    warning_markdown: null
+- column_name: account_is_cash
+  verbose_name: null
+  is_dttm: false
+  is_active: null
+  type: BOOLEAN
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra:
+    warning_markdown: null
+- column_name: is_unaccounted
+  verbose_name: null
+  is_dttm: false
+  is_active: null
+  type: BOOLEAN
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra:
+    warning_markdown: null
+- column_name: is_passive
+  verbose_name: null
+  is_dttm: false
+  is_active: null
+  type: BOOLEAN
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra:
+    warning_markdown: null
+- column_name: transaction_date
+  verbose_name: null
+  is_dttm: true
+  is_active: null
+  type: DATE
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra:
+    warning_markdown: null
+- column_name: budget_is_expense
+  verbose_name: null
+  is_dttm: false
+  is_active: null
+  type: BOOLEAN
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: {}
+version: 1.0.0
+database_uuid: e553206f-b046-4a46-bfa8-ced510821c72

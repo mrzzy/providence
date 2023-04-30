@@ -1,0 +1,90 @@
+table_name: mart_finance_dashboard_uncleared
+main_dttm_col: year_month
+description: null
+default_endpoint: null
+offset: 0
+cache_timeout: null
+schema: public
+sql: ''
+params: null
+template_params: null
+filter_select_enabled: false
+fetch_values_predicate: null
+extra: null
+uuid: 4815e1ce-c3df-48a8-84fd-94674e8cbe40
+metrics:
+- metric_name: count
+  verbose_name: COUNT(*)
+  metric_type: null
+  expression: COUNT(*)
+  description: null
+  d3format: null
+  extra:
+    warning_markdown: ''
+  warning_text: null
+columns:
+- column_name: transaction_amount
+  verbose_name: null
+  is_dttm: false
+  is_active: null
+  type: NUMERIC(18, 7)
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra:
+    warning_markdown: null
+- column_name: transaction_description
+  verbose_name: null
+  is_dttm: false
+  is_active: null
+  type: VARCHAR(771)
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra:
+    warning_markdown: null
+- column_name: transaction_date
+  verbose_name: null
+  is_dttm: true
+  is_active: null
+  type: DATE
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra:
+    warning_markdown: null
+- column_name: in_accounting
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: BOOLEAN
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: {}
+- column_name: in_vendor
+  verbose_name: null
+  is_dttm: false
+  is_active: true
+  type: BOOLEAN
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra: {}
+version: 1.0.0
+database_uuid: e553206f-b046-4a46-bfa8-ced510821c72
