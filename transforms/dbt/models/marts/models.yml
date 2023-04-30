@@ -7,7 +7,7 @@
 version: 2
 models:
   - name: mart_finance_dashboard
-    description: One Big Table of Financial Transactions for populating the Finance Dashboard.
+    description: One Big Table of Accounting Transactions for populating the Finance Dashboard.
     columns:
       - name: year_month
         description: Year-month when the Transaction was made.
@@ -105,3 +105,27 @@ models:
           - dbt_utils.accepted_range:
               inclusive: false
               min_value: 0
+
+  - name: mart_finance_dashboard_uncleared
+    description: Uncleared Transactions for populating the Finance Dashboard.
+    columns:
+      - name: transaction_date
+        description: Date when the Uncleared Transaction was made.
+        tests:
+          - not_null
+      - name: transaction_description
+        description: User assigned description to the Uncleared Transaction.
+      - name: transaction_amount
+        description: Amount the Uncleared Transaction is worth.
+        tests:
+          - not_null
+      - name: in_accounting
+        description: Whether the Uncleared Transaction is accounted for as an emoji
+        tests:
+          - not_null
+      - name: in_vendor
+        description: >-
+          Whether the Uncleared Transaction is present in the vendor account
+          (eg. bank account) as an emoji
+        tests:
+          - not_null
