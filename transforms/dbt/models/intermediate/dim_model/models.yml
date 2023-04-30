@@ -355,12 +355,12 @@ models:
           - not_null
 
   - name: dim_account
-    description: An Account hosted by a vendor containing assets tracked in the accounting budget.
+    description: An Account containing assets tracked in the accounting budget.
     columns:
       - name: id
         description: Surrogate key of the Account.
         tests:
-          - not_null
+          - not_nulL
           - unique
       - name: name
         description: User assigned name of the Account.
@@ -503,27 +503,27 @@ models:
         tests:
           - not_null
 
-  - name: fact_bank_transaction
-    description: Bank Transactions
+  - name: fact_vendor_transaction
+    description: Transactions on an account vendor (eg. bank) hosted account .
     columns:
       - name: id
-        description: Unique surrogate key for the Bank Transaction.
+        description: Unique surrogate key for the Vendor Transaction.
         tests:
           - unique
           - not_null
       - name: description
-        description: Bank assigned description of the Bank Transaction.
+        description: Bank assigned description of the Vendor Transaction.
         tests:
           - not_null
       - name: date_id
-        description: ID of the Date when this Bank Transaction was made.
+        description: ID of the Date when this Vendor Transaction was made.
         tests:
           - not_null
           - relationships:
               to: ref("dim_date")
               field: id
       - name: account_id
-        description: ID of the Account this Bank Transaction was made on.
+        description: ID of the Account this Vendor Transaction was made on.
         tests:
           - not_null
           - relationships:
@@ -532,7 +532,7 @@ models:
       - name: amount
         description: >-
           Amount transacted. Negative values deduct from the balance of the
-          bank account while Positive values credit to its balance.
+          Vendor Account while Positive values credit to its balance.
         tests:
           - not_null
       - name: updated_at
