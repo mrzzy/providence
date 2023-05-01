@@ -15,6 +15,8 @@ providence:
       schema: public
       threads: 16
       type: redshift
+      # longer timeout since redshift-serverless needs some time to start up
+      connect_timeout: 30
     prod:
       dbname: mrzzy
       host: main.132307318913.ap-southeast-1.redshift-serverless.amazonaws.com
@@ -24,4 +26,6 @@ providence:
       schema: public
       threads: 16
       type: redshift
+      # longer timeout since redshift-serverless needs some time to start up
+      connect_timeout: 30
   target: "{{ env_var('DBT_TARGET', 'dev') }}"
