@@ -16,7 +16,8 @@ Providence aims to make personal finance less tedious with automation & less opa
     - **Pandas** to extract transactions from the Excel export I receive from my Bank.
     - **DBT** to reshape raw data into a Dimensional Model & a Data Mart dedicated for populating the Finance Dashboard.
 - **Data Pipelines** Airflow DAGs to orchestrate everything.
-[Finance Dashboard Screenshot](./assets/Finance Dashboard Screenshot.png)
+
+![Finance Dashboard Screenshot](./assets/Finance Dashboard Screenshot.png)
 - **Finance Dashboard** visualise the data to give me a picture of where I'm at financially & assist in me in budgeting / accounting.
     - **Unreconciled Transactions** Lists transactions that in my books but not in my bank account & vice versa. Its a great help when reconciling accounts.
 
