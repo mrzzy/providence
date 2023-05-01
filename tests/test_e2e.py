@@ -142,7 +142,7 @@ def test_ingest_dag(s3_bucket: str, redshift_db: str, redshift_external_schema: 
         )
         if status != 0:
             raise AssertionError(
-                f"Could not import concurrency pools from JSON:\n" + stdout
+                f"Could not import concurrency pools from JSON:\n{stdout}"
             )
 
         for dag_id in DAG_IDS:
