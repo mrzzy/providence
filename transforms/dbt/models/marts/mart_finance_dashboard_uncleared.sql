@@ -11,7 +11,8 @@ with
         where clearing_status = 'uncleared'
     ),
 
-    -- unreconciled vendor transactions: any transaction since account was last reconciled.
+    -- unreconciled vendor transactions:
+    -- any transaction since account was last reconciled.
     unreconciled_vendor as (
         select t.id, t.date_id, t.description, t.amount
         from {{ ref("fact_vendor_transaction") }} as t
@@ -27,4 +28,4 @@ select
     (case when v.id is not null then '✔️' else '❌' end) as in_vendor
 -- join possible matchingg transactions by amount
 from unreconciled_accounting as a
-    full join unreconciled_vendor as v on a.amount = v.amount
+full join unreconciled_vendor as v on a.amount = v.amount

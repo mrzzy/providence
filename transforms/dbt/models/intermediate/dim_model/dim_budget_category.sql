@@ -43,10 +43,10 @@ select
     c.goal_amount,
     c.goal_due,
     c.is_deleted,
-    coalesce(g.name like 'Expenses%', false) as is_expense,
     c.updated_at,
     c.effective_at,
     c.expired_at,
+    coalesce(g.name like 'Expenses%', false) as is_expense,
     c.expired_at is null as is_current
 from category_scd as c
 left join unique_groups as g on g.id = c.category_group_id

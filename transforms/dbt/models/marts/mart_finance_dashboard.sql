@@ -8,15 +8,15 @@ select
     d.year_month_week,
     -- transaction
     t.amount as transaction_amount,
-    (case when a.is_cash then t.amount else 0 end) as cash_amount,
     t.date_id as transaction_date,
     t.description as transaction_description,
-    t.transfer_account_id is not null as transaction_is_transfer,
     t.clearing_status as transaction_clearing_status,
-    -- account
     a.is_cash as account_is_cash,
-    -- category
     c.category_group_id as budget_category_group_id,
+    -- account
+    (case when a.is_cash then t.amount else 0 end) as cash_amount,
+    -- category
+    t.transfer_account_id is not null as transaction_is_transfer,
     coalesce(c.category_group, 'Unknown Category Group') as budget_category_group,
     coalesce(c.name, 'Unknown Category') as budget_category,
     coalesce(c.is_expense, false) as budget_is_expense,
@@ -25,14 +25,18 @@ select
     -- spending
     (
         case
-            when t.amount < 0 and t.transfer_account_id is null and a.is_cash then t.amount else 0
+            when t.amount < 0 and t.transfer_account_id is null and a.is_cash
+            then t.amount
+            else 0
         end
     ) as spending,
     coalesce(p.is_unaccounted, false) as is_unaccounted,
     -- income
     (
         case
-            when t.amount > 0 and t.transfer_account_id is null and a.is_cash then t.amount else 0
+            when t.amount > 0 and t.transfer_account_id is null and a.is_cash
+            then t.amount
+            else 0
         end
     ) as income,
     coalesce(p.is_passive, false) as is_passive
