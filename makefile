@@ -80,11 +80,7 @@ lint-dbt: $(DBT_DIR)
 
 $(eval $(call PHONY_RULE,build,dbt))
 build-dbt: $(DBT_DIR)
-	cd $< && dbt run --target $(DBT_TARGET)
-
-$(eval $(call PHONY_RULE,test,dbt))
-test-dbt: $(DBT_DIR)
-	cd $< && dbt test --target $(DBT_TARGET)
+	cd $< && dbt build --target $(DBT_TARGET)
 
 # Airflow Pipelines
 # NOTE: run 'airflow db init' before running 'make test-pipeline'
