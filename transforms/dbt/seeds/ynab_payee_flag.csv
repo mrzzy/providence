@@ -1,0 +1,7 @@
+payee_id,payee_name,is_unaccounted,is_passive
+10339a7c-b54b-46a8-9141-a793d5bdfb1a,Manual Balance Adjustment,1,0
+11e89a59-2f9c-4b76-9af9-3baf57eb7a18,Reconciliation Balance Adjustment,1,0
+3304a058-a21e-4dd6-8545-1f19102f8f9a,Standard Charted Bank,0,1
+376c5870-56ca-46f5-b1f2-7a2ebf5dadf3,UOB Bank,0,1
+05eae682-21f0-4fb9-8dcb-da72963fa5d5,SG Government: CPF,0,1
+99d50734-caa5-4638-a0bc-d8941a7984ff,Central Depository,0,1

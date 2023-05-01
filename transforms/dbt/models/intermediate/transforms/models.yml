@@ -63,3 +63,76 @@ models:
         description: Timestamp when the data was last updated / refreshed.
         tests:
           - not_null
+
+  - name: int_unique_enriched_bank_statement
+    description: Unique Bank Statement enriched with Account dimension ID.
+    columns:
+      - name: id
+        description: Unique Surrogate key for transaction in Bank Statement.
+        tests:
+          - unique
+          - not_null
+      - name: transacted_on
+        description: Date on which the Bank Transaction was made.
+        tests:
+          - not_null
+      - name: description
+        description: Date on which the Bank Transaction was made.
+        tests:
+          - not_null
+      - name: account_no
+        description: Bank account number.
+        tests:
+          - not_null
+      - name: account_id
+        description: ID of Account dimension representing the Bank Account.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("dim_account")
+              field: id
+      - name: name
+        description: Product name of the Bank Account.
+        tests:
+          - not_null
+      - name: deposit
+        description: Monetary amount credited to the Bank Account in the Transaction.
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0.0
+      - name: withdrawal
+        description: Monetary amount deducted from the Bank Account in the Transaction.
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0.0
+      - name: balance
+        description: Current Balance of the Bank account.
+        tests:
+          - not_null
+      - name: currency_code
+        description: "3 character ISO code of the currency used by Bank Account."
+        tests:
+          - not_null
+      - name: statement_begin
+        description: >-
+          Timestamp denoting the start the date range of the bank statement form
+          the Bank Account information was derived.
+        tests:
+          - not_null
+      - name: statement_end
+        description: >-
+          Timestamp denoting the end (inclusive) the date range of the bank statement
+          from which the Bank Account information was derived.
+        tests:
+          - not_null
+      - name: processed_on
+        description: Timestamp when the data was last extracted from Bank statement export.
+        tests:
+          - not_null
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "statement_begin <= statement_end"
+      - dbt_utils.expression_is_true:
+          expression: "statement_end <= processed_on"

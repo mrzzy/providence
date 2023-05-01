@@ -1,0 +1,84 @@
+slice_name: Expenses
+description: null
+certified_by: null
+certification_details: null
+viz_type: echarts_area
+params:
+  datasource: 4__table
+  viz_type: echarts_area
+  slice_id: 16
+  granularity_sqla: transaction_date
+  time_grain_sqla: P1M
+  time_range: Last year
+  metrics:
+  - <new metric>
+  groupby:
+  - budget_category
+  contributionMode: null
+  adhoc_filters:
+  - clause: WHERE
+    comparator: true
+    datasourceWarning: false
+    expressionType: SIMPLE
+    filterOptionName: filter_nyogkeowbel_ybvuj5cm13
+    isExtra: false
+    isNew: false
+    operator: ==
+    operatorId: IS_TRUE
+    sqlExpression: null
+    subject: budget_is_expense
+  order_desc: true
+  row_limit: 10000
+  truncate_metric: true
+  show_empty_columns: true
+  rolling_type: mean
+  rolling_periods: ''
+  time_compare: []
+  comparison_type: values
+  annotation_layers: []
+  forecastEnabled: false
+  forecastPeriods: 10
+  forecastInterval: 0.8
+  x_axis_title: ''
+  x_axis_title_margin: 15
+  y_axis_title: ''
+  y_axis_title_margin: 15
+  y_axis_title_position: Left
+  color_scheme: presetColors
+  seriesType: line
+  opacity: 1
+  show_value: false
+  stack: Stack
+  only_total: true
+  show_extra_controls: false
+  markerEnabled: false
+  markerSize: 6
+  zoomable: false
+  show_legend: true
+  legendType: scroll
+  legendOrientation: top
+  legendMargin: ''
+  x_axis_time_format: smart_date
+  rich_tooltip: true
+  tooltipSortByMetric: true
+  tooltipTimeFormat: smart_date
+  y_axis_format: $.0f
+  logAxis: false
+  minorSplitLine: false
+  truncateYAxis: false
+  y_axis_bounds:
+  - null
+  - null
+  extra_form_data: {}
+  dashboards:
+  - 2
+query_context: '{"datasource":{"id":4,"type":"table"},"force":false,"queries":[{"time_range":"Last
+  year","granularity":"transaction_date","filters":[{"col":"budget_is_expense","op":"==","val":true}],"extras":{"time_grain_sqla":"P1M","having":"","where":""},"applied_time_extras":{},"columns":["budget_category"],"metrics":["<new
+  metric>"],"orderby":[["<new metric>",false]],"annotation_layers":[],"row_limit":10000,"series_columns":["budget_category"],"series_limit":0,"order_desc":true,"url_params":{},"custom_params":{},"custom_form_data":{},"is_timeseries":true,"time_offsets":[],"post_processing":[{"operation":"pivot","options":{"index":["__timestamp"],"columns":["budget_category"],"aggregates":{"<new
+  metric>":{"operator":"mean"}},"drop_missing_columns":false}},{"operation":"rolling","options":{"rolling_type":"mean","window":1,"min_periods":0,"columns":{"<new
+  metric>":"<new metric>"}}},{"operation":"rename","options":{"columns":{"<new metric>":null},"level":0,"inplace":true}},{"operation":"flatten"}]}],"form_data":{"datasource":"4__table","viz_type":"echarts_area","slice_id":16,"granularity_sqla":"transaction_date","time_grain_sqla":"P1M","time_range":"Last
+  year","metrics":["<new metric>"],"groupby":["budget_category"],"contributionMode":null,"adhoc_filters":[{"clause":"WHERE","comparator":true,"datasourceWarning":false,"expressionType":"SIMPLE","filterOptionName":"filter_nyogkeowbel_ybvuj5cm13","isExtra":false,"isNew":false,"operator":"==","operatorId":"IS_TRUE","sqlExpression":null,"subject":"budget_is_expense"}],"order_desc":true,"row_limit":10000,"truncate_metric":true,"show_empty_columns":true,"rolling_type":"mean","rolling_periods":"","time_compare":[],"comparison_type":"values","annotation_layers":[],"forecastEnabled":false,"forecastPeriods":10,"forecastInterval":0.8,"x_axis_title":"","x_axis_title_margin":15,"y_axis_title":"","y_axis_title_margin":15,"y_axis_title_position":"Left","color_scheme":"presetColors","seriesType":"line","opacity":1,"show_value":false,"stack":"Stack","only_total":true,"show_extra_controls":false,"markerEnabled":false,"markerSize":6,"zoomable":false,"show_legend":true,"legendType":"scroll","legendOrientation":"top","legendMargin":"","x_axis_time_format":"smart_date","rich_tooltip":true,"tooltipSortByMetric":true,"tooltipTimeFormat":"smart_date","y_axis_format":"$.0f","logAxis":false,"minorSplitLine":false,"truncateYAxis":false,"y_axis_bounds":[null,null],"extra_form_data":{},"dashboards":[2],"force":false,"result_format":"json","result_type":"full"},"result_format":"json","result_type":"full"}'
+cache_timeout: null
+uuid: b2739d14-54bf-4d9f-9a94-67a30f82292f
+version: 1.0.0
+dataset_uuid: 4874b9d9-f7d7-459b-a131-1dc18351c0da

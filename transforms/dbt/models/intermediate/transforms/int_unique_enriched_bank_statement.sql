@@ -1,10 +1,10 @@
 --
 -- Providence
 -- Transforms
--- DBT Intermediate: Bank Transaction Fact table
+-- DBT Intermediate: Unique Enriched Bank Statement
 --
 with
-    keyed_transactions as (
+    keyed_statement as (
         select
             {{
                 dbt_utils.generate_surrogate_key(
@@ -14,11 +14,11 @@ with
         from {{ ref("stg_uob_statement") }}
     ),
 
-    unique_transactions as (
+    unique_statement as (
         (
             {{
                 deduplicate(
-                    relation="keyed_transactions",
+                    relation="keyed_statement",
                     partition_by="id",
                     order_by="processed_on desc",
                 )
@@ -26,13 +26,7 @@ with
         )
     )
 
--- grain: 1 row = 1 bank transaction
-select
-    t.id,
-    t.transacted_on as date_id,
-    a.id as account_id,
-    t.description,
-    t.processed_on as updated_at,
-    t.deposit - t.withdrawal as amount
-from unique_transactions as t
+-- enrich statement with account dimension
+select t.*, a.id as account_id
+from unique_statement as t
 left join {{ ref("dim_account") }} as a on a.vendor_id = t.account_no

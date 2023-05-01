@@ -1,7 +1,7 @@
 #
 # Providence
 # Transforms
-# DBT Intermediate Models
+# DBT Intermediate: Dimensional Model
 #
 
 version: 2
@@ -36,6 +36,9 @@ models:
           - not_null
       - name: weekday_short
         description: "3 character abbreviation of the name of the weekday."
+        test:
+          - not_null
+      - name: year_month_week
         test:
           - not_null
       - name: day_of_year
@@ -257,6 +260,10 @@ models:
         description: Whether the Category was deleted.
         tests:
           - not_null
+      - name: is_expense
+        description: Whether the Category is part of an Expense Category Group.
+        tests:
+          - not_null
       - name: updated_at
         description: Timestamp when the data was last updated / refreshed.
         tests:
@@ -321,7 +328,7 @@ models:
           - not_null
 
   - name: dim_payee
-    description: A Payee in transaction.
+    description: A Payee involved in an transaction.
     columns:
       - name: id
         description: ID that uniquely identifies the payee.
@@ -342,9 +349,17 @@ models:
         description: Timestamp when the data was last updated / refreshed.
         tests:
           - not_null
+      - name: is_unaccounted
+        description: Whether transactions made with this YNAB Payee is considered unaccounted.
+        tests:
+          - not_null
+      - name: is_passive
+        description: Whether transactions made this YNAB Payee is considered passive income.
+        tests:
+          - not_null
 
   - name: dim_account
-    description: An Account hosted by a vendor containing assets tracked in the accounting budget.
+    description: An Account containing assets tracked in the accounting budget.
     columns:
       - name: id
         description: Surrogate key of the Account.
@@ -362,9 +377,10 @@ models:
       - name: is_deleted
         description: Whether the account has been deleted in the accounting budget.
         tests:
-        - not_null
-      - name: is_liquid
-        description: Whether the funds in this account is budgetable.
+          - not_null
+      - name: is_cash
+        description: >-
+           Whether the funds in this account is has cash-like liquidity & is budgetable.
         tests:
           - not_null
       - name: budget_type
@@ -392,6 +408,8 @@ models:
         description: Vendor assigned ID to the Account.
       - name: vendor_type
         description: Vendor assigned Account type.
+      - name: last_reconciled_at
+        description: Timestamp when the Account was last reconciled with the Vendor.
       - name: updated_at
         description: Timestamp when the data was last updated / refreshed.
         tests:
@@ -464,7 +482,7 @@ models:
               to: ref("dim_budget_category")
               field: id
       - name: payee_id
-        description: ID of the Payee this Accounting Transaction was made to.
+        description: ID of the Payee involved in this Accounting Transaction.
         tests:
           - relationships:
               to: ref("dim_payee")
@@ -489,27 +507,27 @@ models:
         tests:
           - not_null
 
-  - name: fact_bank_transaction
-    description: Bank Transactions
+  - name: fact_vendor_transaction
+    description: Transactions on an account vendor (eg. bank) hosted account .
     columns:
       - name: id
-        description: Unique surrogate key for the Bank Transaction.
+        description: Unique surrogate key for the Vendor Transaction.
         tests:
           - unique
           - not_null
       - name: description
-        description: Bank assigned description of the Bank Transaction.
+        description: Bank assigned description of the Vendor Transaction.
         tests:
           - not_null
       - name: date_id
-        description: ID of the Date when this Bank Transaction was made.
+        description: ID of the Date when this Vendor Transaction was made.
         tests:
           - not_null
           - relationships:
               to: ref("dim_date")
               field: id
       - name: account_id
-        description: ID of the Account this Bank Transaction was made on.
+        description: ID of the Account this Vendor Transaction was made on.
         tests:
           - not_null
           - relationships:
@@ -518,7 +536,9 @@ models:
       - name: amount
         description: >-
           Amount transacted. Negative values deduct from the balance of the
-          bank account while Positive values credit to its balance.
+          Vendor Account while Positive values credit to its balance.
+        tests:
+          - not_null
       - name: updated_at
         description: Timestamp when the data was last updated / refreshed.
         tests:

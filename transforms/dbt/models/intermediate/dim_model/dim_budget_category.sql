@@ -7,12 +7,7 @@
 with
     category_scd as (
         select
-            {{
-                dbt_utils.star(
-                    ref("int_unique_budget_category"),
-                    except=["budget_month", "budgeted_amount"],
-                )
-            }},
+            *,
             cast(budget_month as timestamp) as effective_at,
             -- dimension row expire when the next dimension row becomes effective
             coalesce(
@@ -51,6 +46,7 @@ select
     c.updated_at,
     c.effective_at,
     c.expired_at,
+    coalesce(g.name like 'Expenses%', false) as is_expense,
     c.expired_at is null as is_current
 from category_scd as c
 left join unique_groups as g on g.id = c.category_group_id

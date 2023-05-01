@@ -31,4 +31,4 @@ select
 from
     {{ source("ynab", "source_ynab") }} as s,
     s.data.budget.months as m,
-    s.data.budget.categories as c
+    m.categories as c

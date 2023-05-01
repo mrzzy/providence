@@ -1,0 +1,79 @@
+table_name: mart_finance_dashboard_cash_flow
+main_dttm_col: transaction_date
+description: null
+default_endpoint: null
+offset: 0
+cache_timeout: null
+schema: public
+sql: ''
+params: null
+template_params: null
+filter_select_enabled: false
+fetch_values_predicate: null
+extra: null
+uuid: bbd8a5d7-0c31-456c-8de9-9581b25ee1b2
+metrics:
+- metric_name: count
+  verbose_name: COUNT(*)
+  metric_type: null
+  expression: COUNT(*)
+  description: null
+  d3format: null
+  extra:
+    warning_markdown: ''
+  warning_text: null
+columns:
+- column_name: year_month
+  verbose_name: null
+  is_dttm: true
+  is_active: null
+  type: TIMESTAMP WITHOUT TIME ZONE
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra:
+    warning_markdown: null
+- column_name: amount
+  verbose_name: null
+  is_dttm: false
+  is_active: null
+  type: NUMERIC(38, 7)
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra:
+    warning_markdown: null
+- column_name: src
+  verbose_name: null
+  is_dttm: false
+  is_active: null
+  type: VARCHAR(256)
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra:
+    warning_markdown: null
+- column_name: dest
+  verbose_name: null
+  is_dttm: false
+  is_active: null
+  type: VARCHAR(256)
+  advanced_data_type: null
+  groupby: true
+  filterable: true
+  expression: null
+  description: null
+  python_date_format: null
+  extra:
+    warning_markdown: null
+version: 1.0.0
+database_uuid: e553206f-b046-4a46-bfa8-ced510821c72

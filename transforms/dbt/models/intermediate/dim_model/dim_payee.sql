@@ -3,11 +3,8 @@
 -- Transforms
 -- DBT Intermediate: Payee Dimension
 --
-select
-    {{ dbt_utils.star(ref("stg_ynab_payee"), except=["scraped_on"]) }},
-    scraped_on as updated_at
-from
-    (
+with
+    unique_payees as (
         {{
             deduplicate(
                 relation=ref("stg_ynab_payee"),
@@ -16,3 +13,15 @@ from
             )
         }}
     )
+
+select
+    {{
+        dbt_utils.star(
+            ref("stg_ynab_payee"), except=["scraped_on"], relation_alias="p"
+        )
+    }},
+    p.scraped_on as updated_at,
+    coalesce(f.is_unaccounted, false) as is_unaccounted,
+    coalesce(f.is_passive, false) as is_passive
+from unique_payees as p
+left join {{ ref("ynab_payee_flag") }} as f on f.payee_id = p.id

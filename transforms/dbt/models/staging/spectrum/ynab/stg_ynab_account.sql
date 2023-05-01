@@ -11,6 +11,7 @@ select
     cast(a.closed as boolean) as is_closed,
     cast(a.deleted as boolean) as is_deleted,
     cast(a.transfer_payee_id as varchar) as payee_id,
+    cast(a.last_reconciled_at as timestamp) as last_reconciled_at,
     coalesce(
         cast(s._rest_api_src_scraped_on as timestamp), {{ timestamp_min() }}
     ) as scraped_on
