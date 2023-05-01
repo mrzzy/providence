@@ -21,7 +21,7 @@ with
 
     actual_balances as (
         select account_id, sum(amount) as balance
-        from {{ ref("fact_bank_transaction") }}
+        from {{ ref("fact_vendor_transaction") }}
         group by account_id
     )
 
