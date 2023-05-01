@@ -25,14 +25,11 @@ Providence aims to make personal finance less tedious with automation & less opa
 ```mermaid
 flowchart TB
     subgraph AWS
-        subgraph src[Data Sources]
-            ynab((YNAB)) --> rest-api[REST API Source]
-            simplygo-web((Simplygo)) --> simplygo[Simplygo Source]
-        end
+        ynab((YNAB)) --> rest-api[REST API Source]
+        simplygo-web((Simplygo)) --> simplygo[Simplygo Source]
 
-        rest-api & simplygo -->|json| lake[(AWS S3 Lake)]
-        uob((Bank Export)) -->|excel| lake --->|files| ext
-        lake -->|excel| pd{{Pandas}} -->|parquet| lake
+        rest-api & simplygo -->|json| lake[(AWS S3 Lake)] --->|files| ext
+        uob((Bank Export)) -->|excel| lake -->|excel| pd{{Pandas}} -->|parquet| lake
 
         subgraph dw[AWS Redshift Warehouse]
             ext[External Tables] -->|clean| dbt-models[DBT Models]
