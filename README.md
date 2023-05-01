@@ -214,5 +214,7 @@ erDiagram
     fact_bank_statement }|--|| dim_account: "on"
 ```
 
+See [DBT Docs](https://mrzzy.github.io/providence/#!/overview) for more details.
+
 ## License
 MIT.
