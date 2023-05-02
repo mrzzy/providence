@@ -1,7 +1,7 @@
 #
 # Providence
 # Data Pipelines
-# Ingest Manual Mapping
+# Ingest Manual Mappings
 #
 from textwrap import dedent
 from airflow.datasets import Dataset
@@ -97,6 +97,7 @@ def ingest_mapping_dag(
     begin >> drop_table >> create_table >> copy_s3_table >> commit  # type: ignore
 
 
+# dag to ingest mapping between YNAB budget account & Vendor account
 dag(
     dag_id="pvd_ingest_account_map",
     start_date=datetime(2023, 4, 18),
@@ -107,5 +108,20 @@ dag(
     redshift_table="map_account",
     create_table_sql="map_account.sql",
     mapping_path="providence/manual/mapping/account.csv",
+    out_dataset=DATASET_MAP_ACCOUNT,
+)
+
+
+# dag to ingest mapping between Bank card & Vendor Bank account
+dag(
+    dag_id="pvd_ingest_bank_card_map",
+    start_date=datetime(2023, 5, 2),
+    template_searchpath=[SQL_DIR],
+    schedule="@once",
+    **DAG_ARGS,
+)(ingest_mapping_dag)(
+    redshift_table="map_bank_card",
+    create_table_sql="map_bank_card.sql",
+    mapping_path="providence/manual/mapping/bank_card.csv",
     out_dataset=DATASET_MAP_ACCOUNT,
 )

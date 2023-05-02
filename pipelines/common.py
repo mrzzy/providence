@@ -43,6 +43,7 @@ DAG_ARGS = {
 }
 # datasets for data-aware dag scheduling
 DATASET_MAP_ACCOUNT = Dataset("redshift://map_account")
+DATASET_MAP_BANK_CARD = Dataset("redshift://map_bank_card")
 DATASET_SIMPLYGO = Dataset("redshift://simplygo")
 DATASET_YNAB = Dataset("redshift://ynab")
 DATASET_UOB = Dataset("redshift://uob")

@@ -13,6 +13,7 @@ from pendulum import datetime
 from common import (
     DAG_ARGS,
     DATASET_MAP_ACCOUNT,
+    DATASET_MAP_BANK_CARD,
     DATASET_SIMPLYGO,
     DATASET_YNAB,
     DATASET_UOB,
@@ -23,7 +24,13 @@ from common import (
 
 @dag(
     dag_id="pvd_transform_dbt",
-    schedule=[DATASET_MAP_ACCOUNT, DATASET_SIMPLYGO, DATASET_YNAB, DATASET_UOB],
+    schedule=[
+        DATASET_MAP_ACCOUNT,
+        DATASET_MAP_BANK_CARD,
+        DATASET_SIMPLYGO,
+        DATASET_YNAB,
+        DATASET_UOB,
+    ],
     start_date=datetime(2023, 4, 24, tz="utc"),
     **DAG_ARGS,
 )
