@@ -82,8 +82,10 @@ def ingest_simplygo_dag(
         image="ghcr.io/mrzzy/pvd-simplygo-src:{{ params.simplygo_src_tag }}",
         image_pull_policy="Always",
         arguments=[
+            # simplygo takes up to 5 days to clear & bill trips, capture the
+            # last 6 days worth of trips to ensure we save trips when they are billed.
             "--trips-from",
-            "{{ ds }}",
+            "{{ macros.ds_add(ds,-6) }}",
             "--trips-to",
             "{{ ds }}",
             "--output",
