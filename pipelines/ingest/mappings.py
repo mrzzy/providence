@@ -1,7 +1,7 @@
 #
 # Providence
 # Data Pipelines
-# Ingest Mapping
+# Ingest Manual Mapping
 #
 from textwrap import dedent
 from airflow.datasets import Dataset
