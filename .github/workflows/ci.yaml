@@ -86,6 +86,7 @@ jobs:
         env:
           AWS_REDSHIFT_USER: "${{ secrets.AWS_REDSHIFT_USER }}"
           AWS_REDSHIFT_PASSWORD: "${{ secrets.AWS_REDSHIFT_PASSWORD }}"
+          DBT_TARGET: prod
         working-directory: transforms/dbt
         run: |
           set -ex -o pipefail
