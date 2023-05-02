@@ -29,11 +29,7 @@ with
             traveled_on as travel_date_id,
             card_id as bank_card_id
         from {{ ref("stg_simplygo_trip_leg") }}
-    )
-
-select *
-from
-    (
+    ), unique_trip_legs as(
         {{
             deduplicate(
                 relation="trip_legs_duplicated",
@@ -42,3 +38,9 @@ from
             )
         }}
     )
+
+select t.*, a.id as account_id
+-- associate trip leg with bank account based on bank account used to pay for the leg
+from unique_trip_legs as t
+    left join {{ ref("stg_map_bank_card") }} as m on m.bank_card_id = t.bank_card_id
+    left join {{ ref("dim_account") }} as a on m.vendor = a.vendor and m.vendor_id = a.vendor_id

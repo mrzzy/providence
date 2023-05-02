@@ -3,9 +3,7 @@
 -- Transforms
 -- DBT Intermediate: Bank Card Dimension
 --
-select id, name, scraped_on as updated_at
-from
-    (
+with unique_cards as (
         {{
             deduplicate(
                 relation=ref("stg_simplygo_card"),
@@ -14,3 +12,6 @@ from
             )
         }}
     )
+
+select c.id, c.name, a.id as account_id, c.scraped_on as updated_at
+from unique_cards as c
