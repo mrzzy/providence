@@ -21,7 +21,7 @@ with
                 )
             }},
             posting_ref as billing_ref,
-            posting_ref is null as is_billed,
+            posting_ref is not null as is_billed,
             -- merged in travel timestamp in utc timezone
             convert_timezone('SGT', 'UTC', traveled_on + begin_at) as traveled_on,
             scraped_on as updated_at,
