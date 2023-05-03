@@ -1,7 +1,8 @@
 {
   "name": "pvd-ynab-sink",
+  "type": "module",
   "version": "0.0.1",
-  "description": "Providence YNAB Sink writes transactions to YNAB from AWS Redshift.",
+  "description": "Providence YNAB Sink writes transactions to YNAB from a SQL DB.",
   "main": "dist/index.js",
   "scripts": {
     "run": "tsc",
