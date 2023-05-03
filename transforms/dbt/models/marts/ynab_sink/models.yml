@@ -1,0 +1,66 @@
+#
+# Providence
+# Transforms
+# DBT Mart Models: YNAB Sink
+#
+
+version: 2
+
+models:
+  - name: mart_ynab_sink
+    description: Compile Transactions to be written to YNAB with the YNAB Sink.
+    columns:
+      - name: subtransaction_group_id
+        description: >-
+          Optional. If set Transactions with the same group ID should be created in
+          YNAB as subtransactions in the same parent Transaction.
+      - name: account_id
+        description: YNAB Budget Account ID to assign to the Transaction.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("stg_ynab_account")
+              field: id
+      - name: amount
+        description: Amount transacted in the transaction
+        tests:
+          - not_null
+      - name: payee_id
+        description: YNAB Payee ID to assign to the Transaction.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("stg_ynab_payee")
+              field: id
+      - name: category_id
+        description: YNAB assigned Budget Category ID.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("stg_ynab_budget_category")
+              field: id
+      - name: memo
+        description: Description to assign to the Transaction.
+        tests:
+          - not_null
+      - name: cleared
+        description: Reconciliation status of this Transaction.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - cleared
+                - uncleared
+                - reconciled
+      - name: approved
+        description: Whether the Transaction is approved.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - true
+                - false
+      - name: flag_color
+        description: Optional. Flag color to assign to the Transaction.
+      - name: import_id
+        description: Optional. Import ID to assign to the Transaction.
