@@ -16,6 +16,7 @@ from common import (
     DAG_ARGS,
     DATASET_MAP_ACCOUNT,
     K8S_LABELS,
+    REDSHIFT_POOL,
     SQL_DIR,
     k8s_env_vars,
 )
@@ -56,18 +57,21 @@ def ingest_mapping_dag(
         task_id="begin",
         conn_id="redshift_default",
         sql="BEGIN",
+        pool=REDSHIFT_POOL,
     )
 
     drop_table = SQLExecuteQueryOperator(
         task_id="drop_table",
         conn_id="redshift_default",
         sql="DROP TABLE IF EXISTS {{ params.redshift_schema }}.{{ params.redshift_table }}",
+        pool=REDSHIFT_POOL,
     )
 
     create_table = SQLExecuteQueryOperator(
         task_id="create_table",
         conn_id="redshift_default",
         sql="{% include params.create_table_sql %}",
+        pool=REDSHIFT_POOL,
     )
 
     copy_s3_table = S3ToRedshiftOperator(
@@ -77,6 +81,7 @@ def ingest_mapping_dag(
         schema="{{ params.redshift_schema }}",
         table="{{ params.redshift_table }}",
         copy_options=["FORMAT CSV", "IGNOREHEADER 1"],
+        pool=REDSHIFT_POOL,
     )
 
     commit = SQLExecuteQueryOperator(
@@ -84,6 +89,7 @@ def ingest_mapping_dag(
         conn_id="redshift_default",
         sql="COMMIT",
         outlets=[DATASET_MAP_ACCOUNT],
+        pool=REDSHIFT_POOL,
     )
 
     begin >> drop_table >> create_table >> copy_s3_table >> commit  # type: ignore

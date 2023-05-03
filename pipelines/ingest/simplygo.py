@@ -21,6 +21,7 @@ from common import (
     AWS_CONNECTION_ID,
     DAG_ARGS,
     K8S_LABELS,
+    REDSHIFT_POOL,
     SQL_DIR,
     get_aws_env,
     k8s_env_vars,
@@ -111,6 +112,7 @@ def ingest_simplygo_dag(
         conn_id="redshift_default",
         sql="DROP TABLE IF EXISTS {{ params.redshift_external_schema }}.{{ params.redshift_table }}",
         autocommit=True,
+        pool=REDSHIFT_POOL,
     )
 
     create_table = SQLExecuteQueryOperator(
@@ -119,6 +121,7 @@ def ingest_simplygo_dag(
         sql="{% include 'source_simplygo.sql' %}",
         autocommit=True,
         outlets=[DATASET_SIMPLYGO],
+        pool=REDSHIFT_POOL,
     )
     ingest_simplygo >> drop_table >> create_table  # type: ignore
 

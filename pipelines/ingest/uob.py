@@ -22,6 +22,7 @@ from common import (
     AWS_CONNECTION_ID,
     DAG_ARGS,
     K8S_LABELS,
+    REDSHIFT_POOL,
     SQL_DIR,
     get_aws_env,
     k8s_env_vars,
@@ -110,6 +111,7 @@ def ingest_uob_dag(
         conn_id="redshift_default",
         sql="DROP TABLE IF EXISTS {{ params.redshift_external_schema }}.{{ params.redshift_table }}",
         autocommit=True,
+        pool=REDSHIFT_POOL,
     )
 
     create_table = SQLExecuteQueryOperator(
@@ -118,6 +120,7 @@ def ingest_uob_dag(
         sql="{% include 'source_uob.sql' %}",
         autocommit=True,
         outlets=[DATASET_UOB],
+        pool=REDSHIFT_POOL,
     )
     convert_uob_pq >> drop_table >> create_table  # type: ignore
 

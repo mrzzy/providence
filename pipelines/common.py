@@ -17,6 +17,7 @@ from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
 )
 from kubernetes.client import models as k8s
 
+# Constants
 AWS_CONNECTION_ID = "aws_default"
 K8S_LABELS = {
     "app.kubernetes.io/part-of": "providence",
@@ -46,6 +47,8 @@ DATASET_MAP_ACCOUNT = Dataset("redshift://map_account")
 DATASET_SIMPLYGO = Dataset("redshift://simplygo")
 DATASET_YNAB = Dataset("redshift://ynab")
 DATASET_UOB = Dataset("redshift://uob")
+# connection pool to limit connections to AWS redshift
+REDSHIFT_POOL = "aws_redshift"
 
 
 def get_aws_env(conn_id: str) -> Dict[str, str]:
