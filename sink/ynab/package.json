@@ -5,7 +5,8 @@
   "description": "Providence YNAB Sink writes transactions to YNAB from a SQL DB.",
   "main": "dist/index.js",
   "scripts": {
-    "run": "tsc",
+    "build": "tsc",
+    "target": "tsc && node dist/index.js",
     "test": "jest"
   },
   "repository": {
