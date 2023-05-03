@@ -1,0 +1,24 @@
+{
+  "name": "pvd-ynab-sink",
+  "version": "0.0.1",
+  "description": "Providence YNAB Sink writes transactions to YNAB from AWS Redshift.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrzzy/providence.git"
+  },
+  "author": "mrzzy",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mrzzy/providence/issues"
+  },
+  "homepage": "https://github.com/mrzzy/providence#readme",
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.0.4"
+  }
+}
