@@ -1,6 +1,5 @@
 {
     "ynab_api": {"slots": 2, "description": "Guards access to the YNAB API"},
     "simplygo_web": {"slots": 1, "description": "Guards access to SimplyGo Website"},
-    "dbt": {"slots": 1, "description": "Guards access to the database backing DBT."},
-    "aws_redshift": {"slots": 8, "description": "Guards access AWS Redshift."}
+    "dbt": {"slots": 1, "description": "Guards access to the database backing DBT."}
 }
