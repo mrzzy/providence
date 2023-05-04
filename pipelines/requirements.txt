@@ -68,7 +68,7 @@ jmespath==1.0.1
 jsonpath-ng==1.5.3
 jsonschema==4.17.3
 kubernetes==23.6.0
-kubernetes-asyncio==24.2.2
+kubernetes-asyncio==24.2.3
 lazy-object-proxy==1.9.0
 linkify-it-py==2.0.0
 lockfile==0.12.2
