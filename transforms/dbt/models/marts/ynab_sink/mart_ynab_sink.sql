@@ -9,7 +9,7 @@ select
     'public_transport:' || t.billing_ref as subtransaction_group_id,
     t.account_id,
     t.updated_at as "date",
-    -- ynab expresses amounts in milliunits: 1000 milliunits = $1
+    -- ynab expresses amounts in milliunits: $1 = 1000 milliunits
     t.cost_sgd * 1000 as amount,
     '0b849f31-3e30-4a00-8b49-053a8365133f' as payee_id,
     -- SG Gov: Land Transport Authority
@@ -20,7 +20,6 @@ select
     true as approved,
     null as flag_color
 from {{ ref("fact_public_transport_trip_leg") }} as t
+    left join {{ ref("fact_accounting_transaction") }} as a on a.description = t.billing_ref
 where
-    t.is_billed
-    and t.billing_ref
-    not in (select distinct description from {{ ref("fact_accounting_transaction") }})
+    t.is_billed and a.id is null
