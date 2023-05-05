@@ -10,6 +10,12 @@ models:
   - name: mart_ynab_sink
     description: Compile Transactions to be written to YNAB with the YNAB Sink.
     columns:
+      - name: import_id
+        description: Optional. Import ID to assign to the Transaction. If set,
+          YNAB considers the transaction as imported. The ID is also used to
+          by YNAB  to deduplicate imports.
+        tests:
+          - not_null
       - name: subtransaction_group_id
         description: >-
           Optional. If set Transactions with the same group ID should be created in
@@ -62,5 +68,3 @@ models:
                 - false
       - name: flag_color
         description: Optional. Flag color to assign to the Transaction.
-      - name: import_id
-        description: Optional. Import ID to assign to the Transaction.
