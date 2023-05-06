@@ -28,11 +28,11 @@ export interface MartTableRow {
  * of one split transaction.
  */
 export function transformYNAB(rows: MartTableRow[]): SaveTransaction[] {
-  // convert date to ISO format: YYYY-MM-DD
   const datedRows = rows.map(({ date, ...params }) => {
     return {
       ...params,
-      date: `${date.getUTCFullYear()}-${date.getMonth()}-${date.getDay()}`,
+      // convert date to ISO format: YYYY-MM-DD, full ISO string has time after "T"
+      date: date.toISOString().split("T")[0],
     };
   });
   // full, non-split transactions
