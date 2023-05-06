@@ -6,7 +6,6 @@
 -- public transport trips yet to be accounted for.
 select
     'ynab_sink:' || t.id as import_id,
-    'public_transport:' || t.billing_ref as subtransaction_group_id,
     t.account_id,
     t.updated_at as "date",
     -- ynab expresses amounts in milliunits: $1 = 1000 milliunits
@@ -18,7 +17,11 @@ select
     t.billing_ref as memo,
     'uncleared' as cleared,
     true as approved,
-    null as flag_color
+    null as flag_color,
+    -- group trips billed together in the same same split transaction
+    'public_transport:' || t.billing_ref as split_id,
+    '0b849f31-3e30-4a00-8b49-053a8365133f' as split_payee_id,
+    t.billing_ref as split_memo
 from {{ ref("fact_public_transport_trip_leg") }} as t
     left join {{ ref("fact_accounting_transaction") }} as a on a.description = t.billing_ref
 where

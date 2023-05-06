@@ -16,10 +16,6 @@ models:
           by YNAB  to deduplicate imports.
         tests:
           - not_null
-      - name: subtransaction_group_id
-        description: >-
-          Optional. If set Transactions with the same group ID should be created in
-          YNAB as subtransactions in the same parent Transaction.
       - name: account_id
         description: YNAB Budget Account ID to assign to the Transaction.
         tests:
@@ -47,8 +43,6 @@ models:
               field: id
       - name: memo
         description: Description to assign to the Transaction.
-        tests:
-          - not_null
       - name: cleared
         description: Reconciliation status of this Transaction.
         tests:
@@ -68,3 +62,17 @@ models:
                 - false
       - name: flag_color
         description: Optional. Flag color to assign to the Transaction.
+
+      # fields set on split transactions composed of multiple subtransactions
+      - name: split_id
+        description: >-
+          Optional. If set Transactions with the same split ID should be created in
+          YNAB as subtransactions in the same parent Split Transaction.
+      - name: split_payee_id
+        description: YNAB Payee ID to assign to the parent Split Transaction.
+        tests:
+          - relationships:
+              to: ref("stg_ynab_payee")
+              field: id
+      - name: split_memo
+        description: Description to assign to the parent Split Transaction.

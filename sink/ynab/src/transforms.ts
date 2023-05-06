@@ -8,23 +8,25 @@ import { SaveTransaction } from "ynab";
 
 /// Expected schema of the YNAB Sink mart table providing transactions to import.
 export interface MartTableRow {
+  import_id: string;
   account_id: string;
-  subtransaction_group_id: string | null;
   date: Date;
   amount: number;
   payee_id: string;
   category_id: string;
-  memo: string;
+  memo: string | string;
   cleared: SaveTransaction.ClearedEnum;
   approved: boolean;
   flag_color: SaveTransaction.FlagColorEnum | null;
-  import_id: string;
+  split_id: string | null;
+  split_payee_id: string | null;
+  split_memo: string | null;
 }
 
 /**
  * Transform transfactions in the given mart table rows into YNAB API SaveTransactions.
  *
- * Groups transactions with the same subtransaction_group_id as the subtransactions
+ * Groups transactions with the same split_id as the subtransactions
  * of one split transaction.
  */
 export function transformYNAB(rows: MartTableRow[]): SaveTransaction[] {
@@ -37,16 +39,14 @@ export function transformYNAB(rows: MartTableRow[]): SaveTransaction[] {
   });
   // full, non-split transactions
   const transactions: SaveTransaction[] = datedRows.filter(
-    ({ subtransaction_group_id }) => subtransaction_group_id == null
+    ({ split_id }) => split_id == null
   );
 
   // group subtransactions into splits
   const splits: { [k: string]: typeof datedRows } = {};
   datedRows.forEach((row) => {
-    if (row.subtransaction_group_id != null) {
-      splits[row.subtransaction_group_id] = (
-        splits[row.subtransaction_group_id] ?? []
-      ).concat([row]);
+    if (row.split_id != null) {
+      splits[row.split_id] = (splits[row.split_id] ?? []).concat([row]);
     }
   });
 
@@ -62,6 +62,8 @@ export function transformYNAB(rows: MartTableRow[]): SaveTransaction[] {
         payee_id: subRows[0].payee_id,
         memo: subRows[0].memo,
         cleared: subRows[0].cleared,
+        // all subtransactions must be approved for the parent split transaction
+        // to be also considered to be approved.
         approved: subRows
           .map(({ approved }) => approved)
           .reduce((prevApproved, approved) => prevApproved && approved),
