@@ -4,16 +4,6 @@
 -- DBT Intermediate: Accounting Transaction Fact table
 --
 with
-    unique_transactions as (
-        {{
-            deduplicate(
-                relation=ref("stg_ynab_transaction"),
-                partition_by="id",
-                order_by="scraped_on desc",
-            )
-        }}
-    ),
-
     unique_subtransactions as (
         {{
             deduplicate(
@@ -43,7 +33,7 @@ with
             coalesce(s.is_deleted, t.is_deleted) as is_deleted,
             coalesce(s.amount, t.amount) as amount,
             greatest(s.scraped_on, t.scraped_on) as updated_at
-        from unique_transactions as t
+        from {{ ref("int_unique_transaction") }} as t
         left join unique_subtransactions as s on s.super_id = t.id
     )
 
