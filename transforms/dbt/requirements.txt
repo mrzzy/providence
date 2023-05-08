@@ -44,7 +44,7 @@ pytimeparse==1.1.8
 pytz==2023.3
 PyYAML==6.0
 requests==2.28.2
-s3transfer==0.6.0
+s3transfer==0.6.1
 six==1.16.0
 sqlparse==0.4.4
 stringcase==1.2.0
