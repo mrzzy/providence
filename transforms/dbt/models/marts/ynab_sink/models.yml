@@ -13,6 +13,7 @@ models:
       - name: import_id
         description: >-
           Unique Import ID to assign to the Transaction used by YNAB to deduplicate imports.
+          Must be 36 characters or less.
         tests:
           - not_null
           - unique
@@ -76,3 +77,6 @@ models:
               field: id
       - name: split_memo
         description: Description to assign to the parent Split Transaction.
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "length(import_id)<= 36"

@@ -5,7 +5,7 @@
 --
 -- public transport trips yet to be accounted for.
 select
-    'ynab_sink:' || t.id as import_id,
+    'pvd' || t.id as import_id,
     t.account_id,
     t.updated_at as "date",
     -- ynab expresses amounts in milliunits: $1 = 1000 milliunits
