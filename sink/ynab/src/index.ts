@@ -4,6 +4,8 @@
 
 import pg from "pg";
 import yargs from "yargs/yargs";
+import { API, SaveTransactionsResponse } from "ynab";
+import { transformYNAB } from "./transforms.js";
 
 // parse command line args
 const parser = yargs(process.argv.slice(2))
@@ -14,6 +16,7 @@ const parser = yargs(process.argv.slice(2))
     Environment variables:
     - AWS_REDSHIFT_USER: Username used to authenticate with AWS Redshift.
     - AWS_REDSHIFT_PASSWORD: Password used to authenticate with AWS Redshift.
+    - YNAB_ACCESS_TOKEN: Access Token used to authenticate with the YNAB API.
   `,
     (yargs) => {
       yargs.positional("dbHost", {
@@ -37,14 +40,16 @@ const parser = yargs(process.argv.slice(2))
 (async function () {
   const argv = parser.parseSync();
   // read database credentials from env vars
-  if (
-    !(
-      "AWS_REDSHIFT_USER" in process.env &&
-      "AWS_REDSHIFT_PASSWORD" in process.env
-    )
-  ) {
+  const hasEnvVars = [
+    "AWS_REDSHIFT_USER",
+    "AWS_REDSHIFT_PASSWORD",
+    "YNAB_ACCESS_TOKEN",
+  ]
+    .map((envVar) => envVar in process.env)
+    .reduce((hasAll, hasThis) => hasAll && hasThis);
+  if (!hasEnvVars) {
     console.error(
-      "Missing expected environment variables providing AWS Redshift credentials."
+      "Missing expected environment variables providing credentials."
     );
     parser.showHelp();
     process.exit(1);
@@ -62,8 +67,30 @@ const parser = yargs(process.argv.slice(2))
   });
   await db.connect();
 
-  const results = await db.query(`SELECT * FROM ${schema}.${table} LIMIT 1;`);
-  // TODO(mrzzy): call YNAB API with transactions
+  // query the database table for transactions
+  const results = await db.query(`SELECT * FROM ${schema}.${table};`);
+  const transactions = transformYNAB(results.rows);
 
+  // write transactions using the YNAB API
+  const ynab = new API(process.env.YNAB_ACCESS_TOKEN!);
+  let response: SaveTransactionsResponse | null = null;
+  debugger;
+  try {
+    response = await ynab.transactions.createTransactions(
+      argv.budgetId as string,
+      {
+        transactions,
+      }
+    );
+  } catch (error) {
+    console.error(
+      `Failed to create transactions with YNAB API: ${JSON.stringify(error)}`
+    );
+    process.exit(1);
+  }
+  const duplicateIds = response.data.duplicate_import_ids;
+  if (duplicateIds != null && duplicateIds.length > 0) {
+    console.warn(`Skipping duplicate import IDs: ${duplicateIds}`);
+  }
   process.exit();
 })();

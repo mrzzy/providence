@@ -11,6 +11,7 @@ export interface TableRow {
   import_id: string;
   account_id: string;
   date: Date;
+  // amount should be an integer as expected by the YNAB API
   amount: number;
   payee_id: string;
   category_id: string;

@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, it } from "@jest/globals";
-import { MartTableRow, transformYNAB } from "./transforms";
+import { TableRow as TableRow, transformYNAB } from "./transforms.js";
 import { SaveTransaction } from "ynab";
 
 describe("transformYNAB()", () => {
@@ -37,17 +37,17 @@ describe("transformYNAB()", () => {
     import_id: "import",
     subtransactions: null,
   };
-  it("transforms full transaction MartTableRow to YNAB's SaveTransaction", () => {
+  it("transforms full transaction TableRow to YNAB's SaveTransaction", () => {
     expect(transformYNAB([row])).toEqual([expected]);
   });
-  it("transaction split transactions MartTableRows to YNAB's SaveTransaction", () => {
+  it("transaction split transactions TableRows to YNAB's SaveTransaction", () => {
     // template multiple rows to simulate subtransactions in a split transaction
     const split_params = {
       split_id: "split",
       split_memo: row.memo,
       split_payee_id: row.payee_id,
     };
-    const rows: MartTableRow[] = [
+    const rows: TableRow[] = [
       {
         ...row,
         category_id: "category1",
