@@ -1,6 +1,5 @@
 /*
  * Providence
- * YNAB Sink
  */
 
 import pg from "pg";
@@ -10,11 +9,11 @@ import yargs from "yargs/yargs";
 const parser = yargs(process.argv.slice(2))
   .command(
     "$0 <dbHost> <tableId> <budgetId>",
-    `YNAB Sink imports transactions from YNAB Sink mart table in Postgres-compatible DB to YNAB.
+    `YNAB Sink imports transactions from a table in AWS Redshift.
 
-  Environment variables are used to pass database credentials:
-  - YNAB_SINK_DB_USERNAME: Username used to authenticate with the database.
-  - YNAB_SINK_DB_PASSWORD: Password used to authenticate with the database.
+    Environment variables:
+    - AWS_REDSHIFT_USER: Username used to authenticate with AWS Redshift.
+    - AWS_REDSHIFT_PASSWORD: Password used to authenticate with AWS Redshift.
   `,
     (yargs) => {
       yargs.positional("dbHost", {
@@ -24,7 +23,7 @@ const parser = yargs(process.argv.slice(2))
       });
       yargs.positional("tableId", {
         describe:
-          "<DATABASE>.<SCHEMA>.<TABLE> YNAB mart table to retrieve transactions from.",
+          "<DATABASE>.<SCHEMA>.<TABLE> AWS Redshift table to retrieve transactions from.",
         type: "string",
       });
       yargs.positional("budgetId", {
@@ -40,12 +39,12 @@ const parser = yargs(process.argv.slice(2))
   // read database credentials from env vars
   if (
     !(
-      "YNAB_SINK_DB_USERNAME" in process.env &&
-      "YNAB_SINK_DB_PASSWORD" in process.env
+      "AWS_REDSHIFT_USER" in process.env &&
+      "AWS_REDSHIFT_PASSWORD" in process.env
     )
   ) {
     console.error(
-      "Missing expected environment variables providing DB credentials."
+      "Missing expected environment variables providing AWS Redshift credentials."
     );
     parser.showHelp();
     process.exit(1);
@@ -58,8 +57,8 @@ const parser = yargs(process.argv.slice(2))
     host,
     port: Number.parseInt(portStr),
     database,
-    user: process.env.YNAB_SINK_DB_USERNAME,
-    password: process.env.YNAB_SINK_DB_PASSWORD,
+    user: process.env.AWS_REDSHIFT_USER,
+    password: process.env.AWS_REDSHIFT_PASSWORD,
   });
   await db.connect();
 

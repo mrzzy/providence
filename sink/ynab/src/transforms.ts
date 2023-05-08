@@ -6,8 +6,8 @@
 
 import { SaveTransaction } from "ynab";
 
-/// Expected schema of the YNAB Sink mart table providing transactions to import.
-export interface MartTableRow {
+/// Expected schema of the table providing transactions to import.
+export interface TableRow {
   import_id: string;
   account_id: string;
   date: Date;
@@ -24,14 +24,14 @@ export interface MartTableRow {
 }
 
 /**
- * Transform transfactions in the given mart table rows into YNAB API SaveTransactions.
+ * Transform transfactions in the given table rows into YNAB API SaveTransactions.
  *
  * Groups transactions with the same split_id as the subtransactions
  * of one parent split transaction.
  */
-export function transformYNAB(rows: MartTableRow[]): SaveTransaction[] {
+export function transformYNAB(rows: TableRow[]): SaveTransaction[] {
   // group subtransactions into splits
-  const splits: { [k: string]: MartTableRow[] } = {};
+  const splits: { [k: string]: TableRow[] } = {};
   rows.forEach((row) => {
     // consider full transactions are a special case of split transaction with only 1 split.
     // full transactions will be grouped by import_id, which is unique by transaction.
@@ -40,7 +40,7 @@ export function transformYNAB(rows: MartTableRow[]): SaveTransaction[] {
   });
 
   // whether the given rows of a split comprise a split (true) or full (false) transaction.
-  const isSplit = (rows: MartTableRow[]) => rows[0].split_id != null;
+  const isSplit = (rows: TableRow[]) => rows[0].split_id != null;
   return Object.values(splits).map((rows) => {
     return {
       account_id: rows[0].account_id,
