@@ -39,7 +39,6 @@ DAG_ARGS = {
         # email notification on task failure
         "email": ["program.nom@gmail.com"],
         "email_on_failure": True,
-        "tags": ["providence"],
     },
 }
 # datasets for data-aware dag scheduling

@@ -11,6 +11,7 @@ from textwrap import dedent
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 from pendulum import datetime
 from kubernetes.client import models as k8s
+from pendulum.date import Date
 from pendulum.datetime import DateTime
 from airflow.decorators import task, dag
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
@@ -76,19 +77,35 @@ def ingest_uob_dag(
     """
     )
 
-    # Find latest UOB export
+    # Find a manual UOB exports to import to build convert_uob_pq task args
     @task
-    def find_uob_export(params: Dict[str, Any] = None, data_interval_end: DateTime = None):  # type: ignore
+    def build_convert_args(
+        params: Dict[str, Any] = None,  # type: ignore
+        ds: str = None,  # type: ignore
+        data_interval_start: DateTime = None,  # type: ignore
+        data_interval_end: DateTime = None,  # type: ignore
+    ):
         s3 = S3Hook()
+        # assume that s3 objects modified between the data interval are new
+        # exports to be imported
         export_keys = s3.list_keys(
             bucket_name=params["s3_bucket"],
-            prefix=f"{params['export_prefix']}",
+            prefix=params["export_prefix"],
+            from_datetime=data_interval_start,
+            to_datetime=data_interval_end,
         )
-        # exports are given a increasing numeric suffix, use max() to return the last one
-        return f"s3://{params['s3_bucket']}/{max(export_keys)}"
+        # build convert_uob_pq's pandas-etl transform args
+        return [
+            [
+                "extract_uob",
+                f"s3://{params['s3_bucket']}/{key}",
+                f"s3://{params['s3_bucket']}/providence/grade=raw/source=uob/date={ds}/export.pq",
+            ]
+            for key in export_keys
+        ]
 
     # Convert UOB transaction export to Parquet
-    convert_uob_pq = KubernetesPodOperator(
+    convert_uob_pq = KubernetesPodOperator.partial(
         task_id="convert_uob_pq",
         image="ghcr.io/mrzzy/pvd-pandas-etl-tfm:{{ params.pandas_etl_tag }}",
         image_pull_policy="Always",
@@ -97,13 +114,8 @@ def ingest_uob_dag(
             "app.kubernetes.io/name": "pvd-pandas-etl-tfm",
             "app.kubernetes.io/version": "{{ params.pandas_etl_tag }}",
         },
-        arguments=[
-            "extract_uob",
-            find_uob_export(),
-            "s3://{{ params.s3_bucket }}/providence/grade=raw/source=uob/date={{ ds }}/export.pq",
-        ],
         env_vars=k8s_env_vars(get_aws_env(AWS_CONNECTION_ID)),
-    )
+    ).expand(arguments=build_convert_args())
 
     # expose ingested data via redshift external table
     drop_table = SQLExecuteQueryOperator(
