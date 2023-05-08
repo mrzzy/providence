@@ -11,11 +11,11 @@ models:
     description: Compile Transactions to be written to YNAB with the YNAB Sink.
     columns:
       - name: import_id
-        description: Optional. Import ID to assign to the Transaction. If set,
-          YNAB considers the transaction as imported. The ID is also used to
-          by YNAB  to deduplicate imports.
+        description: >-
+          Unique Import ID to assign to the Transaction used by YNAB to deduplicate imports.
         tests:
           - not_null
+          - unique
       - name: account_id
         description: YNAB Budget Account ID to assign to the Transaction.
         tests:

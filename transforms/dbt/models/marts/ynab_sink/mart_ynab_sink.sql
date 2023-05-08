@@ -18,7 +18,7 @@ select
     'uncleared' as cleared,
     true as approved,
     null as flag_color,
-    -- group trips billed together in the same same split transaction
+    -- group trips billed together in the same split_id under the same split transaction
     'public_transport:' || t.billing_ref as split_id,
     '0b849f31-3e30-4a00-8b49-053a8365133f' as split_payee_id,
     t.billing_ref as split_memo
