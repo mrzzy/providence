@@ -31,7 +31,7 @@ services:
       AIRFLOW_CONN_PVD_YNAB_SRC: |
         {
             "conn_type": "generic",
-            "password": "${YNAB_SRC_ACCESS_TOKEN}"
+            "password": "${YNAB_ACCESS_TOKEN}"
         }
       AIRFLOW_CONN_REDSHIFT_DEFAULT: |
         {

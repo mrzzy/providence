@@ -124,7 +124,7 @@ def test_ingest_dag(s3_bucket: str, redshift_db: str, redshift_external_schema: 
         - AWS_REDSHIFT_PASSWORD: Redshift password.
         - AWS_REDSHIFT_DB: Redshift database to use.
     - SimplyGo credentials: SIMPLYGO_SRC_USERNAME & SIMPLYGO_SRC_PASSWORD
-    - YNAB credentials: YNAB_SRC_ACCESS_TOKEN
+    - YNAB credentials: YNAB_ACCESS_TOKEN
     - access to a Kubernetes cluster configured via a kube config file provided
         by the 'KUBECONFIG' env var.
     """
