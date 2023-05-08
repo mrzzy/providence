@@ -25,7 +25,7 @@ models:
               to: ref("stg_ynab_account")
               field: id
       - name: amount
-        description: Amount transacted in the transaction
+        description: Amount transacted in the transaction in YNAB milliunits as an integer.
         tests:
           - not_null
       - name: payee_id

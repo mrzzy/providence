@@ -9,7 +9,7 @@ select
     t.account_id,
     t.updated_at as "date",
     -- ynab expresses amounts in milliunits: $1 = 1000 milliunits
-    t.cost_sgd * 1000 as amount,
+    cast(t.cost_sgd * 1000 as int) as amount,
     '0b849f31-3e30-4a00-8b49-053a8365133f' as payee_id,
     -- SG Gov: Land Transport Authority
     '8efad1f9-ef85-45e4-a85e-74f0207dc2c1' as category_id,
