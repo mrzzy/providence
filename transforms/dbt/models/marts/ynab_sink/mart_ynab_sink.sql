@@ -16,7 +16,7 @@ select
     -- Public Transport budget category
     t.billing_ref as memo,
     'uncleared' as cleared,
-    true as approved,
+    false as approved,
     null as flag_color,
     -- group trips billed together in the same split_id under the same split transaction
     'public_transport:' || t.billing_ref as split_id,
