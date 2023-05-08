@@ -14,13 +14,14 @@ select
     -- SG Gov: Land Transport Authority
     '8efad1f9-ef85-45e4-a85e-74f0207dc2c1' as category_id,
     -- Public Transport budget category
-    t.billing_ref as memo,
+    t.source || ' -> ' || t.destination as memo,
     'uncleared' as cleared,
     false as approved,
     null as flag_color,
     -- group trips billed together in the same split_id under the same split transaction
     'public_transport:' || t.billing_ref as split_id,
     '0b849f31-3e30-4a00-8b49-053a8365133f' as split_payee_id,
+    -- warning: do not change, as it will break the left join below
     t.billing_ref as split_memo
 from {{ ref("fact_public_transport_trip_leg") }} as t
     left join {{ ref("fact_accounting_transaction") }} as a on a.description = t.billing_ref
