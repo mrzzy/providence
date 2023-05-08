@@ -27,55 +27,45 @@ export interface MartTableRow {
  * Transform transfactions in the given mart table rows into YNAB API SaveTransactions.
  *
  * Groups transactions with the same split_id as the subtransactions
- * of one split transaction.
+ * of one parent split transaction.
  */
 export function transformYNAB(rows: MartTableRow[]): SaveTransaction[] {
-  const datedRows = rows.map(({ date, ...params }) => {
+  // group subtransactions into splits
+  const splits: { [k: string]: MartTableRow[] } = {};
+  rows.forEach((row) => {
+    // consider full transactions are a special case of split transaction with only 1 split.
+    // full transactions will be grouped by import_id, which is unique by transaction.
+    const group_id = row.split_id ?? row.import_id;
+    splits[group_id] = (splits[group_id] ?? []).concat([row]);
+  });
+
+  // whether the given rows of a split comprise a split (true) or full (false) transaction.
+  const isSplit = (rows: MartTableRow[]) => rows[0].split_id != null;
+  return Object.values(splits).map((rows) => {
     return {
-      ...params,
-      // convert date to ISO format: YYYY-MM-DD, full ISO string has time after "T"
-      date: date.toISOString().split("T")[0],
+      account_id: rows[0].account_id,
+      // obtain only date part of iso by clipping after 'T' delimiter
+      date: rows[0].date.toISOString().split("T")[0],
+      amount: rows
+        .map(({ amount }) => amount)
+        .reduce((sum, amount) => sum + amount),
+      // category for split transactions is automatically set by YNAB.
+      category_id: isSplit(rows) ? null : rows[0].category_id,
+      payee_id: isSplit(rows) ? rows[0].split_payee_id : rows[0].payee_id,
+      memo: isSplit(rows) ? rows[0].split_memo : rows[0].memo,
+      cleared: rows[0].cleared,
+      // all subtransactions must be approved for the parent split transaction
+      // to be also considered to be approved.
+      approved: rows
+        .map(({ approved }) => approved)
+        .reduce((prevApproved, approved) => prevApproved && approved),
+      flag_color: rows[0].flag_color,
+      import_id: rows[0].import_id,
+      subtransactions: !isSplit(rows)
+        ? null
+        : rows.map(({ amount, payee_id, category_id, memo }) => {
+            return { amount, payee_id, category_id, memo };
+          }),
     };
   });
-  // full, non-split transactions
-  const transactions: SaveTransaction[] = datedRows.filter(
-    ({ split_id }) => split_id == null
-  );
-
-  // group subtransactions into splits
-  const splits: { [k: string]: typeof datedRows } = {};
-  datedRows.forEach((row) => {
-    if (row.split_id != null) {
-      splits[row.split_id] = (splits[row.split_id] ?? []).concat([row]);
-    }
-  });
-
-  // derive parent, subtransactions in split transaction
-  const splitTransactions: SaveTransaction[] = Object.values(splits).map(
-    (subRows) => {
-      return {
-        account_id: subRows[0].account_id,
-        date: subRows[0].date,
-        amount: subRows
-          .map(({ amount }) => amount)
-          .reduce((sum, amount) => sum + amount),
-        payee_id: subRows[0].payee_id,
-        memo: subRows[0].memo,
-        cleared: subRows[0].cleared,
-        // all subtransactions must be approved for the parent split transaction
-        // to be also considered to be approved.
-        approved: subRows
-          .map(({ approved }) => approved)
-          .reduce((prevApproved, approved) => prevApproved && approved),
-        flag_color: subRows[0].flag_color,
-        import_id: subRows[0].import_id,
-        subtransactions: subRows.map(
-          ({ amount, payee_id, category_id, memo }) => {
-            return { amount, payee_id, category_id, memo };
-          }
-        ),
-      };
-    }
-  );
-  return transactions.concat(splitTransactions);
 }

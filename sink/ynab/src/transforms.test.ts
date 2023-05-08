@@ -35,6 +35,7 @@ describe("transformYNAB()", () => {
     approved: false,
     flag_color: SaveTransaction.FlagColorEnum.Red,
     import_id: "import",
+    subtransactions: null,
   };
   it("transforms full transaction MartTableRow to YNAB's SaveTransaction", () => {
     expect(transformYNAB([row])).toEqual([expected]);
@@ -50,8 +51,8 @@ describe("transformYNAB()", () => {
       {
         ...row,
         category_id: "category1",
-        payee_id: "payee2",
-        memo: "memo3",
+        payee_id: "payee1",
+        memo: "memo1",
         amount: 1,
         ...split_params,
       },
