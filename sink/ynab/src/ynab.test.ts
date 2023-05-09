@@ -1,11 +1,11 @@
 /*
  * Providence
  * YNAB Sink
- * Transforms Unit Tests
+ * YNAB Unit Tests
  */
 
 import { describe, expect, it } from "@jest/globals";
-import { TableRow as TableRow, transformYNAB } from "./transforms.js";
+import { TableRow as TableRow, transformYNAB } from "./ynab.js";
 import { SaveTransaction } from "ynab";
 
 describe("transformYNAB()", () => {

@@ -1,7 +1,7 @@
 /*
  * Providence
  * YNAB Sink
- * Transforms
+ * YNAB
  */
 
 import { SaveTransaction } from "ynab";
