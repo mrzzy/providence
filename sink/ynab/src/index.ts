@@ -1,11 +1,13 @@
 /*
  * Providence
+ * YNAB Sink
  */
 
 import pg from "pg";
 import yargs from "yargs/yargs";
-import { API, SaveTransactionsResponse } from "ynab";
-import { transformYNAB } from "./transforms.js";
+import { API } from "ynab";
+import { createYNABTransactions, toYNABTransactions } from "./ynab.js";
+import { checkEnv } from "./utility.js";
 
 // parse command line args
 const parser = yargs(process.argv.slice(2))
@@ -65,32 +67,17 @@ const parser = yargs(process.argv.slice(2))
     user: process.env.AWS_REDSHIFT_USER,
     password: process.env.AWS_REDSHIFT_PASSWORD,
   });
+  // a connection has to be made first before querying, otherwise queries will
+  // end up stuck in the query queue and never evaluate.
   await db.connect();
 
   // query the database table for transactions
   const results = await db.query(`SELECT * FROM ${schema}.${table};`);
-  const transactions = transformYNAB(results.rows);
-
   // write transactions using the YNAB API
-  const ynab = new API(process.env.YNAB_ACCESS_TOKEN!);
-  let response: SaveTransactionsResponse | null = null;
-  debugger;
-  try {
-    response = await ynab.transactions.createTransactions(
-      argv.budgetId as string,
-      {
-        transactions,
-      }
-    );
-  } catch (error) {
-    console.error(
-      `Failed to create transactions with YNAB API: ${JSON.stringify(error)}`
-    );
-    process.exit(1);
-  }
-  const duplicateIds = response.data.duplicate_import_ids;
-  if (duplicateIds != null && duplicateIds.length > 0) {
-    console.warn(`Skipping duplicate import IDs: ${duplicateIds}`);
-  }
+  createYNABTransactions(
+    new API(process.env.YNAB_ACCESS_TOKEN!),
+    argv.budgetId as string,
+    toYNABTransactions(results.rows)
+  );
   process.exit();
 })();

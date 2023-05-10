@@ -5,6 +5,7 @@
  */
 
 import { SaveTransaction } from "ynab";
+import { API, SaveTransactionsResponse } from "ynab";
 
 /// Expected schema of the table providing transactions to import.
 export interface TableRow {
@@ -30,7 +31,7 @@ export interface TableRow {
  * Groups transactions with the same split_id as the subtransactions
  * of one parent split transaction.
  */
-export function transformYNAB(rows: TableRow[]): SaveTransaction[] {
+export function toYNABTransactions(rows: TableRow[]): SaveTransaction[] {
   // group subtransactions into splits
   const splits: { [k: string]: TableRow[] } = {};
   rows.forEach((row) => {
@@ -69,4 +70,34 @@ export function transformYNAB(rows: TableRow[]): SaveTransaction[] {
           }),
     };
   });
+}
+
+/**
+ * Create transactions in the given YNAB budget, ignoring duplicates.
+ *
+ * @param ynab YNAB API client used to make the create transaction API request.k
+ * @param budgetId ID of the YNAB budget to create transactions within.
+ * @param List of transactions to create.
+ * @throws Error if one is encountered trying to create transactions.
+ */
+export async function createYNABTransactions(
+  ynab: API,
+  budgetId: string,
+  transactions: SaveTransaction[]
+) {
+  let response: SaveTransactionsResponse | null = null;
+  try {
+    response = await ynab.transactions.createTransactions(budgetId, {
+      transactions,
+    });
+  } catch (error) {
+    throw `Failed to create transactions with YNAB API: ${JSON.stringify(
+      error
+    )}`;
+  }
+
+  const duplicateIds = response.data.duplicate_import_ids;
+  if (duplicateIds != null && duplicateIds.length > 0) {
+    console.warn(`Skipping duplicate import IDs: ${duplicateIds}`);
+  }
 }
