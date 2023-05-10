@@ -29,7 +29,7 @@ export function toYNABTransactions(rows: TableRow[]): SaveTransaction[] {
   return Object.values(splits).map((rows) => {
     return {
       account_id: rows[0].account_id,
-      // obtain only date part of iso by clipping after 'T' delimiter
+      // obtain only date part of iso date by clipping after 'T' delimiter
       date: rows[0].date.toISOString().split("T")[0],
       amount: rows
         .map(({ amount }) => amount)
