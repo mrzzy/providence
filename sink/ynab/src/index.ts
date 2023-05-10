@@ -10,6 +10,7 @@ import { checkEnv } from "./utility.js";
 import { queryDBTable } from "./db.js";
 
 // parse command line args
+// 2 - skip 'node' & 'index.ts' in argv
 const parser = yargs(process.argv.slice(2))
   .command(
     "$0 <dbHost> <tableId> <budgetId>",
