@@ -167,7 +167,7 @@ jobs:
       matrix:
         sink:
           - ynab
-    name: "${{ matrix.transform }} Sink: Publish Container image"
+    name: "${{ matrix.sink }} Sink: Publish Container image"
     runs-on: ubuntu-22.04
     # add permissions needed to push containers to GHCR with GITHUB_TOKEN
     permissions:
@@ -180,8 +180,8 @@ jobs:
         with:
           username: "${{ github.actor }}"
           password: "${{ secrets.GITHUB_TOKEN }}"
-          name: "pvd-${{ matrix.transform }}-sink"
-          context_dir: "sinks/${{ matrix.transform }}"
+          name: "pvd-${{ matrix.sink }}-sink"
+          context_dir: "sinks/${{ matrix.sink }}"
 
   e2e-test:
     needs:
