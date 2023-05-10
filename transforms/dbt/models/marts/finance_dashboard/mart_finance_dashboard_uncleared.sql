@@ -17,7 +17,9 @@ with
         select t.id, t."date" as date_id, t.description, t.amount
         from {{ ref("int_unique_transaction") }} as t
         inner join
-            (select distinct super_id from {{ ref("fact_accounting_transaction") }}) as s
+            (
+                select distinct super_id from {{ ref("fact_accounting_transaction") }}
+            ) as s
             on s.super_id = t.id
     ),
 

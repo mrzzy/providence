@@ -3,7 +3,9 @@
 -- Transforms
 -- DBT Intermediate: Unique Accounting Transactions
 --
-select * from (
+select *
+from
+    (
         {{
             deduplicate(
                 relation=ref("stg_ynab_transaction"),
@@ -11,4 +13,4 @@ select * from (
                 order_by="scraped_on desc",
             )
         }}
-)
+    )
