@@ -6,7 +6,7 @@
 
 import { jest, describe, expect, it } from "@jest/globals";
 import { TableRow } from "./db.js";
-import { SaveTransaction, API, PostTransactionsWrapper } from "ynab";
+import { API, PostTransactionsWrapper } from "ynab";
 import { createYNABTransactions, toYNABTransactions } from "./ynab.js";
 import { modelSaveTransaction, modelTableRow } from "./testModels.js";
 

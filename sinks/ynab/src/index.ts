@@ -6,7 +6,6 @@
 import yargs from "yargs/yargs";
 import { API } from "ynab";
 import { createYNABTransactions, toYNABTransactions } from "./ynab.js";
-import { checkEnv } from "./utility.js";
 import { queryDBTable } from "./db.js";
 
 // parse command line args
@@ -45,12 +44,16 @@ const parser = yargs(process.argv.slice(2))
 (async function () {
   const argv = parser.parseSync();
   // read database credentials from env vars
-  const envVars = [
+  const [redshift_user, redshift_password, ynab_token] = [
     "AWS_REDSHIFT_USER",
     "AWS_REDSHIFT_PASSWORD",
     "YNAB_ACCESS_TOKEN",
-  ];
-  if (!checkEnv(envVars)) {
+  ].map((key) => process.env[key]);
+  if (
+    redshift_user == null ||
+    redshift_password == null ||
+    ynab_token == null
+  ) {
     console.error(
       "Missing expected environment variables providing credentials."
     );
@@ -61,12 +64,12 @@ const parser = yargs(process.argv.slice(2))
   const rows = await queryDBTable(
     argv.dbHost as string,
     argv.tableId as string,
-    process.env.AWS_REDSHIFT_USER!,
-    process.env.AWS_REDSHIFT_PASSWORD!
+    redshift_user,
+    redshift_password
   );
   // write transactions using the YNAB API
   createYNABTransactions(
-    new API(process.env.YNAB_ACCESS_TOKEN!),
+    new API(ynab_token),
     argv.budgetId as string,
     toYNABTransactions(rows)
   );
