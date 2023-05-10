@@ -5,56 +5,25 @@
  */
 
 import { jest, describe, expect, it } from "@jest/globals";
-import {
-  TableRow,
-  createYNABTransactions,
-  toYNABTransactions,
-} from "./ynab.js";
+import { TableRow } from "./db.js";
 import { SaveTransaction, API, PostTransactionsWrapper } from "ynab";
-
-const modelSaveTransaction = {
-  account_id: "account",
-  date: "2023-05-04",
-  amount: 2,
-  payee_id: "payee",
-  category_id: "category",
-  memo: "memo",
-  cleared: SaveTransaction.ClearedEnum.Cleared,
-  approved: false,
-  flag_color: SaveTransaction.FlagColorEnum.Red,
-  import_id: "import",
-  subtransactions: null,
-};
+import { createYNABTransactions, toYNABTransactions } from "./ynab.js";
+import { modelSaveTransaction, modelTableRow } from "./testModels.js";
 
 describe("toYNABTransactions()", () => {
-  const row = {
-    account_id: "account",
-    date: new Date("2023-05-04"),
-    amount: 2,
-    payee_id: "payee",
-    category_id: "category",
-    memo: "memo",
-    cleared: SaveTransaction.ClearedEnum.Cleared,
-    approved: false,
-    flag_color: SaveTransaction.FlagColorEnum.Red,
-    import_id: "import",
-    split_id: null,
-    split_memo: null,
-    split_payee_id: null,
-  };
   it("transforms full transaction TableRow to YNAB's SaveTransaction", () => {
-    expect(toYNABTransactions([row])).toEqual([modelSaveTransaction]);
+    expect(toYNABTransactions([modelTableRow])).toEqual([modelSaveTransaction]);
   });
   it("transaction split transactions TableRows to YNAB's SaveTransaction", () => {
     // template multiple rows to simulate subtransactions in a split transaction
     const split_params = {
       split_id: "split",
-      split_memo: row.memo,
-      split_payee_id: row.payee_id,
+      split_memo: modelTableRow.memo,
+      split_payee_id: modelTableRow.payee_id,
     };
     const rows: TableRow[] = [
       {
-        ...row,
+        ...modelTableRow,
         category_id: "category1",
         payee_id: "payee1",
         memo: "memo1",
@@ -62,7 +31,7 @@ describe("toYNABTransactions()", () => {
         ...split_params,
       },
       {
-        ...row,
+        ...modelTableRow,
         category_id: "category2",
         payee_id: "payee2",
         memo: "memo2",
@@ -70,7 +39,7 @@ describe("toYNABTransactions()", () => {
         ...split_params,
       },
       {
-        ...row,
+        ...modelTableRow,
         category_id: "category3",
         payee_id: "payee3",
         memo: "memo3",
@@ -137,9 +106,8 @@ describe("createTransaction", () => {
       };
     });
 
-    const ynab = await import("ynab");
-    const api = new ynab.API("token");
-    debugger;
+    const mockYNAB = await import("ynab");
+    const api = new mockYNAB.API("token");
     createYNABTransactions(api, "budget", [modelSaveTransaction]);
     const nCalls = (
       api.transactions.createTransactions as jest.Mock<

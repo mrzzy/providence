@@ -3,11 +3,11 @@
  * YNAB Sink
  */
 
-import pg from "pg";
 import yargs from "yargs/yargs";
 import { API } from "ynab";
 import { createYNABTransactions, toYNABTransactions } from "./ynab.js";
 import { checkEnv } from "./utility.js";
+import { queryDBTable } from "./db.js";
 
 // parse command line args
 const parser = yargs(process.argv.slice(2))
@@ -56,28 +56,18 @@ const parser = yargs(process.argv.slice(2))
     parser.showHelp();
     process.exit(1);
   }
-
-  // connect to the database with db client
-  const [host, portStr] = (argv.dbHost as string).split(":");
-  const [database, schema, table] = (argv.tableId as string).split(".");
-  const db = new pg.Client({
-    host,
-    port: Number.parseInt(portStr),
-    database,
-    user: process.env.AWS_REDSHIFT_USER,
-    password: process.env.AWS_REDSHIFT_PASSWORD,
-  });
-  // a connection has to be made first before querying, otherwise queries will
-  // end up stuck in the query queue and never evaluate.
-  await db.connect();
-
-  // query the database table for transactions
-  const results = await db.query(`SELECT * FROM ${schema}.${table};`);
+  // query database for table rows
+  const rows = await queryDBTable(
+    argv.dbHost as string,
+    argv.tableId as string,
+    process.env.AWS_REDSHIFT_USER!,
+    process.env.AWS_REDSHIFT_PASSWORD!
+  );
   // write transactions using the YNAB API
   createYNABTransactions(
     new API(process.env.YNAB_ACCESS_TOKEN!),
     argv.budgetId as string,
-    toYNABTransactions(results.rows)
+    toYNABTransactions(rows)
   );
   process.exit();
 })();

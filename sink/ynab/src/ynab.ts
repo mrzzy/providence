@@ -6,24 +6,7 @@
 
 import { SaveTransaction } from "ynab";
 import { API, SaveTransactionsResponse } from "ynab";
-
-/// Expected schema of the table providing transactions to import.
-export interface TableRow {
-  import_id: string;
-  account_id: string;
-  date: Date;
-  // amount should be an integer as expected by the YNAB API
-  amount: number;
-  payee_id: string;
-  category_id: string;
-  memo: string | string;
-  cleared: SaveTransaction.ClearedEnum;
-  approved: boolean;
-  flag_color: SaveTransaction.FlagColorEnum | null;
-  split_id: string | null;
-  split_payee_id: string | null;
-  split_memo: string | null;
-}
+import { TableRow } from "./db.js";
 
 /**
  * Transform transfactions in the given table rows into YNAB API SaveTransactions.
