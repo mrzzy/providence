@@ -37,17 +37,17 @@ const parser = yargs(process.argv.slice(2))
     }
   )
   .demandCommand();
+
+// wrap in anonymous async function so that we can use "top-level" await
 (async function () {
   const argv = parser.parseSync();
   // read database credentials from env vars
-  const hasEnvVars = [
+  const envVars = [
     "AWS_REDSHIFT_USER",
     "AWS_REDSHIFT_PASSWORD",
     "YNAB_ACCESS_TOKEN",
-  ]
-    .map((envVar) => envVar in process.env)
-    .reduce((hasAll, hasThis) => hasAll && hasThis);
-  if (!hasEnvVars) {
+  ];
+  if (!checkEnv(envVars)) {
     console.error(
       "Missing expected environment variables providing credentials."
     );
