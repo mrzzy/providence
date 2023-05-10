@@ -82,6 +82,26 @@ $(eval $(call PHONY_RULE,build,dbt))
 build-dbt: $(DBT_DIR)
 	cd $< && dbt build --target $(DBT_TARGET)
 
+# YNAB Sink
+YNAB_SINK_DIR  := sinks/ynab
+
+$(eval $(call PHONY_RULE,deps,ynab-sink))
+deps-ynab: $(YNAB_SINK_DIR)
+	cd $< && npm install
+
+$(eval $(call PHONY_RULE,fmt,ynab-sink))
+fmt-ynab: $(YNAB_SINK_DIR)
+	cd $< && npx prettier .
+
+$(eval $(call PHONY_RULE,lint,ynab-sink))
+lint-ynab: $(YNAB_SINK_DIR)
+	cd $< && npx prettier --check .
+	cd $< && npx eslint .
+
+$(eval $(call PHONY_RULE,build,ynab-sink))
+build-ynab: $(YNAB_SINK_DIR)
+	cd $< && npx tsc
+
 # Airflow Pipelines
 # NOTE: run 'airflow db init' before running 'make test-pipeline'
 PIPELINES_DIR := pipelines
