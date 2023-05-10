@@ -4,7 +4,7 @@
  * Database
  */
 
-import { Client } from "pg";
+import pg from "pg";
 import { SaveTransaction } from "ynab";
 
 /// Expected schema of the table providing transactions to import.
@@ -43,7 +43,7 @@ export async function queryDBTable(
   // connect to the database with db client
   const [host, portStr] = (dbHost as string).split(":");
   const [database, schema, table] = (tableId as string).split(".");
-  const db = new Client({
+  const db = new pg.Client({
     host,
     port: Number.parseInt(portStr),
     database,
