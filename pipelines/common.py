@@ -47,8 +47,10 @@ DATASET_MAP_BANK_CARD = Dataset("redshift://map_bank_card")
 DATASET_SIMPLYGO = Dataset("redshift://simplygo")
 DATASET_YNAB = Dataset("redshift://ynab")
 DATASET_UOB = Dataset("redshift://uob")
-# connection pool to limit connections to AWS redshift
+DATASET_DBT = Dataset("redshift://dbt")
+# connection pool to limit concurrent connections to external services
 REDSHIFT_POOL = "aws_redshift"
+YNAB_API_POOL = "ynab_api"
 
 
 def get_aws_env(conn_id: str) -> Dict[str, str]:

@@ -7,13 +7,13 @@
 select
     t.account_id,
     t.travel_date_id as "date",
-    cast(t.cost_sgd * 1000 as int) as amount,
     -- ynab expresses amounts in milliunits: $1 = 1000 milliunits
-    '0b849f31-3e30-4a00-8b49-053a8365133f' as payee_id,
-    '8efad1f9-ef85-45e4-a85e-74f0207dc2c1' as category_id,
+    cast(t.cost_sgd * 1000 as int) as amount,
     -- SG Gov: Land Transport Authority
-    'uncleared' as cleared,
+    '0b849f31-3e30-4a00-8b49-053a8365133f' as payee_id,
     -- Public Transport budget category
+    '8efad1f9-ef85-45e4-a85e-74f0207dc2c1' as category_id,
+    'uncleared' as cleared,
     false as approved,
     null as flag_color,
     '0b849f31-3e30-4a00-8b49-053a8365133f' as split_payee_id,

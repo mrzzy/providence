@@ -12,6 +12,7 @@ from pendulum import datetime
 
 from common import (
     DAG_ARGS,
+    DATASET_DBT,
     DATASET_MAP_ACCOUNT,
     DATASET_MAP_BANK_CARD,
     DATASET_SIMPLYGO,
@@ -62,6 +63,8 @@ def transform_dbt(
     - Input `{DATASET_SIMPLYGO.uri}`
     - Input `{DATASET_YNAB.uri}`
     - Input `{DATASET_UOB.uri}`
+    Outputs:
+    - Output `{DATASET_DBT.uri}`
     """
     )
     KubernetesPodOperator(

@@ -22,6 +22,7 @@ DAG_IDS = [
     "pvd_ingest_ynab",
     "pvd_ingest_uob",
     "pvd_transform_dbt",
+    "pvd_reverse_ynab",
 ]
 
 
