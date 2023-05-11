@@ -89,6 +89,7 @@ def transform_dbt(
             {
                 "AWS_REDSHIFT_USER": "{{ conn.redshift_default.login }}",
                 "AWS_REDSHIFT_PASSWORD": "{{ conn.redshift_default.password }}",
+                "AWS_REDSHIFT_DB": "{{ conn.redshift_default.schema }}",
                 "DBT_TARGET": "{{ params.dbt_target }}",
             }
         ),

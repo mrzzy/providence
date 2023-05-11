@@ -123,7 +123,6 @@ def test_ingest_dag(s3_bucket: str, redshift_db: str, redshift_external_schema: 
     - AWS Redshift:
         - AWS_REDSHIFT_USER: Redshift username.
         - AWS_REDSHIFT_PASSWORD: Redshift password.
-        - AWS_REDSHIFT_DB: Redshift database to use.
     - SimplyGo credentials: SIMPLYGO_SRC_USERNAME & SIMPLYGO_SRC_PASSWORD
     - YNAB credentials: YNAB_ACCESS_TOKEN
     - access to a Kubernetes cluster configured via a kube config file provided
@@ -148,7 +147,7 @@ def test_ingest_dag(s3_bucket: str, redshift_db: str, redshift_external_schema: 
             )
 
         for dag_id in DAG_IDS:
-            stdin, stdout, status = c.exec_in_container(
+            stdout, stderr, status = c.exec_in_container(
                 "airflow",
                 [
                     "airflow",
@@ -160,12 +159,12 @@ def test_ingest_dag(s3_bucket: str, redshift_db: str, redshift_external_schema: 
                         {
                             "s3_bucket": s3_bucket,
                             "redshift_external_schema": redshift_external_schema,
-                            "dbt_target": "dev",
+                            "dbt_target": "e2e",
                         }
                     ),
                 ],
             )
             if status != 0:
                 raise AssertionError(
-                    f"Test Run of {dag_id} DAG failed with nonzero status:\n" + stdout
+                    f"Test Run of {dag_id} DAG failed with nonzero status:\n{stdout}\n{stderr}"
                 )
