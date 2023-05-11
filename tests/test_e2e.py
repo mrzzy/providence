@@ -11,7 +11,7 @@ import string
 import boto3
 import random
 from pathlib import Path
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 import pytest
 from testcontainers.compose import DockerCompose
@@ -53,9 +53,9 @@ def s3_bucket(e2e_suffix: str) -> Iterator[str]:
     )
 
     # copy test data to test bucket
-    # DAG locates export by mod time, not the date in the numeric suffix
     test_data_keys = [
         # uob export
+        # DAG locates export by mod time, not the date in the numeric suffix
         "providence/manual/uob/ACC_TXN_History_09042023114932.xls",
         # account mapping
         "providence/manual/mapping/account.csv",
@@ -65,6 +65,8 @@ def s3_bucket(e2e_suffix: str) -> Iterator[str]:
     for key in test_data_keys:
         bucket.Object(key).copy_from(
             CopySource={"Bucket": "mrzzy-co-data-lake", "Key": key},
+            # ensure that the LastModified timestamp metadata gets updated.
+            MetadataDirective="REPLACE",
         )
 
     yield bucket.name
@@ -159,6 +161,9 @@ def test_ingest_dag(s3_bucket: str, redshift_db: str, redshift_external_schema: 
                     "dags",
                     "test",
                     dag_id,
+                    # explicitly set execution/logical timestamp to ensure
+                    # dags's data interval start's at 12am
+                    date.today().strftime("%Y-%m-%d"),
                     "-c",
                     json.dumps(
                         {
