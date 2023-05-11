@@ -54,5 +54,5 @@ export async function queryDBTable(
   // end up stuck in the query queue and never evaluate.
   await db.connect();
   // query the database table for transactions
-  return (await db.query(`SELECT * FROM ${schema}.${table};`)).rows;
+  return (await db.query("SELECT * FROM $1.$2;", [schema, table])).rows;
 }
