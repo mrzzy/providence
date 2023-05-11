@@ -20,6 +20,7 @@ from common import (
     K8S_LABELS,
     REDSHIFT_POOL,
     SQL_DIR,
+    YNAB_API_POOL,
     get_aws_env,
     k8s_env_vars,
     DATASET_YNAB,
@@ -52,7 +53,7 @@ def ingest_ynab_dag(
     - `redshift_table`: Name of the External Table exposing the ingested data.
 
     Connections by expected id:
-    - `pvd_ynab_src`:
+    - `ynab_api`:
         - `password`: YNAB API access token.
     - `aws_default`:
         - `login`: AWS Access Key ID.
@@ -73,11 +74,10 @@ def ingest_ynab_dag(
     )
 
     # Extract & load budget data with YNAB source into S3 as JSON
-    ynab = BaseHook.get_connection("pvd_ynab_src")
     ingest_ynab = KubernetesPodOperator(
         task_id="ingest_ynab",
-        # pool to limit load impact of concurrent requests on the YNAB API
-        pool="ynab_api",
+        # pool to limit requests to YNAB API and reduce failures due to hitting the rate limit
+        pool=YNAB_API_POOL,
         image="ghcr.io/mrzzy/pvd-rest-api-src:{{ params.rest_api_tag }}",
         image_pull_policy="Always",
         labels=K8S_LABELS
@@ -92,7 +92,7 @@ def ingest_ynab_dag(
         ],
         env_vars=k8s_env_vars(
             {
-                "REST_API_BEARER_TOKEN": ynab.password,
+                "REST_API_BEARER_TOKEN": "{{ conn.ynab_api.password }}",
             }
             | get_aws_env(AWS_CONNECTION_ID)
         ),

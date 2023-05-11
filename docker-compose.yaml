@@ -28,7 +28,7 @@ services:
             "login": "${SIMPLYGO_SRC_USERNAME}",
             "password": "${SIMPLYGO_SRC_PASSWORD}"
         }
-      AIRFLOW_CONN_PVD_YNAB_SRC: |
+      AIRFLOW_CONN_YNAB_API: |
         {
             "conn_type": "generic",
             "password": "${YNAB_ACCESS_TOKEN}"
