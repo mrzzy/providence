@@ -16,7 +16,7 @@ WORKDIR /home/${USER}
 COPY --chown=ynab:root package.json package-lock.json ./
 
 FROM base AS build
-RUN npm install
+RUN npm install --ignore-scripts
 # copy source code
 COPY src ./src
 COPY tsconfig.json ./
@@ -26,6 +26,6 @@ RUN npx tsc
 FROM base AS production
 COPY --from=build /home/ynab/package.json ./
 COPY --from=build /home/ynab/package-lock.json ./
-RUN npm install --omit=dev
+RUN npm install --omit=dev --ignore-scripts
 COPY --from=build /home/ynab/dist /home/ynab/dist
 ENTRYPOINT [ "/usr/local/bin/node", "/home/ynab/dist/index.js" ]

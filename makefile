@@ -87,7 +87,7 @@ YNAB_SINK_DIR  := sinks/ynab
 
 $(eval $(call PHONY_RULE,deps,ynab-sink))
 deps-ynab: $(YNAB_SINK_DIR)
-	cd $< && npm install
+	cd $< && npm install --ignore-scripts
 
 $(eval $(call PHONY_RULE,fmt,ynab-sink))
 fmt-ynab: $(YNAB_SINK_DIR)
