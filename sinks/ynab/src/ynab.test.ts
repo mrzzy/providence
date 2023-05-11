@@ -108,7 +108,7 @@ describe("createTransaction", () => {
 
     const mockYNAB = await import("ynab");
     const api = new mockYNAB.API("token");
-    createYNABTransactions(api, "budget", [modelSaveTransaction]);
+    await createYNABTransactions(api, "budget", [modelSaveTransaction]);
     const nCalls = (
       api.transactions.createTransactions as jest.Mock<
         API["transactions"]["createTransactions"]

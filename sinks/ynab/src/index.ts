@@ -12,7 +12,7 @@ import { queryDBTable } from "./db.js";
 // 2 - skip 'node' & 'index.ts' in argv
 const parser = yargs(process.argv.slice(2))
   .command(
-    "$0 <dbHost> <tableId> <budgetId>",
+    "$0  <dbHost> <tableId> <budgetId>",
     `YNAB Sink imports transactions from a table in AWS Redshift.
 
     Environment variables:
@@ -68,7 +68,7 @@ const parser = yargs(process.argv.slice(2))
     redshift_password
   );
   // write transactions using the YNAB API
-  createYNABTransactions(
+  await createYNABTransactions(
     new API(ynab_token),
     argv.budgetId as string,
     toYNABTransactions(rows)
