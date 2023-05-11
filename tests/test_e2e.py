@@ -53,14 +53,18 @@ def s3_bucket(e2e_suffix: str) -> Iterator[str]:
 
     # copy test data to test bucket
     # DAG locates export by mod time, not the date in the numeric suffix
-    uob_export_key = "providence/manual/uob/ACC_TXN_History_09042023114932.xls"
-    bucket.Object(uob_export_key).copy_from(
-        CopySource={"Bucket": "mrzzy-co-data-lake", "Key": uob_export_key},
-    )
-    account_map_key = "providence/manual/mapping/account.csv"
-    bucket.Object(account_map_key).copy_from(
-        CopySource={"Bucket": "mrzzy-co-data-lake", "Key": account_map_key},
-    )
+    test_data_keys = [
+        # uob export
+        "providence/manual/uob/ACC_TXN_History_09042023114932.xls",
+        # account mapping
+        "providence/manual/mapping/account.csv",
+        # bank card mapping
+        "providence/manual/mapping/bank_card.csv",
+    ]
+    for key in test_data_keys:
+        bucket.Object(key).copy_from(
+            CopySource={"Bucket": "mrzzy-co-data-lake", "Key": key},
+        )
 
     yield bucket.name
 
