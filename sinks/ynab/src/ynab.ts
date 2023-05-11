@@ -73,9 +73,9 @@ export async function createYNABTransactions(
       transactions,
     });
   } catch (error) {
-    throw `Failed to create transactions with YNAB API: ${JSON.stringify(
-      error
-    )}`;
+    throw new Error(
+      `Failed to create transactions with YNAB API: ${JSON.stringify(error)}`
+    );
   }
 
   const duplicateIds = response.data.duplicate_import_ids;
