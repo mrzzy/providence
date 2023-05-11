@@ -187,6 +187,7 @@ jobs:
     needs:
       - src-container
       - tfm-container
+      - sink-container
     name: "End to End Test"
     runs-on: ubuntu-22.04
     env:
