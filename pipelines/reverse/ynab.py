@@ -23,8 +23,7 @@ from common import DAG_ARGS, DATASET_DBT, K8S_LABELS, YNAB_API_POOL, k8s_env_var
     **DAG_ARGS,
 )
 def reverse_ynab(
-    # TODO(mrzzy): remove before merging
-    ynab_sink_tag: str = "feat-trip-reverse-etl",
+    ynab_sink_tag: str = "latest",
     redshift_schema: str = "public",
     redshift_table: str = "mart_ynab_sink",
     ynab_budget_id: str = "f3f15316-e48c-4235-8d5d-1aa3191b3b8c",
@@ -78,9 +77,6 @@ def reverse_ynab(
                 "YNAB_ACCESS_TOKEN": "{{ conn.ynab_api.password }}",
             }
         ),
-        # TODO(mrzzy): remove before merging
-        is_delete_operator_pod=False,
-        log_events_on_failure=True,
     )
 
 
