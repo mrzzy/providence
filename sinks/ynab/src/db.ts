@@ -16,7 +16,7 @@ export interface TableRow {
   amount: number;
   payee_id: string;
   category_id: string;
-  memo: string | string;
+  memo: string | null;
   cleared: SaveTransaction.ClearedEnum;
   approved: boolean;
   flag_color: SaveTransaction.FlagColorEnum | null;
