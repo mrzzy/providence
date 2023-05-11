@@ -23,7 +23,7 @@ COPY tsconfig.json ./
 # compile typescript
 RUN npx tsc
 
-FROM base as production
+FROM base AS production
 COPY --from=build /home/ynab/package.json ./
 COPY --from=build /home/ynab/package-lock.json ./
 RUN npm install --omit=dev
