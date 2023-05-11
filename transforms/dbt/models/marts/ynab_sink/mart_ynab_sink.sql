@@ -6,7 +6,7 @@
 -- public transport trips yet to be accounted for.
 select
     t.account_id,
-    t.updated_at as "date",
+    t.travel_date_id as "date",
     cast(t.cost_sgd * 1000 as int) as amount,
     -- ynab expresses amounts in milliunits: $1 = 1000 milliunits
     '0b849f31-3e30-4a00-8b49-053a8365133f' as payee_id,
