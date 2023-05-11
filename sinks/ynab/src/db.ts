@@ -41,8 +41,8 @@ export async function queryDBTable(
   password: string
 ): Promise<TableRow[]> {
   // connect to the database with db client
-  const [host, portStr] = (dbHost as string).split(":");
-  const [database, schema, table] = (tableId as string).split(".");
+  const [host, portStr] = dbHost.split(":");
+  const [database, schema, table] = tableId.split(".");
   const db = new pg.Client({
     host,
     port: Number.parseInt(portStr),
