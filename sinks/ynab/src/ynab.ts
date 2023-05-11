@@ -4,8 +4,7 @@
  * YNAB
  */
 
-import { SaveTransaction } from "ynab";
-import { API, SaveTransactionsResponse } from "ynab";
+import { API, SaveTransactionsResponse, SaveTransaction } from "ynab";
 import { TableRow } from "./db.js";
 
 /**
