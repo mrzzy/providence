@@ -31,7 +31,7 @@ def ingest_mapping_dag(
     s3_bucket: str = "mrzzy-co-data-lake",
 ):
     dedent(
-        f"""Ingest manually uploaded Mapping CSV to AWS Redshift.
+        """Ingest manually uploaded Mapping CSV to AWS Redshift.
 
     Parameters:
     - `mapping_path`: Path to the Mapping CSV on the bucket to ingest.
