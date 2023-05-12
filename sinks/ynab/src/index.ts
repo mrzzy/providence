@@ -86,10 +86,14 @@ const parser = yargs(process.argv.slice(2))
     new Date(argv.e as string)
   );
   // write transactions using the YNAB API
+  // skip calling the YNAB API if there are no transactions
+  if (rows.length <= 0) {
+    return;
+  }
   await createYNABTransactions(
     new API(ynab_token),
     argv.budgetId as string,
     toYNABTransactions(rows)
   );
-  process.exit();
 })();
+process.exit();
