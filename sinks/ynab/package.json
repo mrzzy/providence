@@ -1,6 +1,5 @@
 {
   "name": "pvd-ynab-sink",
-  "type": "module",
   "version": "0.0.1",
   "description": "Providence YNAB Sink writes transactions to YNAB.",
   "main": "dist/index.js",
