@@ -47,13 +47,21 @@ describe("queryDBTable()", () => {
         "host:5432",
         "database.schema.table",
         "user",
-        "password"
+        "password",
+        new Date("2023-05-12 00:00:00"),
+        new Date("2023-05-12 23:59:59")
       )
     ).toEqual([modelTableRow]);
     // check we made the right SQL query
-    expect(mockQuery.mock.calls[0].at(0)).toEqual(
-      "SELECT * FROM schema.table;"
-    );
+    expect(mockQuery.mock.calls[0]).toEqual([
+      'SELECT * FROM $1.$2 WHERE "date" BETWEEN $3 AND $4;',
+      [
+        "schema",
+        "table",
+        "2023-05-11T16:00:00.000Z",
+        "2023-05-12T15:59:59.000Z",
+      ],
+    ]);
     // check that we called connect() on the Client
     expect(mockConnect.mock.calls.length).toEqual(1);
   });

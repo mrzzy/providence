@@ -21,6 +21,22 @@ const parser = yargs(process.argv.slice(2))
     - YNAB_ACCESS_TOKEN: Access Token used to authenticate with the YNAB API.
   `,
     (yargs) => {
+      yargs.options({
+        b: {
+          alias: "begin",
+          type: "string",
+          default: "0001-01-01T00:00:00Z",
+          describe:
+            "Starting timestamp of the data interval of transactions to import.",
+        },
+        e: {
+          alias: "end",
+          type: "string",
+          default: "9999-12-31T23:59:59Z",
+          describe:
+            "Ending timestamp of the data interval of transactions to import.",
+        },
+      });
       yargs.positional("dbHost", {
         describe:
           "<HOSTNAME>:<PORT> Database host to retrieve transactions from.",
@@ -65,7 +81,9 @@ const parser = yargs(process.argv.slice(2))
     argv.dbHost as string,
     argv.tableId as string,
     redshift_user,
-    redshift_password
+    redshift_password,
+    new Date(argv.b as string),
+    new Date(argv.e as string)
   );
   // write transactions using the YNAB API
   await createYNABTransactions(

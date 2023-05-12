@@ -4,7 +4,7 @@
  * Database
  */
 
-import pg from "pg";
+import * as pg from "pg";
 import { SaveTransaction } from "ynab";
 
 /// Expected schema of the table providing transactions to import.
@@ -32,17 +32,22 @@ export interface TableRow {
  * @param tableId DATABASE>.<SCHEMA>.<TABLE> specifying the database table to query from.
  * @param user Username credential used to authenticate with the database.
  * @param password Password credential used to authenticate with the database.
+ * @param begin Begin of the date range to query.
+ * @param end End of the date range to query.
  * @returns queried data as table rows.
  */
 export async function queryDBTable(
   dbHost: string,
   tableId: string,
   user: string,
-  password: string
+  password: string,
+  begin: Date,
+  end: Date
 ): Promise<TableRow[]> {
   // connect to the database with db client
   const [host, portStr] = dbHost.split(":");
   const [database, schema, table] = tableId.split(".");
+  debugger;
   const db = new pg.Client({
     host,
     port: Number.parseInt(portStr),
@@ -54,5 +59,12 @@ export async function queryDBTable(
   // end up stuck in the query queue and never evaluate.
   await db.connect();
   // query the database table for transactions
-  return (await db.query("SELECT * FROM $1.$2;", [schema, table])).rows;
+  return (
+    await db.query('SELECT * FROM $1.$2 WHERE "date" BETWEEN $3 AND $4;', [
+      schema,
+      table,
+      begin.toISOString(),
+      end.toISOString(),
+    ])
+  ).rows;
 }
