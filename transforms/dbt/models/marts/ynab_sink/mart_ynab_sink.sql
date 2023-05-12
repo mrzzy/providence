@@ -7,6 +7,7 @@
 select
     t.account_id,
     t.travel_date_id as "date",
+    t.updated_at,
     -- ynab expresses amounts in milliunits: $1 = 1000 milliunits
     cast(t.cost_sgd * 1000 as int) as amount,
     -- SG Gov: Land Transport Authority

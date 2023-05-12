@@ -65,7 +65,7 @@ export async function queryDBTable(
     // and not meant to be exposed to external users with potentially malicious intent.
     (
       await db.query(
-        `SELECT * FROM ${schema}.${table} WHERE "date" BETWEEN '${begin.toISOString()}' AND '${end.toISOString()}';`
+        `SELECT * FROM ${schema}.${table} WHERE updated_at BETWEEN '${begin.toISOString()}' AND '${end.toISOString()}';`
       )
     ).rows
   );
