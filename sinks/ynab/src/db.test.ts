@@ -54,13 +54,7 @@ describe("queryDBTable()", () => {
     ).toEqual([modelTableRow]);
     // check we made the right SQL query
     expect(mockQuery.mock.calls[0]).toEqual([
-      'SELECT * FROM $1.$2 WHERE "date" BETWEEN $3 AND $4;',
-      [
-        "schema",
-        "table",
-        "2023-05-11T16:00:00.000Z",
-        "2023-05-12T15:59:59.000Z",
-      ],
+      `SELECT * FROM schema.table WHERE "date" BETWEEN '2023-05-11T16:00:00.000Z' AND '2023-05-12T15:59:59.000Z';`,
     ]);
     // check that we called connect() on the Client
     expect(mockConnect.mock.calls.length).toEqual(1);

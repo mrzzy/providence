@@ -47,7 +47,6 @@ export async function queryDBTable(
   // connect to the database with db client
   const [host, portStr] = dbHost.split(":");
   const [database, schema, table] = tableId.split(".");
-  debugger;
   const db = new pg.Client({
     host,
     port: Number.parseInt(portStr),
@@ -60,11 +59,14 @@ export async function queryDBTable(
   await db.connect();
   // query the database table for transactions
   return (
-    await db.query('SELECT * FROM $1.$2 WHERE "date" BETWEEN $3 AND $4;', [
-      schema,
-      table,
-      begin.toISOString(),
-      end.toISOString(),
-    ])
-  ).rows;
+    // redshift does not support $n parameterised queries, so we interpolate
+    // user args directly into the sql query here. Although this poses a possible
+    // SQL injection vulnerability, the risk is mitigated as this is a cli tool
+    // and not meant to be exposed to external users with potentially malicious intent.
+    (
+      await db.query(
+        `SELECT * FROM ${schema}.${table} WHERE "date" BETWEEN '${begin.toISOString()}' AND '${end.toISOString()}';`
+      )
+    ).rows
+  );
 }
