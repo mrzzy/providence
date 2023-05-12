@@ -26,8 +26,6 @@ from common import (
 @dag(
     dag_id="pvd_transform_dbt",
     schedule=[
-        DATASET_MAP_ACCOUNT,
-        DATASET_MAP_BANK_CARD,
         DATASET_SIMPLYGO,
         DATASET_YNAB,
         DATASET_UOB,
@@ -59,7 +57,6 @@ def transform_dbt(
         - `password`: Redshift DB password.
 
     Datasets:
-    - Input `{DATASET_MAP_ACCOUNT.uri}`
     - Input `{DATASET_SIMPLYGO.uri}`
     - Input `{DATASET_YNAB.uri}`
     - Input `{DATASET_UOB.uri}`
