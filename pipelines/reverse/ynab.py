@@ -60,6 +60,8 @@ def reverse_ynab(
         image="ghcr.io/mrzzy/pvd-ynab-sink:{{ params.ynab_sink_tag }}",
         image_pull_policy="Always",
         arguments=[
+            "--begin={{ data_interval_start | ds }}",
+            "--end={{ data_interval_end | ds }}",
             "{{ conn.redshift_default.host }}:{{ conn.redshift_default.port }}",
             # 'schema' in the redshift_default connection refers to database name
             "{{ conn.redshift_default.schema }}.{{ params.redshift_schema }}.{{ params.redshift_table }}",
