@@ -94,8 +94,7 @@ def transform_dbt(
                 "DBT_TARGET": "{{ params.dbt_target }}",
             }
         ),
-        is_delete_operator_pod=False,
-        log_events_on_failure=True,
+        outlets=[DATASET_DBT],
     )
 
 
