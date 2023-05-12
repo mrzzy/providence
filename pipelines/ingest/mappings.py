@@ -15,6 +15,7 @@ from airflow.configuration import conf
 from common import (
     DAG_ARGS,
     DATASET_MAP_ACCOUNT,
+    DATASET_MAP_BANK_CARD,
     K8S_LABELS,
     REDSHIFT_POOL,
     SQL_DIR,
@@ -123,5 +124,5 @@ dag(
     redshift_table="map_bank_card",
     create_table_sql="map_bank_card.sql",
     mapping_path="providence/manual/mapping/bank_card.csv",
-    out_dataset=DATASET_MAP_ACCOUNT,
+    out_dataset=DATASET_MAP_BANK_CARD,
 )
