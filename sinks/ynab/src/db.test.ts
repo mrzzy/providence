@@ -48,13 +48,13 @@ describe("queryDBTable()", () => {
         "database.schema.table",
         "user",
         "password",
-        new Date("2023-05-12 00:00:00"),
-        new Date("2023-05-12 23:59:59")
+        new Date("2023-05-11T00:00:00Z"),
+        new Date("2023-05-11T23:59:59Z")
       )
     ).toEqual([modelTableRow]);
     // check we made the right SQL query
     expect(mockQuery.mock.calls[0]).toEqual([
-      `SELECT * FROM schema.table WHERE updated_at BETWEEN '2023-05-11T16:00:00.000Z' AND '2023-05-12T15:59:59.000Z';`,
+      `SELECT * FROM schema.table WHERE updated_at BETWEEN '2023-05-11T00:00:00.000Z' AND '2023-05-11T23:59:59.000Z';`,
     ]);
     // check that we called connect() on the Client
     expect(mockConnect.mock.calls.length).toEqual(1);
