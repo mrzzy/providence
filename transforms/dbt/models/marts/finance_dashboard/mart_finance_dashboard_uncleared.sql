@@ -9,19 +9,24 @@ with
         -- full transactions
         select id, date_id, account_id, description, amount
         from {{ ref("fact_accounting_transaction") }}
-        where clearing_status = 'uncleared' and super_id is null
+        where t.clearing_status = 'uncleared' and super_id is null
         union all
         -- split transactions composed of multiple subtransactions
         -- each split transaction will be 1 transaction on the vendor account side
         -- group subtransactions into split transactions better matching by amount.
-        select t.id, t."date" as date_id, account_id, t.description, sum(t.amount)
+        select
+            t.id,
+            t."date" as date_id,
+            t.account_id,
+            t.description,
+            sum(t.amount) as amount
         from {{ ref("int_unique_transaction") }} as t
         inner join
             (
                 select distinct super_id from {{ ref("fact_accounting_transaction") }}
             ) as s
             on s.super_id = t.id
-        where clearing_status = 'uncleared'
+        where t.clearing_status = 'uncleared'
         group by t.id, t."date", t.account_id, t.description
     ),
 
