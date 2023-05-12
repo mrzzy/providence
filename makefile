@@ -85,22 +85,26 @@ build-dbt: $(DBT_DIR)
 # YNAB Sink
 YNAB_SINK_DIR  := sinks/ynab
 
-$(eval $(call PHONY_RULE,deps,ynab-sink))
+$(eval $(call PHONY_RULE,deps,ynab))
 deps-ynab: $(YNAB_SINK_DIR)
 	cd $< && npm install --ignore-scripts
 
-$(eval $(call PHONY_RULE,fmt,ynab-sink))
+$(eval $(call PHONY_RULE,fmt,ynab))
 fmt-ynab: $(YNAB_SINK_DIR)
-	cd $< && npx prettier .
+	cd $< && npx prettier -w .
 
-$(eval $(call PHONY_RULE,lint,ynab-sink))
+$(eval $(call PHONY_RULE,lint,ynab))
 lint-ynab: $(YNAB_SINK_DIR)
 	cd $< && npx prettier --check .
 	cd $< && npx eslint .
 
-$(eval $(call PHONY_RULE,build,ynab-sink))
+$(eval $(call PHONY_RULE,build,ynab))
 build-ynab: $(YNAB_SINK_DIR)
 	cd $< && npx tsc
+
+$(eval $(call PHONY_RULE,build,ynab))
+test-ynab: $(YNAB_SINK_DIR)
+	cd $< && npm test
 
 # Airflow Pipelines
 # NOTE: run 'airflow db init' before running 'make test-pipeline'
