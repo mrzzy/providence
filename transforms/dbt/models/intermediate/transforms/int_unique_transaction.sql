@@ -14,3 +14,4 @@ from
             )
         }}
     )
+where is_deleted = false

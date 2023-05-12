@@ -138,7 +138,7 @@ models:
           expression: "statement_end <= processed_on"
 
   - name: int_unique_transaction
-    description: A Accounting Transaction.
+    description: A unique, non-deleted Accounting Transaction.
     columns:
       - name: id
         description: Unique Transaction ID.
@@ -171,6 +171,8 @@ models:
         description: Whether the Transaction was deleted.
         tests:
           - not_null
+          - accepted_values:
+              values: [false]
       - name: budget_id
         description: ID of the YNAB Budget the Transaction was made within.
         tests:

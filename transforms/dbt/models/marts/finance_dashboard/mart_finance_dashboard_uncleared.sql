@@ -9,7 +9,7 @@ with
         -- full transactions
         select id, date_id, account_id, description, amount
         from {{ ref("fact_accounting_transaction") }}
-        where t.clearing_status = 'uncleared' and super_id is null
+        where clearing_status = 'uncleared' and super_id is null
         union all
         -- split transactions composed of multiple subtransactions
         -- each split transaction will be 1 transaction on the vendor account side

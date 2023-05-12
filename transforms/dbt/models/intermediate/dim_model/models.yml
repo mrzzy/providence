@@ -160,8 +160,8 @@ models:
           - not_null
           - accepted_values:
               values:
-              - Rail
-              - Bus
+                - Rail
+                - Bus
       - name: bank_card_id
         description: ID of the Bank Card used to pay for this Trip Leg.
         tests:
@@ -387,7 +387,7 @@ models:
           - not_null
       - name: is_cash
         description: >-
-           Whether the funds in this account is has cash-like liquidity & is budgetable.
+          Whether the funds in this account is has cash-like liquidity & is budgetable.
         tests:
           - not_null
       - name: budget_type
@@ -462,10 +462,6 @@ models:
                 - reconciled
       - name: is_approved
         description: Whether the Accounting Transaction was approved.
-        tests:
-          - not_null
-      - name: is_deleted
-        description: Whether the Accounting Transaction was deleted.
         tests:
           - not_null
       - name: budget_id
@@ -549,7 +545,7 @@ models:
       - name: updated_at
         description: Timestamp when the data was last updated / refreshed.
         tests:
-        - not_null
+          - not_null
 
   - name: fact_bank_statement
     description: Periodic Bank Statement snapshot.

@@ -30,7 +30,6 @@ with
             coalesce(
                 s.transfer_account_id, t.transfer_account_id
             ) as transfer_account_id,
-            coalesce(s.is_deleted, t.is_deleted) as is_deleted,
             coalesce(s.amount, t.amount) as amount,
             greatest(s.scraped_on, t.scraped_on) as updated_at
         from {{ ref("int_unique_transaction") }} as t
