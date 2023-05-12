@@ -6,7 +6,7 @@
 
 providence:
   outputs:
-    dev:
+    dev: &redshift
       dbname: dev
       host: main.132307318913.ap-southeast-1.redshift-serverless.amazonaws.com
       user: "{{ env_var('AWS_REDSHIFT_USER') }}"
@@ -17,15 +17,10 @@ providence:
       type: redshift
       # longer timeout since redshift-serverless needs some time to start up
       connect_timeout: 30
+    e2e:
+      <<: *redshift
+      dbname: "{{ env_var('AWS_REDSHIFT_DB') }}"
     prod:
+      <<: *redshift
       dbname: mrzzy
-      host: main.132307318913.ap-southeast-1.redshift-serverless.amazonaws.com
-      user: "{{ env_var('AWS_REDSHIFT_USER') }}"
-      password: "{{ env_var('AWS_REDSHIFT_PASSWORD') }}"
-      port: 5439
-      schema: public
-      threads: 16
-      type: redshift
-      # longer timeout since redshift-serverless needs some time to start up
-      connect_timeout: 30
   target: "{{ env_var('DBT_TARGET', 'dev') }}"

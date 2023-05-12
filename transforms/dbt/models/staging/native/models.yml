@@ -15,6 +15,7 @@ models:
         description: Surrogate key for the Account mapping
         tests:
           - unique
+          - not_null
       - name: budget_account_id
         description: YNAB Budget Account ID to associate with the Vendor Account.
         tests:
@@ -23,10 +24,32 @@ models:
               to: ref("stg_ynab_account")
               field: id
       - name: vendor
-        description: Name of the Vendor hosting the .
+        description: Name of the Vendor hosting the Vendor Account.
         tests:
           - not_null
       - name: vendor_id
         description: Vendor assigned ID to the Account associated with the YNAB Budget Account.
+        tests:
+          - not_null
+
+  - name: stg_map_bank_card
+    description:
+      Manually crafted mapping between a SimplyGo Bank Card & a Vendor Account.
+    columns:
+      - name: id
+        description: Surrogate key for the Bank Card mapping
+        tests:
+          - unique
+          - not_null
+      - name: bank_card_id
+        description: Bank Card ID to associate with the Vendor Account.
+        tests:
+          - not_null
+      - name: vendor
+        description: Name of the Vendor hosting the Vendor Account.
+        tests:
+          - not_null
+      - name: vendor_id
+        description: Vendor assigned ID to the Account to associate with the Bank Card.
         tests:
           - not_null

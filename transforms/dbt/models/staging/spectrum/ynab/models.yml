@@ -40,11 +40,11 @@ models:
     description: Budget allocation category where funds are allocated in budget.
     columns:
       - name: id
-        description: YNAB assigned Category ID.
+        description: YNAB assigned Budget Category ID.
         tests:
           - not_null
       - name: name
-        description: User assigned Category name.
+        description: User assigned Budget Category name.
         tests:
           - not_null
       - name: budget_id

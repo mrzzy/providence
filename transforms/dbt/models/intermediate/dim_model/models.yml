@@ -113,7 +113,7 @@ models:
           - not_null
           - unique
       - name: name
-        description: User assigned name of the bank card.
+        description: User assigned name of the Bank Card.
         tests:
           - not_null
       - name: updated_at
@@ -168,6 +168,13 @@ models:
           - not_null
           - relationships:
               to: ref("dim_bank_card")
+              field: id
+      - name: account_id
+        description: ID of the Account the Trip is billed to.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("dim_account")
               field: id
       - name: billing_ref
         description: Billing reference assigned once the Trip Leg is billed.

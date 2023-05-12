@@ -136,3 +136,76 @@ models:
           expression: "statement_begin <= statement_end"
       - dbt_utils.expression_is_true:
           expression: "statement_end <= processed_on"
+
+  - name: int_unique_transaction
+    description: A Accounting Transaction.
+    columns:
+      - name: id
+        description: Unique Transaction ID.
+        tests:
+          - not_null
+          - unique
+      - name: amount
+        description: >-
+          Monetary Amount transferred from the associated account to the payee
+          in the Transaction. Negative values signify a withdrawal from the
+          account while positive values signfiy a deposit from the payee.
+        tests:
+          - not_null
+      - name: description
+        description: User assigned description to the transaction.
+      - name: clearing_status
+        description: Reconciliation status of this transaction.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - cleared
+                - uncleared
+                - reconciled
+      - name: is_approved
+        description: Whether the Transaction was approved.
+        tests:
+          - not_null
+      - name: is_deleted
+        description: Whether the Transaction was deleted.
+        tests:
+          - not_null
+      - name: budget_id
+        description: ID of the YNAB Budget the Transaction was made within.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("stg_ynab_budget")
+              field: id
+      - name: category_id
+        description: YNAB assigned ID of the Category this Transaction belongs to.
+      - name: account_id
+        description: ID of the YNAB Account this Transaction was made on.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("stg_ynab_account")
+              field: id
+      - name: payee_id
+        description: ID of the YNAB Payee involved in this Transaction.
+        tests:
+          - relationships:
+              to: ref("stg_ynab_payee")
+              field: id
+      - name: transfer_account_id
+        description: >-
+          Optional. Only set when this Transaction is a transfer between Accounts.
+          ID of the target YNAB Account this Transaction transfers to.
+        tests:
+          - relationships:
+              to: ref("stg_ynab_account")
+              field: id
+      - name: date
+        description: Date when this Transaction was made.
+        tests:
+          - not_null
+      - name: scraped_on
+        description: Timestamp when the data was last scraped from YNAB.
+        tests:
+          - not_null

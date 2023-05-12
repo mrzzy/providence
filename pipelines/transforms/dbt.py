@@ -12,7 +12,9 @@ from pendulum import datetime
 
 from common import (
     DAG_ARGS,
+    DATASET_DBT,
     DATASET_MAP_ACCOUNT,
+    DATASET_MAP_BANK_CARD,
     DATASET_SIMPLYGO,
     DATASET_YNAB,
     DATASET_UOB,
@@ -23,7 +25,13 @@ from common import (
 
 @dag(
     dag_id="pvd_transform_dbt",
-    schedule=[DATASET_MAP_ACCOUNT, DATASET_SIMPLYGO, DATASET_YNAB, DATASET_UOB],
+    schedule=[
+        DATASET_MAP_ACCOUNT,
+        DATASET_MAP_BANK_CARD,
+        DATASET_SIMPLYGO,
+        DATASET_YNAB,
+        DATASET_UOB,
+    ],
     start_date=datetime(2023, 4, 24, tz="utc"),
     **DAG_ARGS,
 )
@@ -55,6 +63,8 @@ def transform_dbt(
     - Input `{DATASET_SIMPLYGO.uri}`
     - Input `{DATASET_YNAB.uri}`
     - Input `{DATASET_UOB.uri}`
+    Outputs:
+    - Output `{DATASET_DBT.uri}`
     """
     )
     KubernetesPodOperator(
@@ -79,6 +89,8 @@ def transform_dbt(
             {
                 "AWS_REDSHIFT_USER": "{{ conn.redshift_default.login }}",
                 "AWS_REDSHIFT_PASSWORD": "{{ conn.redshift_default.password }}",
+                # airflow connections uses 'schema' to store selected database
+                "AWS_REDSHIFT_DB": "{{ conn.redshift_default.schema }}",
                 "DBT_TARGET": "{{ params.dbt_target }}",
             }
         ),

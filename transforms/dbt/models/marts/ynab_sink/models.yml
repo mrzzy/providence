@@ -1,0 +1,82 @@
+#
+# Providence
+# Transforms
+# DBT Mart Models: YNAB Sink
+#
+
+version: 2
+
+models:
+  - name: mart_ynab_sink
+    description: Compile Transactions to be written to YNAB with the YNAB Sink.
+    columns:
+      - name: import_id
+        description: >-
+          Unique Import ID to assign to the Transaction used by YNAB to deduplicate imports.
+          Must be 36 characters or less.
+        tests:
+          - not_null
+          - unique
+      - name: account_id
+        description: YNAB Budget Account ID to assign to the Transaction.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("stg_ynab_account")
+              field: id
+      - name: amount
+        description: Amount transacted in the transaction in YNAB milliunits as an integer.
+        tests:
+          - not_null
+      - name: payee_id
+        description: YNAB Payee ID to assign to the Transaction.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("stg_ynab_payee")
+              field: id
+      - name: category_id
+        description: YNAB assigned Budget Category ID.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("stg_ynab_budget_category")
+              field: id
+      - name: memo
+        description: Description to assign to the Transaction.
+      - name: cleared
+        description: Reconciliation status of this Transaction.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - cleared
+                - uncleared
+                - reconciled
+      - name: approved
+        description: Whether the Transaction is approved.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - true
+                - false
+      - name: flag_color
+        description: Optional. Flag color to assign to the Transaction.
+
+      # fields set on split transactions composed of multiple subtransactions
+      - name: split_id
+        description: >-
+          Optional. If set Transactions with the same split ID should be created in
+          YNAB as subtransactions in the same parent Split Transaction.
+      - name: split_payee_id
+        description: YNAB Payee ID to assign to the parent Split Transaction.
+        tests:
+          - relationships:
+              to: ref("stg_ynab_payee")
+              field: id
+      - name: split_memo
+        description: Description to assign to the parent Split Transaction.
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "length(import_id)<= 36"

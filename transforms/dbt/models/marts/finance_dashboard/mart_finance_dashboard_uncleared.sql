@@ -6,9 +6,21 @@
 with
     -- uncleared accounting transactions
     unreconciled_accounting as (
+        -- full transactions
         select id, date_id, description, amount
         from {{ ref("fact_accounting_transaction") }}
-        where clearing_status = 'uncleared'
+        where super_id is not null
+        union all
+        -- split transactions composed of multiple subtransactions
+        -- each split transaction will be 1 transaction on the vendor account side
+        -- group subtransactions into split transactions better matching by amount.
+        select t.id, t."date" as date_id, t.description, t.amount
+        from {{ ref("int_unique_transaction") }} as t
+        inner join
+            (
+                select distinct super_id from {{ ref("fact_accounting_transaction") }}
+            ) as s
+            on s.super_id = t.id
     ),
 
     -- unreconciled vendor transactions:
@@ -26,6 +38,6 @@ select
     coalesce(a.amount, v.amount) as transaction_amount,
     (case when a.id is not null then '✔️' else '❌' end) as in_accounting,
     (case when v.id is not null then '✔️' else '❌' end) as in_vendor
--- join possible matchingg transactions by amount
+-- join possible matching transactions by amount
 from unreconciled_accounting as a
 full join unreconciled_vendor as v on a.amount = v.amount

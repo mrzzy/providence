@@ -21,4 +21,13 @@ sources:
           - name: vendor
             description: Vendor hosting the vendor account.
           - name: vendor_id
-            description: Vendor assigned account to associate with YNAB Budget account.
+            description: Vendor assigned account ID to associate with the YNAB Budget account.
+      - name: map_bank_card
+        description: Mapping of to SimplyGo Bank Card IDs to vendor-specific account IDs
+        columns:
+          - name: budget_account_id
+            description: SimplyGo assigned Bank Card ID to associate with Vendor account.
+          - name: vendor
+            description: Vendor hosting the Vendor account.
+          - name: vendor_id
+            description: Vendor assigned account ID to associate with the Bank Card.

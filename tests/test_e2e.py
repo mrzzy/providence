@@ -11,17 +11,19 @@ import string
 import boto3
 import random
 from pathlib import Path
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 import pytest
 from testcontainers.compose import DockerCompose
 
 DAG_IDS = [
     "pvd_ingest_account_map",
+    "pvd_ingest_bank_card_map",
     "pvd_ingest_simplygo",
     "pvd_ingest_ynab",
     "pvd_ingest_uob",
     "pvd_transform_dbt",
+    "pvd_reverse_ynab",
 ]
 
 
@@ -51,15 +53,21 @@ def s3_bucket(e2e_suffix: str) -> Iterator[str]:
     )
 
     # copy test data to test bucket
-    # DAG locates export by mod time, not the date in the numeric suffix
-    uob_export_key = "providence/manual/uob/ACC_TXN_History_09042023114932.xls"
-    bucket.Object(uob_export_key).copy_from(
-        CopySource={"Bucket": "mrzzy-co-data-lake", "Key": uob_export_key},
-    )
-    account_map_key = "providence/manual/mapping/account.csv"
-    bucket.Object(account_map_key).copy_from(
-        CopySource={"Bucket": "mrzzy-co-data-lake", "Key": account_map_key},
-    )
+    test_data_keys = [
+        # uob export
+        # DAG locates export by mod time, not the date in the numeric suffix
+        "providence/manual/uob/ACC_TXN_History_09042023114932.xls",
+        # account mapping
+        "providence/manual/mapping/account.csv",
+        # bank card mapping
+        "providence/manual/mapping/bank_card.csv",
+    ]
+    for key in test_data_keys:
+        bucket.Object(key).copy_from(
+            CopySource={"Bucket": "mrzzy-co-data-lake", "Key": key},
+            # ensure that the LastModified timestamp metadata gets updated.
+            MetadataDirective="REPLACE",
+        )
 
     yield bucket.name
 
@@ -122,9 +130,8 @@ def test_ingest_dag(s3_bucket: str, redshift_db: str, redshift_external_schema: 
     - AWS Redshift:
         - AWS_REDSHIFT_USER: Redshift username.
         - AWS_REDSHIFT_PASSWORD: Redshift password.
-        - AWS_REDSHIFT_DB: Redshift database to use.
     - SimplyGo credentials: SIMPLYGO_SRC_USERNAME & SIMPLYGO_SRC_PASSWORD
-    - YNAB credentials: YNAB_SRC_ACCESS_TOKEN
+    - YNAB credentials: YNAB_ACCESS_TOKEN
     - access to a Kubernetes cluster configured via a kube config file provided
         by the 'KUBECONFIG' env var.
     """
@@ -147,24 +154,27 @@ def test_ingest_dag(s3_bucket: str, redshift_db: str, redshift_external_schema: 
             )
 
         for dag_id in DAG_IDS:
-            stdin, stdout, status = c.exec_in_container(
+            stdout, stderr, status = c.exec_in_container(
                 "airflow",
                 [
                     "airflow",
                     "dags",
                     "test",
                     dag_id,
+                    # explicitly set execution/logical timestamp to ensure
+                    # dags's data interval start's at 12am
+                    date.today().strftime("%Y-%m-%d"),
                     "-c",
                     json.dumps(
                         {
                             "s3_bucket": s3_bucket,
                             "redshift_external_schema": redshift_external_schema,
-                            "dbt_target": "dev",
+                            "dbt_target": "e2e",
                         }
                     ),
                 ],
             )
             if status != 0:
                 raise AssertionError(
-                    f"Test Run of {dag_id} DAG failed with nonzero status:\n" + stdout
+                    f"Test Run of {dag_id} DAG failed with nonzero status:\n{stdout}\n{stderr}"
                 )
