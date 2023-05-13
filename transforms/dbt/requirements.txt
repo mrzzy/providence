@@ -14,7 +14,7 @@ dbt-extractor==0.4.1
 dbt-postgres==1.4.5
 dbt-redshift==1.4.0
 future==0.18.3
-grpclib==0.4.3
+grpclib==0.4.4
 h2==4.1.0
 hologram==0.0.15
 hpack==4.0.0
