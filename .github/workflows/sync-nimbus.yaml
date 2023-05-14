@@ -1,0 +1,42 @@
+#
+# Providence
+# Sync Terraform Module on Nimbus
+#
+
+name: Sync Revision of Providence Terraform Module on Nimbus
+on:
+  push:
+    branches: [main]
+    paths:
+      - "infra/terraform/**"
+jobs:
+  create-nimbus-pr:
+    name: Create Pull Request to update Providence Terraform Module on Nimbus
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Clone Nimbus repository
+        uses: actions/checkout@v3
+        with:
+          repository: mrzzy/nimbus
+      - name: Update revision of Providence Terraform Module
+        run: |
+          sed -i -e \
+            '/source.*=.*github.com\/mrzzy\/providence/s/ref=[^"]*/ref=${{ github.sha }}/' \
+            terraform/aws.tf
+      - name: Create Pull Request on Nimbus
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: "${{ secrets.GH_PUSH_TOKEN }}"
+          # Commit
+          commit-message: "build(terraform): bump revision of providence terraform module"
+          # Pull request
+          branch: build/update-pvd-tf-module
+          title: "build(terraform): Update Providence Terraform module."
+          body: "Update revision of Providence Terraform module to \
+            ${{ github.repository}}@${{ github.sha }}"
+          delete-branch: true
+
+      - name: Automerge Pull Request on Nimbus
+        env:
+          GH_TOKEN: "{{ secrets.GH_PUSH_TOKEN }}"
+        run: gh pr merge --squash --auto
