@@ -129,6 +129,11 @@ lint-pipelines-sql: $(PIPELINES_DIR)
 
 # Terraform module
 TERRAFORM_DIR:=infra/terraform
+$(eval $(call PHONY_RULE,deps,terraform))
+deps-terraform: $(TERRAFORM_DIR)
+	cd $< && terraform init
+
+$(eval $(call PHONY_RULE,lint,terraform))
 lint-terraform: $(TERRAFORM_DIR)
 	cd $< && terraform fmt -check
 	cd $< && terraform validate
