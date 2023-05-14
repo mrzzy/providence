@@ -40,3 +40,13 @@ repos:
     rev: v8.40.0
     hooks:
       - id: eslint
+  # lint terraform
+  - repo: https://github.com/antonbabenko/pre-commit-terraform.git
+    rev: v1.72.1
+    hooks:
+      - id: terraform_fmt
+        args:
+          - --args=-recursive -no-color
+      - id: terraform_validate
+        args:
+          - --args=-no-color
