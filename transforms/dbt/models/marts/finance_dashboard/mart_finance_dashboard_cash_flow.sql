@@ -85,8 +85,8 @@ with
     )
 
 -- compile src-dest columns for sankey diagram:
--- income payees \ spent savings \     /> savings-> savings categories
--- income payees -> income -> spending -> spending category groups
+-- income payees \ spent savings \  /> savings-> savings categories
+-- income payees -> income -> -------- spending -> spending category groups
 select *
 from
     (
