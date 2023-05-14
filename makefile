@@ -126,3 +126,9 @@ lint-pipelines: lint-pipelines-sql
 
 lint-pipelines-sql: $(PIPELINES_DIR)
 	cd $< && sqlfmt --check .
+
+# Terraform module
+TERRAFORM_DIR:=infra/terraform
+lint-terraform: $(TERRAFORM_DIR)
+	cd $< && terraform fmt -check
+	cd $< && terraform validate
