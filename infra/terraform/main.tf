@@ -72,12 +72,12 @@ resource "aws_iam_role" "warehouse" {
 }
 # allow Redshift CRUD on S3 and Athena access to query S3 objects
 resource "aws_iam_role_policy_attachment" "warehouse_s3" {
-  for_each = toset([
-    aws_iam_policy.s3_crud.arn,
-    "arn:aws:iam::aws:policy/AmazonAthenaFullAccess",
-  ])
   role       = aws_iam_role.warehouse.name
-  policy_arn = each.key
+  policy_arn = aws_iam_policy.s3_crud.arn
+}
+resource "aws_iam_role_policy_attachment" "warehouse_athena" {
+  role       = aws_iam_role.warehouse.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonAthenaFullAccess"
 }
 
 # VPC
