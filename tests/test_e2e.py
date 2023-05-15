@@ -108,7 +108,7 @@ def redshift_external_schema(e2e_suffix: str, redshift_db: str) -> str:
         CREATE EXTERNAL SCHEMA IF NOT EXISTS lake
         FROM DATA CATALOG
             DATABASE '{e2e_schema}'
-            IAM_ROLE 'arn:aws:iam::132307318913:role/warehouse'
+            IAM_ROLE 'arn:aws:iam::132307318913:role/warehouse20230514141001091300000002'
             CREATE EXTERNAL DATABASE IF NOT EXISTS
         """,
         Database=redshift_db,
