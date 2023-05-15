@@ -27,12 +27,12 @@ def ingest_mapping_dag(
     mapping_path: str,
     redshift_table: str,
     create_table_sql: str,
-    out_dataset: Dataset,
+    out_dataset: str,
     redshift_schema: str = "public",
     s3_bucket: str = "mrzzy-co-data-lake",
 ):
     dedent(
-        """Ingest manually uploaded Mapping CSV to AWS Redshift.
+        f"""Ingest manually uploaded Mapping CSV to AWS Redshift.
 
     Parameters:
     - `mapping_path`: Path to the Mapping CSV on the bucket to ingest.
@@ -53,7 +53,7 @@ def ingest_mapping_dag(
             - `role_arn`: Instruct Redshift to assume this AWS IAM role when making AWS requests.
 
     Datasets:
-    - Outputs to `out_dataset`.
+    - Outputs to `{out_dataset}`.
     """
     )
     begin = SQLExecuteQueryOperator(
@@ -92,7 +92,7 @@ def ingest_mapping_dag(
         conn_id="redshift_default",
         sql="COMMIT",
         pool=REDSHIFT_POOL,
-        outlets=[out_dataset],
+        outlets=[Dataset(out_dataset)],
     )
 
     begin >> drop_table >> create_table >> copy_s3_table >> commit  # type: ignore

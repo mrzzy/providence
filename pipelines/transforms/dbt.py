@@ -4,6 +4,7 @@
 #
 
 from textwrap import dedent
+from airflow.datasets import Dataset
 from airflow.decorators import dag
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
     KubernetesPodOperator,
@@ -26,9 +27,9 @@ from common import (
 @dag(
     dag_id="pvd_transform_dbt",
     schedule=[
-        DATASET_SIMPLYGO,
-        DATASET_YNAB,
-        DATASET_UOB,
+        Dataset(DATASET_SIMPLYGO),
+        Dataset(DATASET_YNAB),
+        Dataset(DATASET_UOB),
     ],
     start_date=datetime(2023, 4, 24, tz="utc"),
     **DAG_ARGS,
@@ -57,11 +58,11 @@ def transform_dbt(
         - `password`: Redshift DB password.
 
     Datasets:
-    - Input `{DATASET_SIMPLYGO.uri}`
-    - Input `{DATASET_YNAB.uri}`
-    - Input `{DATASET_UOB.uri}`
+    - Input `{DATASET_SIMPLYGO}`
+    - Input `{DATASET_YNAB}`
+    - Input `{DATASET_UOB}`
     Outputs:
-    - Output `{DATASET_DBT.uri}`
+    - Output `{DATASET_DBT}`
     """
     )
     KubernetesPodOperator(
@@ -91,7 +92,7 @@ def transform_dbt(
                 "DBT_TARGET": "{{ params.dbt_target }}",
             }
         ),
-        outlets=[DATASET_DBT],
+        outlets=[Dataset(DATASET_DBT)],
     )
 
 

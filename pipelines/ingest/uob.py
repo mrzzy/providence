@@ -8,6 +8,7 @@
 from datetime import timedelta
 from typing import Any, Dict
 from textwrap import dedent
+from airflow.datasets import Dataset
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 from pendulum import datetime
 from kubernetes.client import models as k8s
@@ -73,7 +74,7 @@ def ingest_uob_dag(
         - `extra`:
             - `role_arn`: Instruct Redshift to assume this AWS IAM role when making AWS requests.
     Datasets:
-    - Outputs `{DATASET_UOB.uri}`.
+    - Outputs `{DATASET_UOB}`.
     """
     )
 
@@ -131,7 +132,7 @@ def ingest_uob_dag(
         conn_id="redshift_default",
         sql="{% include 'source_uob.sql' %}",
         autocommit=True,
-        outlets=[DATASET_UOB],
+        outlets=[Dataset(DATASET_UOB)],
         pool=REDSHIFT_POOL,
     )
     convert_uob_pq >> drop_table >> create_table  # type: ignore

@@ -42,12 +42,12 @@ DAG_ARGS = {
     },
 }
 # datasets for data-aware dag scheduling
-DATASET_MAP_ACCOUNT = Dataset("redshift://map_account")
-DATASET_MAP_BANK_CARD = Dataset("redshift://map_bank_card")
-DATASET_SIMPLYGO = Dataset("redshift://simplygo")
-DATASET_YNAB = Dataset("redshift://ynab")
-DATASET_UOB = Dataset("redshift://uob")
-DATASET_DBT = Dataset("redshift://dbt")
+DATASET_MAP_ACCOUNT = "redshift://map_account"
+DATASET_MAP_BANK_CARD = "redshift://map_bank_card"
+DATASET_SIMPLYGO = "redshift://simplygo"
+DATASET_YNAB = "redshift://ynab"
+DATASET_UOB = "redshift://uob"
+DATASET_DBT = "redshift://dbt"
 # connection pool to limit concurrent connections to external services
 REDSHIFT_POOL = "aws_redshift"
 YNAB_API_POOL = "ynab_api"

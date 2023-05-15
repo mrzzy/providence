@@ -7,6 +7,7 @@
 
 from datetime import timedelta
 from textwrap import dedent
+from airflow.datasets import Dataset
 from airflow.decorators import dag
 from airflow.hooks.base import BaseHook
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
@@ -69,7 +70,7 @@ def ingest_ynab_dag(
         - `extra`:
             - `role_arn`: Instruct Redshift to assume this AWS IAM role when making AWS requests.
     Datasets:
-    - Outputs `{DATASET_YNAB.uri}`.
+    - Outputs `{DATASET_YNAB}`.
     """
     )
 
@@ -112,7 +113,7 @@ def ingest_ynab_dag(
         conn_id="redshift_default",
         sql="{% include 'source_ynab.sql' %}",
         autocommit=True,
-        outlets=[DATASET_YNAB],
+        outlets=[Dataset(DATASET_YNAB)],
         pool=REDSHIFT_POOL,
     )
     ingest_ynab >> drop_table >> create_table  # type: ignore

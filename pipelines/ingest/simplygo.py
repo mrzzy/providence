@@ -8,6 +8,7 @@ from os import path
 from datetime import timedelta
 from textwrap import dedent
 from typing import Any, Dict, List
+from airflow.datasets import Dataset
 from airflow.decorators import dag, task
 from airflow.hooks.base import BaseHook
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
@@ -71,7 +72,7 @@ def ingest_simplygo_dag(
             - `role_arn`: Instruct Redshift to assume this AWS IAM role when making AWS requests.
 
     Datasets:
-    - Outputs `{DATASET_SIMPLYGO.uri}`.
+    - Outputs `{DATASET_SIMPLYGO}`.
     """
     )
     # Extract & load SimplyGo data with SimplyGo source into S3 as JSON
@@ -120,7 +121,7 @@ def ingest_simplygo_dag(
         conn_id="redshift_default",
         sql="{% include 'source_simplygo.sql' %}",
         autocommit=True,
-        outlets=[DATASET_SIMPLYGO],
+        outlets=[Dataset(DATASET_SIMPLYGO)],
         pool=REDSHIFT_POOL,
     )
     ingest_simplygo >> drop_table >> create_table  # type: ignore
