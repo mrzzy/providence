@@ -3,7 +3,7 @@
 -- Pipelines
 -- UOB External Table DDL
 --
-CREATE EXTERNAL TABLE {{ params.redshift_external_schema }}.{{ params.redshift_table }} (
+CREATE EXTERNAL TABLE {{ params.redshift_external_schema }}.source_uob (
   "transaction date" varchar,
   "transaction description" varchar,
   withdrawal double precision,

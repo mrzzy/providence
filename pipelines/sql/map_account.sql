@@ -3,7 +3,7 @@
 -- Pipelines
 -- map_account DDL
 --
-create table if not exists {{ params.redshift_schema }}.{{ params.redshift_table }} (
+CREATE TABLE IF NOT EXISTS {{ params.redshift_schema }}.map_account (
   budget_account_id VARCHAR,
   vendor VARCHAR,
   vendor_id VARCHAR

@@ -14,7 +14,6 @@ from airflow.hooks.base import BaseHook
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
     KubernetesPodOperator,
 )
-from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 from pendulum import datetime
 from kubernetes.client import models as k8s
 
@@ -22,8 +21,6 @@ from common import (
     AWS_CONNECTION_ID,
     DAG_ARGS,
     K8S_LABELS,
-    REDSHIFT_POOL,
-    SQL_DIR,
     get_aws_env,
     k8s_env_vars,
     DATASET_SIMPLYGO,
@@ -34,25 +31,18 @@ from common import (
     dag_id="pvd_ingest_simplygo",
     schedule=timedelta(days=1),
     start_date=datetime(2023, 4, 4, tz="utc"),
-    template_searchpath=[SQL_DIR],
     **DAG_ARGS,
 )
 def ingest_simplygo_dag(
     s3_bucket: str = "mrzzy-co-data-lake",
     simplygo_src_tag: str = "latest",
-    redshift_external_schema: str = "lake",
-    redshift_table: str = "source_simplygo",
 ):
     dedent(
-        f"""Ingests SimplyGo data into AWS S3, exposing it as external table in Redshift.
+        f"""Ingests SimplyGo data into AWS S3.
 
     Parameters:
-    - `s3_bucket`: Name of a existing S3 bucket to stage data.
+    - `s3_bucket`: Name of a existing S3 bucket to ingest data.
     - `simplygo_src_tag`: Tag specifying the version of the SimplyGo Source container to use.
-    - `redshift_external_schema`: External Schema that will contain the external
-        table exposing the ingested data in Redshift.
-    - `redshift_table`: Name of the External Table exposing the ingested data.
-
     Connections by expected id:
     - `pvd_simplygo_src`:
         - `login`: SimplyGo username.
@@ -62,14 +52,6 @@ def ingest_simplygo_dag(
         - `password`: AWS Access Secret Key.
         - `extra`:
             - `region`: AWS region.
-    - `redshift_default`:
-        - `host`: Redshift DB endpoint.
-        - `port`: Redshift DB port.
-        - `login`: Redshift DB username.
-        - `password`: Redshift DB password.
-        - `schema`: Database to use by default.
-        - `extra`:
-            - `role_arn`: Instruct Redshift to assume this AWS IAM role when making AWS requests.
 
     Datasets:
     - Outputs `{DATASET_SIMPLYGO}`.
@@ -105,26 +87,8 @@ def ingest_simplygo_dag(
             }
             | get_aws_env(AWS_CONNECTION_ID)
         ),
-    )
-
-    # expose ingest data via redshift external table
-    drop_table = SQLExecuteQueryOperator(
-        task_id="drop_table",
-        conn_id="redshift_default",
-        sql="DROP TABLE IF EXISTS {{ params.redshift_external_schema }}.{{ params.redshift_table }}",
-        autocommit=True,
-        pool=REDSHIFT_POOL,
-    )
-
-    create_table = SQLExecuteQueryOperator(
-        task_id="create_table",
-        conn_id="redshift_default",
-        sql="{% include 'source_simplygo.sql' %}",
-        autocommit=True,
         outlets=[Dataset(DATASET_SIMPLYGO)],
-        pool=REDSHIFT_POOL,
     )
-    ingest_simplygo >> drop_table >> create_table  # type: ignore
 
 
 ingest_simplygo_dag()

@@ -17,6 +17,7 @@ import pytest
 from testcontainers.compose import DockerCompose
 
 DAG_IDS = [
+    "pvd_schema",
     "pvd_ingest_account_map",
     "pvd_ingest_bank_card_map",
     "pvd_ingest_simplygo",
@@ -97,28 +98,27 @@ def redshift_db(e2e_suffix: str):
     )
 
 
+# redshift_db is passed as a fixture to ensure that the database only gets
+# cleaned up after glue data catalog.
 @pytest.fixture
-def redshift_external_schema(e2e_suffix: str, redshift_db: str) -> str:
-    redshift = boto3.client("redshift-data")
-    e2e_schema = f"providence_e2e_lake_{e2e_suffix}"
+def glue_data_catalog(e2e_suffix: str, redshift_db: str) -> Iterator[str]:
+    glue = boto3.client("glue")
 
-    # create test external schema backed by test glue data catalog
-    redshift.execute_statement(
-        Sql=f"""
-        CREATE EXTERNAL SCHEMA IF NOT EXISTS lake
-        FROM DATA CATALOG
-            DATABASE '{e2e_schema}'
-            IAM_ROLE 'arn:aws:iam::132307318913:role/warehouse20230514141001091300000002'
-            CREATE EXTERNAL DATABASE IF NOT EXISTS
-        """,
-        Database=redshift_db,
-        WorkgroupName="main",
-    )
+    # glue data catalog will be created on redshift external schema creation
+    # so we only return the name of the data catalog here
+    catalog = f"providence_e2e_lake_{e2e_suffix}"
+    yield catalog
 
-    return "lake"
+    # drop created glue data Catalog
+    glue.delete_database(Name=catalog)
 
 
-def test_ingest_dag(s3_bucket: str, redshift_db: str, redshift_external_schema: str):
+def test_ingest_dag(
+    s3_bucket: str,
+    redshift_db: str,
+    redshift_external_schema: str,
+    glue_data_catalog: str,
+):
     """End to End Test Providence Data Pipelines by performing 1 DAG run.
 
     Expects the following test environment:
@@ -169,6 +169,7 @@ def test_ingest_dag(s3_bucket: str, redshift_db: str, redshift_external_schema: 
                         {
                             "s3_bucket": s3_bucket,
                             "redshift_external_schema": redshift_external_schema,
+                            "glue_data_catalog": glue_data_catalog,
                             "dbt_target": "e2e",
                         }
                     ),

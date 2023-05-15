@@ -9,7 +9,6 @@ from datetime import timedelta
 from typing import Any, Dict
 from textwrap import dedent
 from airflow.datasets import Dataset
-from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 from pendulum import datetime
 from kubernetes.client import models as k8s
 from pendulum.date import Date
@@ -24,8 +23,6 @@ from common import (
     AWS_CONNECTION_ID,
     DAG_ARGS,
     K8S_LABELS,
-    REDSHIFT_POOL,
-    SQL_DIR,
     get_aws_env,
     k8s_env_vars,
     DATASET_UOB,
@@ -36,28 +33,21 @@ from common import (
     dag_id="pvd_ingest_uob",
     schedule=timedelta(days=1),
     start_date=datetime(2023, 4, 2, 13, 0, tz="utc"),
-    template_searchpath=[SQL_DIR],
     **DAG_ARGS,
 )
 def ingest_uob_dag(
     s3_bucket: str = "mrzzy-co-data-lake",
     export_prefix="providence/manual/uob/ACC_TXN_History_",
     pandas_etl_tag: str = "latest",
-    redshift_external_schema: str = "lake",
-    redshift_table: str = "source_uob",
 ):
     dedent(
-        f"""Ingests manual UOB transaction export into AWS S3, exposing it as
-    external Table in AWS Redshift.
+        f"""Ingests manual UOB transaction export into AWS S3
 
     Parameters:
     - `s3_bucket`: Name of a existing S3 bucket to that contains the UOB export to ingest.
-            The bucket is also used to stage data for load into Redshift.
+            The bucket will also be used to store ingested data.
     - `export_prefix` Path prefix under which UOB export is manually stored in the bucket.
     - `pandas_etl_tag`: Tag specifying the version of the Pandas ETL container to use.
-    - `redshift_external_schema`: External Schema that will contain the external
-        table exposing the ingested data in Redshift.
-    - `redshift_table`: Name of the External Table exposing the ingested data.
 
     Connections by expected id:
     - `aws_default`:
@@ -65,14 +55,7 @@ def ingest_uob_dag(
         - `password`: AWS Access Secret Key.
         - `extras`:
             - `region`: AWS region.
-    - `redshift_default`:
-        - `host`: Redshift DB endpoint.
-        - `port`: Redshift DB port.
-        - `login`: Redshift DB username.
-        - `password`: Redshift DB password.
-        - `schema`: Database to use by default.
-        - `extra`:
-            - `role_arn`: Instruct Redshift to assume this AWS IAM role when making AWS requests.
+
     Datasets:
     - Outputs `{DATASET_UOB}`.
     """
@@ -116,26 +99,8 @@ def ingest_uob_dag(
             "app.kubernetes.io/version": "{{ params.pandas_etl_tag }}",
         },
         env_vars=k8s_env_vars(get_aws_env(AWS_CONNECTION_ID)),
-    ).expand(arguments=build_convert_args())
-
-    # expose ingested data via redshift external table
-    drop_table = SQLExecuteQueryOperator(
-        task_id="drop_table",
-        conn_id="redshift_default",
-        sql="DROP TABLE IF EXISTS {{ params.redshift_external_schema }}.{{ params.redshift_table }}",
-        autocommit=True,
-        pool=REDSHIFT_POOL,
-    )
-
-    create_table = SQLExecuteQueryOperator(
-        task_id="create_table",
-        conn_id="redshift_default",
-        sql="{% include 'source_uob.sql' %}",
-        autocommit=True,
         outlets=[Dataset(DATASET_UOB)],
-        pool=REDSHIFT_POOL,
-    )
-    convert_uob_pq >> drop_table >> create_table  # type: ignore
+    ).expand(arguments=build_convert_args())
 
 
 ingest_uob_dag()
