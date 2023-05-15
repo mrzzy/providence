@@ -53,7 +53,7 @@ def ingest_mapping_dag(
             - `role_arn`: Instruct Redshift to assume this AWS IAM role when making AWS requests.
 
     Datasets:
-    - Outputs to `{out_dataset}`.
+    - Outputs to `out_dataset`.
     """
     )
     begin = SQLExecuteQueryOperator(

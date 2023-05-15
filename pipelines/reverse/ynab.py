@@ -6,6 +6,7 @@
 
 from datetime import timedelta
 from textwrap import dedent
+from airflow.datasets import Dataset
 from airflow.decorators import dag
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
     KubernetesPodOperator,
@@ -18,7 +19,7 @@ from common import DAG_ARGS, DATASET_DBT, K8S_LABELS, YNAB_API_POOL, k8s_env_var
 
 @dag(
     dag_id="pvd_reverse_ynab",
-    schedule=[DATASET_DBT],
+    schedule=[Dataset(DATASET_DBT)],
     start_date=datetime(2023, 5, 10, tz="utc"),
     **DAG_ARGS,
 )
@@ -50,7 +51,7 @@ def reverse_ynab(
             - `role_arn`: Instruct Redshift to assume this AWS IAM role when making AWS requests.
 
     Datasets:
-    - Input `{DATASET_DBT.uri}`
+    - Input `{DATASET_DBT}`
     """
     )
     KubernetesPodOperator(
