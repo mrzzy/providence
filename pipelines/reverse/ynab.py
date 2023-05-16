@@ -28,6 +28,7 @@ def reverse_ynab(
     redshift_schema: str = "public",
     redshift_table: str = "mart_ynab_sink",
     ynab_budget_id: str = "f3f15316-e48c-4235-8d5d-1aa3191b3b8c",
+    keep_k8s_pod: bool = False,
 ):
     dedent(
         f"""Reverse ETL writes transactions back to YNAB to account for Public Transport trips.
@@ -37,6 +38,8 @@ def reverse_ynab(
     - `redshift_schema`: Schema containing the DBT mart table to source transactions from.
     - `redshift_table`: DBT Mart Table containing the transactions to write to YNAB.
     - `ynab_budget_id`: YNAB assigned Budget ID specifying the budget write transactions to.
+    - `keep_k8s_pod`: Whether to leave K8s pods untouched after task completes.
+        By default, the K8s pod created for the task will be cleaned up.
 
     Connections by expected id:
     - `ynab_api`:
@@ -80,6 +83,7 @@ def reverse_ynab(
                 "YNAB_ACCESS_TOKEN": "{{ conn.ynab_api.password }}",
             }
         ),
+        is_delete_operator_pod=keep_k8s_pod,
     )
 
 

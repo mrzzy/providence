@@ -36,6 +36,7 @@ from common import (
 def ingest_simplygo_dag(
     s3_bucket: str = "mrzzy-co-data-lake",
     simplygo_src_tag: str = "latest",
+    keep_k8s_pod: bool = False,
 ):
     dedent(
         f"""Ingests SimplyGo data into AWS S3.
@@ -43,6 +44,8 @@ def ingest_simplygo_dag(
     Parameters:
     - `s3_bucket`: Name of a existing S3 bucket to ingest data.
     - `simplygo_src_tag`: Tag specifying the version of the SimplyGo Source container to use.
+    - `keep_k8s_pod`: Whether to leave K8s pods untouched after task completes.
+        By default, the K8s pod created for the task will be cleaned up.
     Connections by expected id:
     - `pvd_simplygo_src`:
         - `login`: SimplyGo username.
@@ -88,6 +91,7 @@ def ingest_simplygo_dag(
             | get_aws_env(AWS_CONNECTION_ID)
         ),
         outlets=[Dataset(DATASET_SIMPLYGO)],
+        is_delete_operator_pod=keep_k8s_pod,
     )
 
 

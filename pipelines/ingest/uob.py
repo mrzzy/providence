@@ -39,6 +39,7 @@ def ingest_uob_dag(
     s3_bucket: str = "mrzzy-co-data-lake",
     export_prefix="providence/manual/uob/ACC_TXN_History_",
     pandas_etl_tag: str = "latest",
+    keep_k8s_pod: bool = False,
 ):
     dedent(
         f"""Ingests manual UOB transaction export into AWS S3
@@ -48,6 +49,8 @@ def ingest_uob_dag(
             The bucket will also be used to store ingested data.
     - `export_prefix` Path prefix under which UOB export is manually stored in the bucket.
     - `pandas_etl_tag`: Tag specifying the version of the Pandas ETL container to use.
+    - `keep_k8s_pod`: Whether to leave K8s pods untouched after task completes.
+        By default, the K8s pod created for the task will be cleaned up.
 
     Connections by expected id:
     - `aws_default`:
@@ -100,6 +103,7 @@ def ingest_uob_dag(
         },
         env_vars=k8s_env_vars(get_aws_env(AWS_CONNECTION_ID)),
         outlets=[Dataset(DATASET_UOB)],
+        is_delete_operator_pod=keep_k8s_pod,
     ).expand(arguments=build_convert_args())
 
 

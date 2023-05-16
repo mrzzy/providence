@@ -40,6 +40,7 @@ def transform_dbt(
     dbt_select: str = "*",
     redshift_schema: str = "public",
     redshift_external_schema: str = "lake",
+    keep_k8s_pod: bool = False,
 ):
     dedent(
         f"""Transform raw data tables into DBT models on AWS Redshift.
@@ -52,6 +53,8 @@ def transform_dbt(
     - `redshift_schema`: Schema that will contain the mapping table & DBT tables.
     - `redshift_external_schema`: External Schema that will contains the external
         tables exposing the ingested data in Redshift.
+    - `keep_k8s_pod`: Whether to leave K8s pods untouched after task completes.
+        By default, the K8s pod created for the task will be cleaned up.
 
     Connections by expected id:
     - `redshift_default`: `login`: Redshift DB username.
@@ -93,6 +96,7 @@ def transform_dbt(
             }
         ),
         outlets=[Dataset(DATASET_DBT)],
+        is_delete_operator_pod=keep_k8s_pod,
     )
 
 

@@ -35,6 +35,7 @@ def ingest_ynab_dag(
     rest_api_tag: str = "latest",
     ynab_budget_id: str = "f3f15316-e48c-4235-8d5d-1aa3191b3b8c",
     s3_bucket: str = "mrzzy-co-data-lake",
+    keep_k8s_pod: bool = False,
 ):
     dedent(
         f"""Ingests YNAB budget data into AWS S3.
@@ -43,6 +44,8 @@ def ingest_ynab_dag(
     - `s3_bucket`: Name of a existing S3 bucket to store ingested data.
     - `ynab_budget_id`: ID specifying the YNAB Budget to retrieve data for.
     - `rest_api_tag`: Tag specifying the version of the REST API Source container to use.
+    - `keep_k8s_pod`: Whether to leave K8s pods untouched after task completes.
+        By default, the K8s pod created for the task will be cleaned up.
 
     Connections by expected id:
     - `ynab_api`:
@@ -82,6 +85,7 @@ def ingest_ynab_dag(
             | get_aws_env(AWS_CONNECTION_ID)
         ),
         outlets=[Dataset(DATASET_YNAB)],
+        is_delete_operator_pod=keep_k8s_pod,
     )
 
 
