@@ -139,7 +139,7 @@ def test_ingest_dag(
     # pass dedicated redshift db via env var to docker-compose
     os.environ["AWS_REDSHIFT_DB"] = redshift_db
     # run standalone airflow with docker compose
-    with DockerCompose("..", "docker-compose.yaml") as c:
+    with DockerCompose(str(Path(".").parent / "infra"), "docker-compose.yaml") as c:
         c.wait_for("http://localhost:8080")
 
         # import concurrency pools to reduce e2e failures caused by concurrency
