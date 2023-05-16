@@ -220,7 +220,7 @@ jobs:
           AWS_REDSHIFT_USER: "${{ secrets.AWS_REDSHIFT_USER }}"
           AWS_REDSHIFT_PASSWORD: "${{ secrets.AWS_REDSHIFT_PASSWORD }}"
           YNAB_ACCESS_TOKEN: "${{ secrets.YNAB_ACCESS_TOKEN }}"
-        run: pytest
+        run: pytest -vvv
       - name: Export kind cluster logs
         if: always()
         run: kind export logs kind_logs
