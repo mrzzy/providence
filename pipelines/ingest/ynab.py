@@ -62,7 +62,7 @@ def ingest_ynab_dag(
     )
 
     # Extract & load budget data with YNAB source into S3 as JSON
-    ingest_ynab = KubernetesPodOperator(
+    KubernetesPodOperator(
         task_id="ingest_ynab",
         # pool to limit requests to YNAB API and reduce failures due to hitting the rate limit
         pool=YNAB_API_POOL,

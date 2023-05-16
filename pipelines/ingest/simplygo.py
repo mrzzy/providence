@@ -62,7 +62,7 @@ def ingest_simplygo_dag(
     )
     # Extract & load SimplyGo data with SimplyGo source into S3 as JSON
     simplygo = BaseHook.get_connection("pvd_simplygo_src")
-    ingest_simplygo = KubernetesPodOperator(
+    KubernetesPodOperator(
         task_id="ingest_simplygo",
         # pool to limit load impact of concurrent requests on the SimplyGo Website
         pool="simplygo_web",

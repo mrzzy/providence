@@ -175,7 +175,6 @@ def test_ingest_dag(
                 ],
             )
             if status != 0:
-                __import__("pdb").set_trace()
                 raise AssertionError(
                     f"Test Run of {dag_id} DAG failed with nonzero status:\n{stdout}\n{stderr}"
                 )

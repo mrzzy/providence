@@ -92,7 +92,7 @@ def ingest_uob_dag(
         ]
 
     # Convert UOB transaction export to Parquet
-    convert_uob_pq = KubernetesPodOperator.partial(
+    KubernetesPodOperator.partial(
         task_id="convert_uob_pq",
         image="ghcr.io/mrzzy/pvd-pandas-etl-tfm:{{ params.pandas_etl_tag }}",
         image_pull_policy="Always",
