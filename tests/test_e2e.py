@@ -116,7 +116,6 @@ def glue_data_catalog(e2e_suffix: str, redshift_db: str) -> Iterator[str]:
 def test_ingest_dag(
     s3_bucket: str,
     redshift_db: str,
-    redshift_external_schema: str,
     glue_data_catalog: str,
 ):
     """End to End Test Providence Data Pipelines by performing 1 DAG run.
@@ -168,7 +167,6 @@ def test_ingest_dag(
                     json.dumps(
                         {
                             "s3_bucket": s3_bucket,
-                            "redshift_external_schema": redshift_external_schema,
                             "glue_data_catalog": glue_data_catalog,
                             "dbt_target": "e2e",
                         }
@@ -176,6 +174,7 @@ def test_ingest_dag(
                 ],
             )
             if status != 0:
+                __import__("pdb").set_trace()
                 raise AssertionError(
                     f"Test Run of {dag_id} DAG failed with nonzero status:\n{stdout}\n{stderr}"
                 )
