@@ -28,6 +28,7 @@ def ingest_mapping_dag(
     def build_dag(
         mapping_path: str,
         redshift_table: str,
+        redshift_schema: str = "public",
         s3_bucket: str = "mrzzy-co-data-lake",
     ):
         dedent(
@@ -62,7 +63,7 @@ def ingest_mapping_dag(
         truncate_table = SQLExecuteQueryOperator(
             task_id="truncate_table",
             conn_id="redshift_default",
-            sql="TRUNCATE TABLE {{ params.redshift_schema }}.{{ redshift_table }}",
+            sql="TRUNCATE TABLE {{ params.redshift_schema }}.{{ params.redshift_table }}",
             pool=REDSHIFT_POOL,
         )
 
