@@ -42,7 +42,7 @@ services:
           "password": "${AWS_REDSHIFT_PASSWORD}",
           "schema": "${AWS_REDSHIFT_DB}",
           "extra": {
-            "role_arn": "arn:aws:iam::132307318913:role/warehouse"
+            "role_arn": "arn:aws:iam::132307318913:role/warehouse20230514141001091300000002"
           }
         }
       # expects an accessible kubernetes cluster via passed $KUBECONFIG

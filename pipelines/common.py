@@ -12,9 +12,6 @@ from airflow.datasets import Dataset
 
 from airflow.hooks.base import BaseHook
 from airflow.models import BaseOperator
-from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
-    KubernetesPodOperator,
-)
 from kubernetes.client import models as k8s
 
 # Constants
