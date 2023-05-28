@@ -17,6 +17,7 @@ from common import DAG_ARGS, REDSHIFT_POOL, SQL_DIR
     schedule=None,
     start_date=datetime(2023, 5, 15, tz="utc"),
     template_searchpath=[SQL_DIR],
+    **DAG_ARGS,
 )
 def apply_schema(
     s3_bucket: str = "mrzzy-co-data-lake",
