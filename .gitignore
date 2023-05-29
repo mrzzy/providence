@@ -399,3 +399,6 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+# kubectl credentials
+/tests/.kubeconfig.yaml
