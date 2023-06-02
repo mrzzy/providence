@@ -64,11 +64,8 @@ def reverse_ynab(
         image="ghcr.io/mrzzy/pvd-ynab-sink:{{ params.ynab_sink_tag }}",
         image_pull_policy="Always",
         arguments=[
-            # simplygo takes up to 5 days to clear & bill trips.
-            # import the trips in the last 7 day window of trips into ynab to
-            # ensure we don't miss trips that weren't billed yet.
-            "--begin={{ macros.ds_add(ds,-7) }}",
-            "--end={{ ds }}",
+            "--begin={{ data_interval_start | ds }}",
+            "--end={{ data_interval_end | ds }}",
             "{{ conn.redshift_default.host }}:{{ conn.redshift_default.port }}",
             # 'schema' in the redshift_default connection refers to database name
             "{{ conn.redshift_default.schema }}.{{ params.redshift_schema }}.{{ params.redshift_table }}",
