@@ -96,4 +96,3 @@ const parser = yargs(process.argv.slice(2))
     toYNABTransactions(rows)
   );
 })();
-process.exit();
