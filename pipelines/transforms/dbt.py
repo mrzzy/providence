@@ -3,7 +3,6 @@
 # DBT Transform
 #
 
-from datetime import timedelta
 from textwrap import dedent
 from airflow.datasets import Dataset
 from airflow.decorators import dag
@@ -27,7 +26,11 @@ from common import (
 
 @dag(
     dag_id="pvd_transform_dbt",
-    schedule=timedelta(days=1),
+    schedule=[
+        Dataset(DATASET_SIMPLYGO),
+        Dataset(DATASET_YNAB),
+        Dataset(DATASET_UOB),
+    ],
     start_date=datetime(2023, 4, 24, tz="utc"),
     **DAG_ARGS,
 )
