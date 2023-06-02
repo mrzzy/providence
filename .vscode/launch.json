@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "pwa-node",
+            "name": "Launch YNAB Sink",
+            "request": "launch",
+            "program": "sinks/ynab/dist/index.js",
+            "args": [
+                "--begin=2023-05-25",
+                "--end=2023-06-01",
+                "localhost:5432",
+                "mrzzy.public.mart_ynab_sink",
+                "f3f15316-e48c-4235-8d5d-1aa3191b3b8c"
+            ],
+            "outFiles": [
+                "sinks/ynab/dist/*.js"
+            ],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
