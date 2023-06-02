@@ -46,7 +46,15 @@ services:
           }
         }
       # expects an accessible kubernetes cluster via passed $KUBECONFIG
-      KUBECONFIG: /kubeconfig.yaml
+      AIRFLOW_CONN_KUBERNETES_DEFAULT: |
+        {
+          "conn_type": "kubernetes",
+          "extra": {
+            "kube_config_path": "/kubeconfig.yaml",
+            "namespace": "default"
+          }
+        }
+
     network_mode: host
     volumes:
       - "${KUBECONFIG}:/kubeconfig.yaml"
