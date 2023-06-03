@@ -22,6 +22,7 @@ const mockQuery = jest.fn(async () => {
     rows: [modelTableRow],
   };
 });
+const mockEnd = jest.fn();
 jest.mock("pg", () => {
   return {
     __esModule: true,
@@ -35,6 +36,7 @@ jest.mock("pg", () => {
       return {
         connect: mockConnect,
         query: mockQuery,
+        end: mockEnd,
       };
     },
   };
@@ -58,5 +60,7 @@ describe("queryDBTable()", () => {
     ]);
     // check that we called connect() on the Client
     expect(mockConnect.mock.calls.length).toEqual(1);
+    // check that we closed the db connection by calling end() on the Client
+    expect(mockEnd.mock.calls.length).toEqual(1);
   });
 });
