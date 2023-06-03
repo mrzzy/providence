@@ -211,3 +211,8 @@ models:
         description: Timestamp when the data was last scraped from YNAB.
         tests:
           - not_null
+      - name: matched_transaction_id
+        description: >
+          Optional. ID of the YNAB Transaction YNAB matched and merged with this
+          Transaction. Matched Transaction ID may be referenced by other YNAB
+          Subtransactions.

@@ -218,6 +218,10 @@ models:
         description: Whether the Transaction was approved.
         tests:
           - not_null
+      - name: is_deleted
+        description: Whether the Transaction was deleted.
+        tests:
+          - not_null
       - name: budget_id
         description: ID of the YNAB Budget the Transaction was made within.
         tests:
@@ -256,6 +260,11 @@ models:
         description: Timestamp when the data was last scraped from YNAB.
         tests:
           - not_null
+      - name: matched_transaction_id
+        description: >-
+          Optional. ID of the YNAB Transaction YNAB matched and merged with this
+          Transaction. Matched Transaction ID may be referenced by other YNAB
+          Subtransactions.
 
   - name: stg_ynab_subtransaction
     description: A YNAB accounting Subtransaction.
@@ -265,12 +274,11 @@ models:
         tests:
           - not_null
       - name: super_id
-        description: ID of super / parent Transaction of this Subtransaction
+        description: >-
+          ID of super / parent Transaction of this Subtransaction. Could be either
+          a YNAB Transaction ID or a ID of a Matched YNAB Transaction.
         tests:
           - not_null
-          - relationships:
-              to: ref("stg_ynab_transaction")
-              field: id
       - name: description
         description: User assigned description to the Subtransaction.
       - name: category_id
@@ -289,6 +297,10 @@ models:
           - relationships:
               to: ref("stg_ynab_account")
               field: id
+      - name: is_deleted
+        description: Whether the Subtransaction was deleted.
+        tests:
+          - not_null
       - name: amount
         description: >-
           Monetary Amount transferred from the associated account to the payee
