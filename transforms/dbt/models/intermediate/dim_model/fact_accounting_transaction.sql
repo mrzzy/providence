@@ -37,7 +37,13 @@ with
     )
 
 -- swap ynab category id with budget category dimension's id
-select t.*, c.id as category_id
+select
+    t.*,
+    c.id as category_id,
+    -- ynab api does not include deleted transactions in non-delta, full budget
+    -- requests
+    -- assume transactions that we can no longer scrape in newer requests as deleted
+    datediff(day, t.scraped_on, sysdate) > 2 as is_deleted
 from all_transactions as t
 left join
     {{ ref("dim_budget_category") }} as c

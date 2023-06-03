@@ -218,10 +218,6 @@ models:
         description: Whether the Transaction was approved.
         tests:
           - not_null
-      - name: is_deleted
-        description: Whether the Transaction was deleted.
-        tests:
-          - not_null
       - name: budget_id
         description: ID of the YNAB Budget the Transaction was made within.
         tests:
@@ -293,10 +289,6 @@ models:
           - relationships:
               to: ref("stg_ynab_account")
               field: id
-      - name: is_deleted
-        description: Whether the Subtransaction was deleted.
-        tests:
-          - not_null
       - name: amount
         description: >-
           Monetary Amount transferred from the associated account to the payee
@@ -308,4 +300,4 @@ models:
       - name: scraped_on
         description: Timestamp when the data was last scraped from YNAB.
         tests:
-        - not_null
+          - not_null
