@@ -170,6 +170,8 @@ def test_ingest_dag(
                             "glue_data_catalog": glue_data_catalog,
                             "dbt_target": "e2e",
                             "keep_k8s_pod": True,
+                            # disable to prevent email spam from e2e failures
+                            "email_on_failure": False,
                         }
                     ),
                 ],
