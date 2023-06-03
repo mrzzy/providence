@@ -58,15 +58,16 @@ export async function queryDBTable(
   // end up stuck in the query queue and never evaluate.
   await db.connect();
   // query the database table for transactions
-  return (
-    // redshift does not support $n parameterised queries, so we interpolate
-    // user args directly into the sql query here. Although this poses a possible
-    // SQL injection vulnerability, the risk is mitigated as this is a cli tool
-    // and not meant to be exposed to external users with potentially malicious intent.
-    (
-      await db.query(
-        `SELECT * FROM ${schema}.${table} WHERE updated_at BETWEEN '${begin.toISOString()}' AND '${end.toISOString()}';`
-      )
-    ).rows
-  );
+  // redshift does not support $n parameterised queries, so we interpolate
+  // user args directly into the sql query here. Although this poses a possible
+  // SQL injection vulnerability, the risk is mitigated as this is a cli tool
+  // and not meant to be exposed to external users with potentially malicious intent.
+  const transactions = (
+    await db.query(
+      `SELECT * FROM ${schema}.${table} WHERE updated_at BETWEEN '${begin.toISOString()}' AND '${end.toISOString()}';`
+    )
+  ).rows;
+  // close the db connection as we no longer need it.
+  db.end();
+  return transactions;
 }
