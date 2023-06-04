@@ -6,7 +6,7 @@
 services:
   # Standalone Airflow for Development
   airflow:
-    image: apache/airflow:2.5.3-python3.10
+    image: apache/airflow:2.6.1-python3.10
     environment:
       AIRFLOW__CORE__LOAD_EXAMPLES: "False"
       AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS: "False"
@@ -46,7 +46,15 @@ services:
           }
         }
       # expects an accessible kubernetes cluster via passed $KUBECONFIG
-      KUBECONFIG: /kubeconfig.yaml
+      AIRFLOW_CONN_KUBERNETES_DEFAULT: |
+        {
+          "conn_type": "kubernetes",
+          "extra": {
+            "kube_config_path": "/kubeconfig.yaml",
+            "namespace": "default"
+          }
+        }
+
     network_mode: host
     volumes:
       - "${KUBECONFIG}:/kubeconfig.yaml"
