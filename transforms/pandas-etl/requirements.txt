@@ -10,6 +10,6 @@ s3fs==0.4.2
 s3transfer==0.6.1
 six==1.16.0
 tzdata==2023.3
-urllib3==1.26.15
+urllib3==1.26.16
 xlrd==2.0.1
 pyarrow==11.0.0
