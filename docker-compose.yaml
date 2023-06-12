@@ -36,6 +36,7 @@ services:
     environment:
       AIRFLOW__CORE__LOAD_EXAMPLES: "False"
       AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS: "False"
+      # point airflow at sqlite db persisted by data volume
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: "sqlite:////data/airflow.db"
       # user env vars from .env automatically loaded by compose to define
       # Airflow connections expected by Airflow DAGs. NOTE: These Airflow
@@ -96,6 +97,24 @@ services:
       - 8088:8088
     volumes:
       - superset-data:/data
+
+  # Standalone Spark cluster for Batch Data Processing
+  spark-master:
+    image: apache/spark:3.4.0
+    command: ["/opt/spark/sbin/start-master.sh"]
+    environment:
+      SPARK_NO_DAEMONIZE: 1
+    ports:
+      - 7070:7070
+      - 4040:4040
+
+  spark-worker:
+    image: apache/spark:3.4.0
+    # mitigate race condition of connecting to spark master before it starts via restarts
+    restart: on-failure
+    command: ["/opt/spark/sbin/start-worker.sh", "spark://spark-master:7077"]
+    environment:
+      SPARK_NO_DAEMONIZE: 1
 
 volumes:
   minio-data:
