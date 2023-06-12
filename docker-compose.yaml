@@ -9,7 +9,7 @@ services:
     image: minio/minio:RELEASE.2023-06-09T07-32-12Z
     environment:
       # root user
-      MINIO_ROOT_USER: "${MINIO_ROOT_USER}"
+      MINIO_ROOT_USER: "admin"
       MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD}"
       # storage volume where minio write its data
       MINIO_VOLUMES: "/mnt/data"
@@ -95,6 +95,8 @@ services:
     build: infra/docker/superset
     ports:
       - 8088:8088
+    environment:
+      ADMIN_PASSWORD: "${SUPERSET_ADMIN_PASSWORD}"
     volumes:
       - superset-data:/data
 
