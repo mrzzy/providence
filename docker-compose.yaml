@@ -32,10 +32,11 @@ services:
 
   # Standalone Airflow for Development
   airflow:
-    image: apache/airflow:2.6.1-python3.10
+    build: infra/docker/airflow
     environment:
       AIRFLOW__CORE__LOAD_EXAMPLES: "False"
       AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS: "False"
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: "sqlite:////data/airflow.db"
       # user env vars from .env automatically loaded by compose to define
       # Airflow connections expected by Airflow DAGs. NOTE: These Airflow
       # connections would not appear in the Airflow UI as they are not stored in the DB.
@@ -84,7 +85,7 @@ services:
     volumes:
       - "${KUBECONFIG}:/kubeconfig.yaml"
       - ./pipelines:/opt/airflow/dags
-    command: ["airflow", "standalone"]
+      - airflow-data:/opt/airflow/data
     ports:
       - 8080:8080
 
@@ -99,3 +100,4 @@ services:
 volumes:
   minio-data:
   superset-data:
+  airflow-data:

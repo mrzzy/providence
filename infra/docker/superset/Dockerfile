@@ -1,15 +1,14 @@
 #
 # Providence
-# Superset Container for Docker Compose Deploymeent
 # Superset Config
+# Superset Container for Docker Compose Deploymeent
 #
 
 FROM apache/superset:0e3f1f638c06de11668c37329ca7141fd1159293
 
 USER root
+# create data mountpoint to store state
 RUN mkdir -p /data /app/docker && \
-  # create sqlite db to store superset state
-  python -c 'import sqlite3; conn = sqlite3.connect("/data/superset.db"); conn.close()' && \
   chown -R superset:superset /data /app/docker
 
 # download superset container bootstrap scripts
