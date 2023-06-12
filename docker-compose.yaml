@@ -88,5 +88,14 @@ services:
     ports:
       - 8080:8080
 
+  # Superset for BI Dashboards
+  superset:
+    build: infra/docker/superset
+    ports:
+      - 8088:8088
+    volumes:
+      - superset-data:/data
+
 volumes:
-  minio-data: {}
+  minio-data:
+  superset-data:
