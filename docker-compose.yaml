@@ -60,6 +60,15 @@ services:
             "namespace": "default"
           }
         }
+      AIRFLOW_CONN_SPARK_SQL_DEFAULT: |
+        {
+          "conn_type": "spark",
+          "host": "spark-master"
+          "port": 7070
+          "extra": {
+            "deploy-mode":  "cluster",
+          },
+        }
       KUBECONFIG: /kubeconfig.yaml
     volumes:
       - "${KUBECONFIG}:/kubeconfig.yaml"
