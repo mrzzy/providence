@@ -20,7 +20,7 @@ superset fab create-admin \
   --password $ADMIN_PASSWORD
 set -x
 
-# Setting up roSetting up roles and permsles and perms
+# Setting up roles and perms
 superset init
 
 /usr/bin/run-server.sh
