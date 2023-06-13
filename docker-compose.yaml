@@ -29,7 +29,6 @@ services:
       - 9000:9000
       # web console port
       - 9090:9090
-
   # Standalone Airflow for Development
   airflow:
     build: infra/docker/airflow
@@ -41,15 +40,6 @@ services:
       # user env vars from .env automatically loaded by compose to define
       # Airflow connections expected by Airflow DAGs. NOTE: These Airflow
       # connections would not appear in the Airflow UI as they are not stored in the DB.
-      AIRFLOW_CONN_AWS_DEFAULT: |
-        {
-            "conn_type": "aws",
-            "login": "${AWS_ACCESS_KEY_ID}",
-            "password": "${AWS_SECRET_ACCESS_KEY}",
-            "extra": {
-              "region_name": "${AWS_DEFAULT_REGION}"
-            }
-        }
       AIRFLOW_CONN_PVD_SIMPLYGO_SRC: |
         {
             "conn_type": "generic",
@@ -60,18 +50,6 @@ services:
         {
             "conn_type": "generic",
             "password": "${YNAB_ACCESS_TOKEN}"
-        }
-      AIRFLOW_CONN_REDSHIFT_DEFAULT: |
-        {
-          "conn_type": "redshift",
-          "host": "main.132307318913.ap-southeast-1.redshift-serverless.amazonaws.com",
-          "port": 5439,
-          "login": "${AWS_REDSHIFT_USER}",
-          "password": "${AWS_REDSHIFT_PASSWORD}",
-          "schema": "${AWS_REDSHIFT_DB}",
-          "extra": {
-            "role_arn": "arn:aws:iam::132307318913:role/warehouse20230514141001091300000002"
-          }
         }
       # expects an accessible kubernetes cluster via passed $KUBECONFIG
       AIRFLOW_CONN_KUBERNETES_DEFAULT: |
