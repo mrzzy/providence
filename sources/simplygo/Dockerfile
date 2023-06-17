@@ -6,6 +6,13 @@
 FROM rust:1.68.2 AS build
 RUN mkdir /app
 WORKDIR /app
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+    rclone=1.53.3-1+b6 \
+    # install CA certificates needed by openssl to verify server identity
+    ca-certificates=20210119 \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # build dependencies in separate layer to cache dependencies
 COPY Cargo.toml Cargo.lock /app/
 RUN mkdir src && touch src/lib.rs && cargo build --release
@@ -22,11 +29,8 @@ FROM debian:bullseye-slim AS release
 # create non root user to simplygo source
 ARG USER=simplygo
 RUN adduser --system simplygo
-# install CA certificates needed by openssl to verify server identity
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends ca-certificates=20210119 \
-  && rm -rf /var/lib/apt/lists/*
-# copy release binary forom build stage
+# copy release & rclone binary forom build stage
+COPY --from=build /usr/bin/rclone /usr/bin/rclone
 COPY --from=build /app/target/release/simplygo_src /bin/simplygo_src
 
 USER simplygo
