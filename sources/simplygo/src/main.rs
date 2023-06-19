@@ -5,9 +5,7 @@
 
 use chrono::{Local, NaiveDate};
 use clap::Parser;
-use simplygo_src::S3Sink;
-use simplygo_src::{models::Record, SimplyGo};
-use std::fs::File;
+use simplygo_src::{models::Record, RCloneSink, SimplyGo};
 use std::io::Write;
 
 #[derive(Parser, Debug)]
@@ -25,12 +23,9 @@ struct Cli {
     #[arg(long)]
     /// Date ending period from which trips are scraped from SimplyGo in format YYYY-MM-DD
     trips_to: String,
-    /// Path or S3 URL of the location to write output scraped data in JSON format.
+    /// Path or Rclone remote location to write output scraped data in JSON format.
     /// * Path writes the data as local file on disk.
-    /// * S3 URL write the data as a blob on AWS S3 service:
-    ///     - Requires AWS credentials to be provided via `AWS_ACCESS_KEY_ID` &
-    ///         `AWS_SECRET_ACCESS_KEY` environment variables.
-    ///     - Requires AWS Region to be set via `AWS_DEFAULT_REGION` environment variable.
+    /// * Rclone remote location in the format <RCLONE_REMOTE>:<REMOTE_PATH>
     #[arg(long, default_value = "simplygo.json")]
     output: String,
 }
@@ -60,11 +55,7 @@ fn main() {
 
     // write scraped record as json
     let mut sink: Box<dyn Write> = match &args.output {
-        s3_url if s3_url.starts_with("s3://") => Box::new(S3Sink::new(s3_url)),
-        path => Box::new(
-            File::create(path)
-                .unwrap_or_else(|e| panic!("Could not open {} for writing: {}", args.output, e)),
-        ),
+        target_path => Box::new(RCloneSink::new(&target_path)),
     };
     serde_json::to_writer(&mut sink, &record)
         .unwrap_or_else(|e| panic!("Failed to write Record as JSON to Sink: {}", e));
