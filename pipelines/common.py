@@ -69,3 +69,21 @@ def get_aws_env(conn_id: str) -> Dict[str, str]:
 def k8s_env_vars(env_vars: Dict[str, str]) -> List[k8s.V1EnvVar]:
     """Convert given env_vars into list of K8s env vars."""
     return [k8s.V1EnvVar(name, value) for name, value in env_vars.items()]
+
+
+def rclone_conn_str(conn_id: str) -> str:
+    """Build a rclone remote connection string from the given Airflow Connection
+
+    Args:
+        conn_id: ID of the Airflow Connection containing rclone remote config params
+            in its 'extra' property.
+    """
+    # build rclone remote connection string
+    remote = BaseHook.get_connection(conn_id).extra_dejson
+    return (
+        ":"
+        + ",".join(
+            [remote["type"]] + [f"{k}='{v}'" for k, v in remote.items() if k != "type"]
+        )
+        + ":"
+    )
