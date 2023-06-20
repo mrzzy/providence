@@ -24,11 +24,15 @@ services:
       ]
     volumes:
       - minio-data:/mnt/data
+    # use host networking airflow so task containers running within the kind k8s
+    # cluster can access minio via bridge network gateway ip
+    network_mode: host
     ports:
       # s3 object storage api port
       - 9000:9000
       # web console port
       - 9090:9090
+
   # Standalone Airflow for Development
   airflow:
     build: infra/docker/airflow
@@ -77,7 +81,7 @@ services:
             "provider": "Minio",
             "access_key_id": "${MINIO_ROOT_USER}",
             "secret_access_key": "${MINIO_ROOT_PASSWORD}",
-            "endpoint": "http://localhost:9000"
+            "endpoint": "http://172.24.0.1:9000"
           }
         }
       KUBECONFIG: /kubeconfig.yaml
@@ -122,3 +126,10 @@ volumes:
   minio-data:
   superset-data:
   airflow-data:
+
+networks:
+  providence:
+    ipam:
+      config:
+        # fix the bridge network to 172.24.0.* subnet to force the gateway ip to be 172.24.0.1
+        - subnet: 172.24.0.0/24
