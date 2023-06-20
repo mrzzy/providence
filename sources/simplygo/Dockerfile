@@ -29,7 +29,9 @@ FROM debian:bullseye-slim AS release
 # create non root user to simplygo source
 ARG USER=simplygo
 RUN adduser --system simplygo
-# copy release & rclone binary forom build stage
+# copy ca certificates
+COPY --from=build /etc/ssl/certs /etc/ssl/certs
+# copy release & rclone binary
 COPY --from=build /usr/bin/rclone /usr/bin/rclone
 COPY --from=build /app/target/release/simplygo_src /bin/simplygo_src
 
