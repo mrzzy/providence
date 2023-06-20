@@ -8,10 +8,13 @@ RUN mkdir /app
 WORKDIR /app
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
-    rclone=1.53.3-1+b6 \
     # install CA certificates needed by openssl to verify server identity
     ca-certificates=20210119 \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
+# install rclone via docker image for a more updated version of rclone then is
+# available from the apt package repository.
+# needed for connection string functionality introduced in rclone >=1.55.0
+COPY --from=rclone/rclone:1.62.2  /usr/local/bin/rclone /usr/bin/rclone
 
 # build dependencies in separate layer to cache dependencies
 COPY Cargo.toml Cargo.lock /app/
