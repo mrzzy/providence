@@ -34,12 +34,11 @@ impl RCloneSink {
         }
     }
 
-    fn buffer_path(&self) -> String {
+    fn buffer_path(&self) -> &str {
         self.buffer
             .path()
             .to_str()
             .expect("Unable to convert name of temporary file to string")
-            .to_string()
     }
 }
 impl Write for RCloneSink {
@@ -51,13 +50,25 @@ impl Write for RCloneSink {
         self.buffer.flush()?;
         // copy written file to rclone remote
         let result = match Command::new("rclone")
-            .args(["copyto", &self.buffer_path(), &self.target_path])
-            .spawn()
+            .args(["copyto", "-vvv", &self.buffer_path(), &self.target_path])
+            .output()
         {
-            Ok(_) => Ok(()),
+            // successful
+            Ok(out) if out.status.success() => Ok(()),
+            // command ran but with non zero exit
+            Ok(out) => Err(Error::new(
+                ErrorKind::Other,
+                format!(
+                    "rclone copy to failed: {}",
+                    std::str::from_utf8(&out.stderr).unwrap_or_else(|e| panic!(
+                        "Could not decode non utf-8 output from rclone: {}",
+                        e
+                    ))
+                ),
+            )),
+            // command could not run
             Err(e) => Err(Error::new(ErrorKind::Other, e)),
         };
-        // cleanup temp file
         result
     }
 }
