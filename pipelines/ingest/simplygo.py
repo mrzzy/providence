@@ -25,7 +25,7 @@ from common import (
     get_aws_env,
     k8s_env_vars,
     DATASET_SIMPLYGO,
-    rclone_conn_str,
+    get_rclone_env,
 )
 
 
@@ -33,7 +33,8 @@ from common import (
     dag_id="pvd_ingest_simplygo",
     schedule=timedelta(days=1),
     start_date=datetime(2023, 4, 4, tz="utc"),
-    **DAG_ARGS,
+    # TODO(mrzzy): remove default_args
+    **(DAG_ARGS | {"default_args": {}}),
 )
 def ingest_simplygo_dag(
     bucket: str = "mrzzy-co-data-lake",
@@ -61,6 +62,7 @@ args
     )
     # Extract & load SimplyGo data with SimplyGo source into S3 as JSON
     simplygo = BaseHook.get_connection("pvd_simplygo_src")
+    rclone_remote = "default"
     KubernetesPodOperator(
         task_id="ingest_simplygo",
         # pool to limit load impact of concurrent requests on the SimplyGo Website
@@ -76,8 +78,8 @@ args
             "--trips-to",
             "{{ ds }}",
             "--output",
-            rclone_conn_str("rclone_default")
-            + "{{ params.bucket }}/providence/grade=raw/source=simplygo/date={{ ds }}/simplygo.json",
+            rclone_remote
+            + ":{{ params.bucket }}/providence/grade=raw/source=simplygo/date={{ ds }}/simplygo.json",
         ],
         labels=K8S_LABELS
         | {
@@ -89,6 +91,7 @@ args
                 "SIMPLYGO_SRC_USERNAME": simplygo.login,  # type: ignore
                 "SIMPLYGO_SRC_PASSWORD": simplygo.password,  # type: ignore
             }
+            | get_rclone_env(remote_name=rclone_remote, conn_id="rclone_default")
         ),
         outlets=[Dataset(DATASET_SIMPLYGO)],
         is_delete_operator_pod=keep_k8s_pod,
