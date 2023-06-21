@@ -13,6 +13,9 @@ USER ${USER}
 ENV PATH=/home/${USER}/.local/bin:${PATH}
 WORKDIR /home/${USER}
 
+# install rclone
+COPY --from=rclone/rclone:1.62.2  /usr/local/bin/rclone /usr/bin/rclone
+
 # install pip module requirements
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
