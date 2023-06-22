@@ -84,7 +84,6 @@ def ingest_api(
     subprocess.run(
         ["rclone", "rcat", target_path],
         input=json.dumps(content).encode(),
-        capture_output=True,
         # check status code upon rclone exit
         check=True,
     )
@@ -95,7 +94,7 @@ if __name__ == "__main__":
     parser = ArgumentParser(usage=USAGE)
     parser.add_argument("method")
     parser.add_argument("api_url", type=urlparse)
-    parser.add_argument("target_path", type=urlparse)
+    parser.add_argument("target_path")
     args = parser.parse_args()
 
     ingest_api(
