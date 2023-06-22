@@ -35,7 +35,7 @@ services:
 
   # Standalone Airflow for Development
   airflow:
-    build: infra/docker/airflow
+    build: infra/services/airflow
     environment:
       AIRFLOW__CORE__LOAD_EXAMPLES: "False"
       AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS: "False"
@@ -96,7 +96,7 @@ services:
 
   # Superset for BI Dashboards
   superset:
-    build: infra/docker/superset
+    build: infra/services/superset
     ports:
       - 8088:8088
     environment:
