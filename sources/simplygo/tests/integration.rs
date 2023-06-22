@@ -50,10 +50,14 @@ fn run_minio(client: &Cli) -> (Container<MinIO>, String) {
 /// Create director with `rclone mkdir` at the given path.
 /// Used to create buckets when working cloud storage.
 fn mkdir(target_dir: &str) {
-    Command::new("rclone")
-        .args(["mkdir", target_dir])
-        .spawn()
-        .unwrap_or_else(|e| panic!("Could not rclone mkdir: {}", e));
+    assert!(
+        Command::new("rclone")
+            .args(["mkdir", target_dir])
+            .status()
+            .unwrap_or_else(|e| panic!("Could not rclone mkdir: {}", e))
+            .success(),
+        "rclone mkdir exited with non-zero exit code."
+    );
 }
 
 /// Wait for the given path to exist by running `rclone ls` repeatedly

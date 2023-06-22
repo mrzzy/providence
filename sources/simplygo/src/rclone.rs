@@ -4,7 +4,7 @@
  * RClone Sink
 */
 
-use std::io::Write;
+use std::io::{Error, ErrorKind, Write};
 use std::process::{Child, ChildStdin, Command, Stdio};
 
 /// Sink that writes written to an RClone location specified by target_path.
@@ -42,17 +42,25 @@ impl Write for RCloneSink {
     }
 
     fn flush(&mut self) -> std::io::Result<()> {
-        let result = self.stdin().flush();
+        self.stdin().flush()?;
         // take and drop stdin stream to close it, causing rclone to terminate
         self.rclone
             .stdin
             .take()
             .expect("Could not obtain 'rclone rcat' stdin for closing");
         // wait for rclone to terminate
-        self.rclone
+        match self
+            .rclone
             .wait()
-            .expect("Could not wait for 'rclone rcat' as it is not running");
-        result
+            .expect("Could not wait for 'rclone rcat' as it is not running")
+            .success()
+        {
+            true => Ok(()),
+            false => Err(Error::new(
+                ErrorKind::Other,
+                "'rclone rcat' exited with non zero exit code",
+            )),
+        }
     }
 }
 
@@ -65,8 +73,7 @@ mod tests {
 
     #[test]
     fn sink_test() {
-        let target = NamedTempFile::new()
-            .expect("Could not create temporary file: {}");
+        let target = NamedTempFile::new().expect("Could not create temporary file: {}");
         let mut sink = RCloneSink::new(&target.path().to_string_lossy());
         sink.write(b"test").expect("Failed to write");
     }
