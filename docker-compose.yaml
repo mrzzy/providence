@@ -35,7 +35,7 @@ services:
 
   # Standalone Airflow for Development
   airflow:
-    build: infra/services/airflow
+    build: pipelines
     environment:
       AIRFLOW__CORE__LOAD_EXAMPLES: "False"
       AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS: "False"

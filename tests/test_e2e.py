@@ -167,6 +167,7 @@ def test_ingest_dag(
                     json.dumps(
                         {
                             "s3_bucket": s3_bucket,
+                            "bucket": s3_bucket,
                             "glue_data_catalog": glue_data_catalog,
                             "dbt_target": "e2e",
                             "keep_k8s_pod": True,
