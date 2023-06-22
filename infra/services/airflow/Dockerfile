@@ -12,4 +12,7 @@ RUN mkdir -p /data/ && \
   chown -R airflow /data/
 
 USER airflow
+# install airflow providers
+RUN pip install --no-cache-dir apache-airflow-providers-apache-spark==4.1.0
+
 CMD ["airflow", "standalone"]
