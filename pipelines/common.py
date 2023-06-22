@@ -16,6 +16,7 @@ from kubernetes.client import models as k8s
 
 # Constants
 AWS_CONNECTION_ID = "aws_default"
+RCLONE_CONNECTION_ID = "rclone_default"
 K8S_LABELS = {
     "app.kubernetes.io/part-of": "providence",
     "app.kubernetes.io/managed-by": "airflow",
@@ -78,7 +79,7 @@ def get_rclone_env(remote_name: str, conn_id: str) -> Dict:
     """
     remote_params = BaseHook.get_connection(conn_id).extra_dejson
     return {
-        f"RCLONE_CONFIG_{remote_name.upper()}_{key}": value
+        f"RCLONE_CONFIG_{remote_name.upper()}_{key.upper()}": value
         for key, value in remote_params.items()
     }
 
