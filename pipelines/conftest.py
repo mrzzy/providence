@@ -8,6 +8,8 @@ from typing import Dict
 import pytest
 from airflow.models import Connection
 
+from common import RCLONE_CONNECTION_ID
+
 
 @pytest.fixture
 def airflow_connections() -> Dict[str, Connection]:
@@ -33,7 +35,7 @@ def airflow_connections() -> Dict[str, Connection]:
             password="test",
         ),
         Connection(
-            conn_id="rclone_default",
+            conn_id=RCLONE_CONNECTION_ID,
             conn_type="generic",
             extra={
                 "type": "remote",

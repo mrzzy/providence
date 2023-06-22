@@ -18,8 +18,10 @@ from common import (
     AWS_CONNECTION_ID,
     DAG_ARGS,
     K8S_LABELS,
+    RCLONE_CONNECTION_ID,
     YNAB_API_POOL,
     get_aws_env,
+    get_rclone_env,
     k8s_env_vars,
     DATASET_YNAB,
 )
@@ -29,19 +31,20 @@ from common import (
     dag_id="pvd_ingest_ynab",
     schedule=timedelta(days=1),
     start_date=datetime(2023, 4, 4, tz="utc"),
-    **DAG_ARGS,
+    # TODO(mrzzy): remove default_args
+    **(DAG_ARGS | {"default_args": {}}),
 )
 def ingest_ynab_dag(
     rest_api_tag: str = "latest",
     ynab_budget_id: str = "f3f15316-e48c-4235-8d5d-1aa3191b3b8c",
-    s3_bucket: str = "mrzzy-co-data-lake",
+    bucket: str = "mrzzy-co-data-lake",
     keep_k8s_pod: bool = False,
 ):
     dedent(
-        f"""Ingests YNAB budget data into AWS S3.
+        f"""Ingests YNAB budget data into a cloud storage bucket.
 
     Parameters:
-    - `s3_bucket`: Name of a existing S3 bucket to store ingested data.
+    - `bucket`: Name of a existing cloud storage bucket to ingest data.
     - `ynab_budget_id`: ID specifying the YNAB Budget to retrieve data for.
     - `rest_api_tag`: Tag specifying the version of the REST API Source container to use.
     - `keep_k8s_pod`: Whether to leave K8s pods untouched after task completes.
@@ -50,18 +53,17 @@ def ingest_ynab_dag(
     Connections by expected id:
     - `ynab_api`:
         - `password`: YNAB API access token.
-    - `aws_default`:
-        - `login`: AWS Access Key ID.
-        - `password`: AWS Access Secret Key.
-        - `extra`:
-            - `region`: AWS region.
+    - `rclone_default`:
+        - `extra`: rclone remote config parameters
+            See https://rclone.org/docs/#configure for provider specific config keys.
 
     Datasets:
     - Outputs `{DATASET_YNAB}`.
     """
     )
 
-    # Extract & load budget data with YNAB source into S3 as JSON
+    # Extract & load YNAB budget data with REST API source
+    rclone_remote = "default"
     KubernetesPodOperator(
         task_id="ingest_ynab",
         # pool to limit requests to YNAB API and reduce failures due to hitting the rate limit
@@ -76,13 +78,14 @@ def ingest_ynab_dag(
         arguments=[
             "GET",
             "https://api.ynab.com/v1/budgets/{{ params.ynab_budget_id }}",
-            "s3://{{ params.s3_bucket }}/providence/grade=raw/source=ynab/date={{ ds }}/budget.json",
+            rclone_remote
+            + ":{{ params.bucket }}/providence/grade=raw/source=ynab/date={{ ds }}/budget.json",
         ],
         env_vars=k8s_env_vars(
             {
                 "REST_API_BEARER_TOKEN": "{{ conn.ynab_api.password }}",
             }
-            | get_aws_env(AWS_CONNECTION_ID)
+            | get_rclone_env(remote_name=rclone_remote, conn_id=RCLONE_CONNECTION_ID)
         ),
         outlets=[Dataset(DATASET_YNAB)],
         is_delete_operator_pod=keep_k8s_pod,
