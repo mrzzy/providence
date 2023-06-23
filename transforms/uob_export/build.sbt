@@ -10,6 +10,7 @@ lazy val root = (project in file("."))
     name := "uob_export",
     libraryDependencies += munit % Test,
     libraryDependencies += "org.apache.spark" %% "spark-sql" % "3.4.0",
+    libraryDependencies += "com.crealytics" %% "spark-excel" % "3.3.1_0.18.7",
   )
 
 // See https://www.scala-sbt.org/1.x/docs/Using-Sonatype.html for instructions on how to publish to Sonatype.
