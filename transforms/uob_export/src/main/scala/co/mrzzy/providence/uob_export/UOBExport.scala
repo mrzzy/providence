@@ -10,20 +10,32 @@ import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.types.StructField
 import org.apache.spark.sql.types.StringType
+import org.apache.spark.sql.types.DecimalType
 
 object UOBExport {
   val SparkExcelFormat = "com.crealytics.spark.excel";
 
-  /** Extract the bank transactions in the given UOB excel export into
-    * Dataframe.
+  /** Schema of Bank transactions read from UOB exports */
+  val BankTransaction = StructType(
+    Seq(
+      StructField("Transaction Date", StringType),
+      StructField("Transaction Description", StringType),
+      StructField("Withdrawal", DecimalType(13, 2)),
+      StructField("Deposit", DecimalType(13, 2)),
+      StructField("Available Balance", DecimalType(13, 2))
+    )
+  )
+
+  /** Extract the bank transactions in the given UOB excel export into a
+    * DataFrame.
     *
     * @param path
     *   Path to UOB bank transaction excel export.
     * @param spark
     *   Spark Session used to interface with spark.
     * @return
+    *   DataFrame of read bank transactions.
     */
-
   def readTransactions(
       path: String
   )(implicit
@@ -33,6 +45,7 @@ object UOBExport {
       .format(SparkExcelFormat)
       .option("header", true)
       .option("dataAddress", "A8")
+      .schema(BankTransaction)
       .load(path)
   }
 
