@@ -7,21 +7,36 @@
 package co.mrzzy.providence.uob_export
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.types.StructType
+import org.apache.spark.sql.types.StructField
+import org.apache.spark.sql.types.StringType
 
 object UOBExport {
+  val SparkExcelFormat = "com.crealytics.spark.excel";
 
-  /** Read the excel at the given path a dataframe.
+  /** Extract the bank transactions in the given UOB excel export into
+    * Dataframe.
     *
-    * @param spark
     * @param path
+    *   Path to UOB bank transaction excel export.
+    * @param spark
+    *   Spark Session used to interface with spark.
     * @return
     */
-  def readExcel(spark: SparkSession, path: String): DataFrame = {
+
+  def readTransactions(
+      path: String
+  )(implicit
+      spark: SparkSession
+  ): DataFrame = {
     spark.read
-      .format("com.crealytics.spark.excel")
-      .option("header", false)
+      .format(SparkExcelFormat)
+      .option("header", true)
+      .option("dataAddress", "A8")
       .load(path)
   }
+
+  def readMeta = ???
 
   def main(args: Array[String]): Unit = {
     // parse command args
@@ -35,8 +50,8 @@ at path 'export_xlsx' and write them into a Delta Lake table at path 'output_del
       print(usage)
       sys.exit(1)
     }
-    val (export_xlsx, output_delta) = (args(0), args(1))
-
-    val spark = SparkSession.builder.appName("pvd-uob-export").getOrCreate()
+    val (exportXlsx, outputDelta) = (args(0), args(1))
+    implicit val spark =
+      SparkSession.builder.appName("pvd-uob-export").getOrCreate()
   }
 }
