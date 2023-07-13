@@ -11,13 +11,12 @@ import org.apache.spark.sql.SparkSession
 import java.nio.file.Files
 
 class UOBExportSpec extends munit.FunSuite {
-  implicit val spark = UOBExport
-    .configDelta(
-      SparkSession.builder
-        .appName("pvd-uob-export")
-        .master("local[*]")
-    )
-    .getOrCreate()
+  implicit val spark =
+    SparkSession.builder
+      .appName("pvd-uob-export")
+      .config(UOBExport.SparkConfig)
+      .master("local[*]")
+      .getOrCreate()
 
   test("readTransactions() reads bank transactions from UOB export") {
     val df = UOBExport
@@ -46,7 +45,8 @@ class UOBExportSpec extends munit.FunSuite {
 
   test("write() writes dataframe delta paritioned by date") {
     val targetPath = Files.createTempDirectory("UOBExportSpec_write")
-    UOBExport.write(df, targetPath.toString)
+    UOBExport.write(targetPath.toString)(df)
+    // test that spark can read delta table written by scalaa
     spark.read.format("delta").load(targetPath.toUri.toString)
     new Directory(targetPath.toFile).deleteRecursively
   }

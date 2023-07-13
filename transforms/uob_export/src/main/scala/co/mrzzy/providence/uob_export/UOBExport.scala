@@ -19,7 +19,14 @@ import org.apache.spark.sql.functions
 
 object UOBExport {
   val SparkExcelFormat = "com.crealytics.spark.excel";
+  val SparkConfig = Map(
+    "spark.sql.extensions"->  "io.delta.sql.DeltaSparkSessionExtension",
+    "spark.sql.catalog.spark_catalog"-> "org.apache.spark.sql.delta.catalog.DeltaCatalog",
+  )
+
+
   val TimestampCol = "__uob_export_timestamp"
+
 
   /** Schema of Bank transactions read from UOB exports */
   val BankTransaction = StructType(
@@ -125,21 +132,19 @@ object UOBExport {
       .withColumn(TimestampCol, functions.current_timestamp())
   }
 
-  def write(df: DataFrame, path: String) {
+  /** Write extracted bank export into Delta Lake table.
+    *
+    * @param path
+    *   Path / location to write the delta lake table to.
+    * @param df
+    *   Dataframe to write as a Delta Lake table.
+    */
+  def write(path: String)(df: DataFrame) {
     df.write
       .format("delta")
       .mode(SaveMode.Overwrite)
       .partitionBy("TransactionDate")
       .save(path)
-  }
-
-  def configDelta(builder: SparkSession.Builder): SparkSession.Builder = {
-    builder
-      .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
-      .config(
-        "spark.sql.catalog.spark_catalog",
-        "org.apache.spark.sql.delta.catalog.DeltaCatalog"
-      )
   }
 
   def main(args: Array[String]): Unit = {
@@ -155,12 +160,12 @@ at path 'export_xlsx' and write them into a Delta Lake table at path 'output_del
       sys.exit(1)
     }
     val (exportXlsx, outputDelta) = (args(0), args(1))
-    implicit val spark = configDelta(
-      SparkSession.builder
-        .appName("pvd-uob-export")
-    ).getOrCreate()
 
-    // write extracted bank export into delta table.
-    write(read(exportXlsx), outputDelta)
+    // run Pipeline
+    implicit val spark = SparkSession.builder
+      .appName("pvd-uob-export")
+      .config(SparkConfig)
+      .getOrCreate
+    (read _ andThen write(exportXlsx) _)(exportXlsx)
   }
 }
