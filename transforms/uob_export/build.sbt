@@ -17,7 +17,16 @@ ThisBuild / assemblyMergeStrategy := { case _ =>
 lazy val root = (project in file("."))
   .settings(
     name := "uob_export",
-    libraryDependencies += spark % "provided",
-    libraryDependencies += sparkExcel,
-    libraryDependencies += munit % Test
+    libraryDependencies ++= commonDeps,
+  )
+
+lazy val it = (project in file("it"))
+  .dependsOn(root)
+  .settings(
+    // do not publish integration test project
+    publish / skip := true,
+    libraryDependencies ++= commonDeps,
+    libraryDependencies += testContainers % Test,
+    libraryDependencies += hadoopAWS % Test,
+    libraryDependencies += awsJavaSDK % Test,
   )
