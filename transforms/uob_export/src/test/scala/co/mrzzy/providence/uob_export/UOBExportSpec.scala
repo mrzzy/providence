@@ -43,11 +43,11 @@ class UOBExportSpec extends munit.FunSuite {
     assert(df.columns.contains(UOBExport.TimestampCol))
   }
 
-  test("write() writes dataframe delta paritioned by date") {
+  test("write() writes dataframe parquet files") {
     val targetPath = Files.createTempDirectory("UOBExportSpec_write")
     UOBExport.write(targetPath.toString)(df)
-    // test that spark can read delta table written by scalaa
-    spark.read.format("delta").load(targetPath.toUri.toString)
+    // test that spark can read parquet files written previously
+    spark.read.format("parquet").load(targetPath.toUri.toString)
     new Directory(targetPath.toFile).deleteRecursively
   }
 }

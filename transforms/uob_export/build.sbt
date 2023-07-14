@@ -19,6 +19,5 @@ lazy val root = (project in file("."))
     name := "uob_export",
     libraryDependencies += spark % "provided",
     libraryDependencies += sparkExcel,
-    libraryDependencies += delta,
     libraryDependencies += munit % Test
   )

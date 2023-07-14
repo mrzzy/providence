@@ -19,14 +19,10 @@ import org.apache.spark.sql.functions
 
 object UOBExport {
   val SparkExcelFormat = "com.crealytics.spark.excel";
-  val SparkConfig = Map(
-    "spark.sql.extensions"->  "io.delta.sql.DeltaSparkSessionExtension",
-    "spark.sql.catalog.spark_catalog"-> "org.apache.spark.sql.delta.catalog.DeltaCatalog",
+  val SparkConfig: Map[String, String] = Map(
   )
 
-
   val TimestampCol = "__uob_export_timestamp"
-
 
   /** Schema of Bank transactions read from UOB exports */
   val BankTransaction = StructType(
@@ -132,40 +128,51 @@ object UOBExport {
       .withColumn(TimestampCol, functions.current_timestamp())
   }
 
-  /** Write extracted bank export into Delta Lake table.
+  /** Write extracted bank export into Parquet files
     *
     * @param path
-    *   Path / location to write the delta lake table to.
+    *   Path / location to write the Parquet files to.
     * @param df
-    *   Dataframe to write as a Delta Lake table.
+    *   Dataframe to write as Parquet files.
     */
   def write(path: String)(df: DataFrame) {
     df.write
-      .format("delta")
+      .format("parquet")
       .mode(SaveMode.Overwrite)
-      .partitionBy("TransactionDate")
       .save(path)
   }
 
-  def main(args: Array[String]): Unit = {
+  /** Run the UOB Export Pipeline with the given SparkSession.
+    *
+    * @param spark
+    *   Spark Session used to interface with spark.
+    * @param args
+    *   Command line argv passed to main.
+    */
+  def run(implicit spark: SparkSession, args: Array[String]): Unit = {
     // parse command args
-    val usage = """Usage: uob_export <export_xlsx> <output_delta>
+    val usage = """Usage: uob_export <export_xlsx> <output_path>
 
 Extract UOB Bank transactions into a from the UOB Excel transactions export
-at path 'export_xlsx' and write them into a Delta Lake table at path 'output_delta'.
+at path 'export_xlsx' and write them into a Parquet file at path 'output_path'.
     """
     if (args.length != 2) {
       println("Expected to be given 2 arguments")
       print(usage)
       sys.exit(1)
     }
-    val (exportXlsx, outputDelta) = (args(0), args(1))
+    val (exportXlsx, outputPath) = (args(0), args(1))
+    // run uob export pipeline
+    val df = read(exportXlsx)
+    write(outputPath)(df)
+  }
 
+  def main(args: Array[String]): Unit = {
     // run Pipeline
-    implicit val spark = SparkSession.builder
+    val spark = SparkSession.builder
       .appName("pvd-uob-export")
       .config(SparkConfig)
       .getOrCreate
-    (read _ andThen write(exportXlsx) _)(exportXlsx)
+    run(spark, args)
   }
 }
