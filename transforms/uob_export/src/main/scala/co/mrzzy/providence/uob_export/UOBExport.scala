@@ -15,7 +15,7 @@ import org.apache.spark.sql.types.DecimalType
 import org.apache.spark.sql.types.TimestampType
 import org.apache.spark.sql.SaveMode
 import org.apache.spark.sql.types.DateType
-import org.apache.spark.sql.functions
+import org.apache.spark.sql.functions._
 
 object UOBExport {
   val SparkExcelFormat = "com.crealytics.spark.excel";
@@ -69,12 +69,22 @@ object UOBExport {
   )(implicit
       spark: SparkSession
   ): DataFrame = {
+    // cast column to bank transaction schema
+    val castSchema =
+      (column: String, field: String) =>
+        col(column).cast(BankTransaction(field).dataType).as(field)
     spark.read
       .format(SparkExcelFormat)
       .option("header", true)
       .option("dataAddress", "A8")
-      .schema(BankTransaction)
       .load(path)
+      .select(
+        castSchema("Transaction Date", "TransactionDate"),
+        castSchema("Transaction Description", "TransactionDescription"),
+        castSchema("Withdrawal", "Withdrawal"),
+        castSchema("Deposit", "Deposit"),
+        castSchema("Available Balance", "AvailableBalance")
+      )
   }
 
   /** Extract the metadata from rows 5-7 of the UOB excel export into a
@@ -125,7 +135,7 @@ object UOBExport {
     readTransactions(path)
       .crossJoin(readMeta(path))
       // add processing timestamp
-      .withColumn(TimestampCol, functions.current_timestamp())
+      .withColumn(TimestampCol, current_timestamp())
   }
 
   /** Write extracted bank export into Parquet files

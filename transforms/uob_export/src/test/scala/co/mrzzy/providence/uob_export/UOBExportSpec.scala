@@ -23,14 +23,16 @@ class UOBExportSpec extends munit.FunSuite {
       .readTransactions(getClass().getResource("/ACC_TXN_test.xls").getPath())
     // test: dimensions of export dataframe
     assertEquals(df.schema, UOBExport.BankTransaction)
-    assertEquals(df.count(), 2L)
+    // use rdd count force spark to evaluate dataframe and get an accurate count
+    assertEquals(df.rdd.count(), 2L)
   }
 
   test("readMetadata() reads metadata from UOB export") {
     val df = UOBExport
       .readMeta(getClass().getResource("/ACC_TXN_test.xls").getPath())
     assertEquals(df.schema, UOBExport.Metadata)
-    assertEquals(df.count(), 1L)
+    // use rdd count force spark to evaluate dataframe and get an accurate count
+    assertEquals(df.rdd.count(), 1L)
   }
 
   lazy val df = UOBExport
@@ -38,7 +40,8 @@ class UOBExportSpec extends munit.FunSuite {
 
   test("read() joins transactions & metadata, adds timestamp column") {
     assertEquals(df.schema, UOBExport.BankExport)
-    assertEquals(df.count(), 2L)
+    // use rdd count force spark to evaluate dataframe and get an accurate count
+    assertEquals(df.rdd.count(), 2L)
 
     assert(df.columns.contains(UOBExport.TimestampCol))
   }
