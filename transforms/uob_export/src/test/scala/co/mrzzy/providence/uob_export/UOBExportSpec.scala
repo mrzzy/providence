@@ -9,6 +9,9 @@ package co.mrzzy.providence.uob_export
 import scala.reflect.io.Directory
 import org.apache.spark.sql.SparkSession
 import java.nio.file.Files
+import org.apache.spark.sql.Row
+import scala.collection.immutable.ArraySeq
+import java.sql.Date
 
 class UOBExportSpec extends munit.FunSuite {
   implicit val spark =
@@ -21,29 +24,80 @@ class UOBExportSpec extends munit.FunSuite {
   test("readTransactions() reads bank transactions from UOB export") {
     val df = UOBExport
       .readTransactions(getClass().getResource("/ACC_TXN_test.xls").getPath())
-    // test: dimensions of export dataframe
+    // test: read dataframe schema
     assertEquals(df.schema, UOBExport.BankTransaction)
-    // use rdd count force spark to evaluate dataframe and get an accurate count
-    assertEquals(df.rdd.count(), 2L)
+    // test: read dataframe contents
+    assertEquals(
+      df.collect().toSeq,
+      ArraySeq(
+        Row(
+          Date.valueOf("2023-04-06"),
+          "Placeholder Description",
+          new java.math.BigDecimal("5.00"),
+          new java.math.BigDecimal("5.00"),
+          new java.math.BigDecimal("2000.00")
+        ),
+        Row(
+          Date.valueOf("2023-04-04"),
+          "Placeholder Description",
+          new java.math.BigDecimal("5.00"),
+          new java.math.BigDecimal("5.00"),
+          new java.math.BigDecimal("2000.00")
+        )
+      )
+    )
   }
 
   test("readMetadata() reads metadata from UOB export") {
+    // test: read dataframe schema
     val df = UOBExport
       .readMeta(getClass().getResource("/ACC_TXN_test.xls").getPath())
     assertEquals(df.schema, UOBExport.Metadata)
-    // use rdd count force spark to evaluate dataframe and get an accurate count
-    assertEquals(df.rdd.count(), 1L)
+    // test: read dataframe contents
+    assertEquals(
+      df.collect().toSeq,
+      ArraySeq(
+        Row("123456789", "Test Account", "06 Feb 2023 To 07 Apr 2023", "SGD")
+      )
+    )
   }
 
   lazy val df = UOBExport
     .read(getClass().getResource("/ACC_TXN_test.xls").getPath())
 
   test("read() joins transactions & metadata, adds timestamp column") {
+    // test: read dataframe schema
     assertEquals(df.schema, UOBExport.BankExport)
-    // use rdd count force spark to evaluate dataframe and get an accurate count
-    assertEquals(df.rdd.count(), 2L)
-
     assert(df.columns.contains(UOBExport.TimestampCol))
+
+    // test: read dataframe contents
+    assertEquals(
+      df.drop(UOBExport.TimestampCol).collect.toSeq,
+      ArraySeq(
+        Row(
+          Date.valueOf("2023-04-06"),
+          "Placeholder Description",
+          new java.math.BigDecimal("5.00"),
+          new java.math.BigDecimal("5.00"),
+          new java.math.BigDecimal("2000.00"),
+          "123456789",
+          "Test Account",
+          "06 Feb 2023 To 07 Apr 2023",
+          "SGD"
+        ),
+        Row(
+          Date.valueOf("2023-04-07"),
+          "Placeholder Description",
+          new java.math.BigDecimal("5.00"),
+          new java.math.BigDecimal("5.00"),
+          new java.math.BigDecimal("2000.00"),
+          "123456789",
+          "Test Account",
+          "06 Feb 2023 To 07 Apr 2023",
+          "SGD"
+        )
+      )
+    )
   }
 
   test("write() writes dataframe parquet files") {
