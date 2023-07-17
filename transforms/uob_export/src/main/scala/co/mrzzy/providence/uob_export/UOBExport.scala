@@ -79,7 +79,7 @@ object UOBExport {
       .option("dataAddress", "A8")
       .load(path)
       .select(
-        castSchema("Transaction Date", "TransactionDate"),
+        to_date(col("Transaction Date"), "dd MMM yyyy").as("TransactionDate"),
         castSchema("Transaction Description", "TransactionDescription"),
         castSchema("Withdrawal", "Withdrawal"),
         castSchema("Deposit", "Deposit"),
@@ -106,14 +106,14 @@ object UOBExport {
     // extract metadata from rows 5-7 of the export
     val metaRows = spark.read
       .format(SparkExcelFormat)
-      .option("header", true)
-      .option("dataAddress", "A5:C8")
+      .option("header", false)
+      .option("dataAddress", "A5:C7")
       .load(path)
       .collect()
     val metadata = Row(
-      metaRows.map(_.getString(1)) :+
+      (metaRows.map(_.getString(1)) :+
         // currency is oddly placed, so we extract it manually
-        metaRows(0).getString(2): _*
+        metaRows(0).getString(2)): _*
     )
     spark.createDataFrame(
       spark.sparkContext.parallelize(Seq(metadata)),
