@@ -544,9 +544,6 @@ spark-warehouse/
 
 .Rproj.user
 
-# For SBT
-.jvmopts
-
 ### Metals ###
 .metals/
 .bloop/
