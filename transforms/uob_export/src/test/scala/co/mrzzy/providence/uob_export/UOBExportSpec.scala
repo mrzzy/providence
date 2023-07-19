@@ -38,7 +38,7 @@ class UOBExportSpec extends munit.FunSuite {
           new java.math.BigDecimal("2000.00")
         ),
         Row(
-          Date.valueOf("2023-04-04"),
+          Date.valueOf("2023-04-07"),
           "Placeholder Description",
           new java.math.BigDecimal("5.00"),
           new java.math.BigDecimal("5.00"),
