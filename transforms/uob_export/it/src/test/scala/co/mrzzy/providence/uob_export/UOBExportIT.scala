@@ -36,9 +36,10 @@ class UOBExportIT extends munit.FunSuite with TestContainerForEach {
           Map(
             "spark.hadoop.fs.s3a.access.key" -> "minioadmin",
             "spark.hadoop.fs.s3a.secret.key" -> "minioadmin",
-            "spark.hadoop.fs.s3a.endpoint" -> s"http://localhost:${compose.getServicePort("minio", S3APIPort)}",
+            "spark.hadoop.fs.s3a.endpoint" -> s"http://localhost:${compose
+                .getServicePort("minio", S3APIPort)}",
             "spark.hadoop.fs.s3a.path.style.access" -> "true",
-            "spark.hadoop.fs.s3a.connection.ssl.enabled" -> "false",
+            "spark.hadoop.fs.s3a.connection.ssl.enabled" -> "false"
           )
         )
         .getOrCreate
@@ -53,9 +54,14 @@ class UOBExportIT extends munit.FunSuite with TestContainerForEach {
         )
       )
 
-      // check contents of loaded excel file
-      spark.read
-        .parquet(exportPath)
+      // test: check that we can read the exported excel file
+      assertEquals(
+        spark.read
+          .parquet(exportPath)
+          .rdd
+          .count,
+        2L
+      )
     }
   }
 
