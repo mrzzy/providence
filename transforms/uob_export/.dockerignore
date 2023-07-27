@@ -1,0 +1,5 @@
+.bsp/
+target/
+Dockerfile
+.gitignore
+.dockerignore
