@@ -20,6 +20,12 @@ import org.apache.spark.sql.functions._
 object UOBExport {
   val SparkExcelFormat = "com.crealytics.spark.excel";
   val SparkConfig: Map[String, String] = Map(
+    /// recommended settings for writing parquet on cloud storage
+    "spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version" -> "2",
+    "spark.hadoop.parquet.enable.summary-metadata" -> "false",
+    "spark.sql.parquet.mergeSchema" -> "false",
+    "spark.sql.parquet.filterPushdown" -> "true",
+    "spark.sql.hive.metastorePartitionPruning" -> "true"
   )
 
   val TimestampCol = "__uob_export_timestamp"
