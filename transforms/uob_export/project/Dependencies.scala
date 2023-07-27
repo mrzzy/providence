@@ -12,6 +12,9 @@ object Dependencies {
 
   lazy val testContainers =
     "com.dimafeng" %% "testcontainers-scala-munit" % "0.40.17"
+  // cloud storage connectors & sdks
   lazy val hadoopAWS = "org.apache.hadoop" % "hadoop-aws" % "3.3.4"
   lazy val awsJavaSDK = "com.amazonaws" % "aws-java-sdk-bundle" % "1.12.505"
+
+  lazy val hadoopGCP = "com.google.cloud.bigdataoss" % "gcs-connector" % "hadoop3-2.2.16" classifier "shaded"
 }
