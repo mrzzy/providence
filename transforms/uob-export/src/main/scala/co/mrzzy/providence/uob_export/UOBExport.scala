@@ -167,7 +167,7 @@ object UOBExport {
     */
   def run(implicit spark: SparkSession, args: Array[String]): Unit = {
     // parse command args
-    val usage = """Usage: uob_export <export_xlsx> <output_path>
+    val usage = """Usage: uob-export <export_xlsx> <output_path>
 
 Extract UOB Bank transactions into a from the UOB Excel transactions export
 at path 'export_xlsx' and write them into a Parquet file at path 'output_path'.
