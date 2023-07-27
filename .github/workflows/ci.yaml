@@ -150,7 +150,6 @@ jobs:
       fail-fast: false
       matrix:
         transform:
-          - pandas-etl
           - dbt
           - uob-export
     name: "${{ matrix.transform }} Transform: Publish Container image"

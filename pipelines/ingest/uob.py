@@ -38,7 +38,7 @@ from common import (
 def ingest_uob_dag(
     s3_bucket: str = "mrzzy-co-data-lake",
     export_prefix="providence/manual/uob/ACC_TXN_History_",
-    pandas_etl_tag: str = "latest",
+    uob_export_tag: str = "latest",
     keep_k8s_pod: bool = False,
 ):
     dedent(
@@ -48,7 +48,7 @@ def ingest_uob_dag(
     - `s3_bucket`: Name of a existing S3 bucket to that contains the UOB export to ingest.
             The bucket will also be used to store ingested data.
     - `export_prefix` Path prefix under which UOB export is manually stored in the bucket.
-    - `pandas_etl_tag`: Tag specifying the version of the Pandas ETL container to use.
+    - `uob_export_tag`: Tag specifying the version of the UOB Export container to use.
     - `keep_k8s_pod`: Whether to leave K8s pods untouched after task completes.
         By default, the K8s pod created for the task will be cleaned up.
 
@@ -94,12 +94,12 @@ def ingest_uob_dag(
     # Convert UOB transaction export to Parquet
     KubernetesPodOperator.partial(
         task_id="convert_uob_pq",
-        image="ghcr.io/mrzzy/pvd-pandas-etl-tfm:{{ params.pandas_etl_tag }}",
+        image="ghcr.io/mrzzy/pvd-pandas-etl-tfm:{{ params.uob_export_tag }}",
         image_pull_policy="Always",
         labels=K8S_LABELS
         | {
             "app.kubernetes.io/name": "pvd-pandas-etl-tfm",
-            "app.kubernetes.io/version": "{{ params.pandas_etl_tag }}",
+            "app.kubernetes.io/version": "{{ params.uob_export_tag }}",
         },
         env_vars=k8s_env_vars(get_aws_env(AWS_CONNECTION_ID)),
         outlets=[Dataset(DATASET_UOB)],
