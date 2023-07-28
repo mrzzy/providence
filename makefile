@@ -50,14 +50,19 @@ deps-rest-api: $(REST_API_DIR)
 
 $(eval $(call PYTHON_RULES,rest-api,$(REST_API_DIR)))
 
-# Pandas ETL transform
-PANDAS_ETL_DIR := transforms/pandas-etl
+# UOB Export ETL transform
+UOB_EXPORT_DIR := transforms/uob-export
 
-$(eval $(call PHONY_RULE,deps,pandas-etl))
-deps-pandas-etl: $(PANDAS_ETL_DIR)
-	cd $< && pip install -r requirements-dev.txt
+define UOB_EXPORT_RULE
+$(call PHONY_RULE,$(1),uob-export)
+$(1)-uob-export: $$(UOB_EXPORT_DIR)
+	cd $$< && $(2)
+endef
 
-$(eval $(call PYTHON_RULES,pandas-etl,$(PANDAS_ETL_DIR)))
+$(eval $(call UOB_EXPORT_RULE,fmt,sbt scalafmt))
+$(eval $(call UOB_EXPORT_RULE,lint,sbt scalafmtCheck))
+$(eval $(call UOB_EXPORT_RULE,build,sbt package))
+$(eval $(call UOB_EXPORT_RULE,test,sbt test it/test))
 
 # DBT transform
 DBT_DIR := transforms/dbt
