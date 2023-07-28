@@ -37,15 +37,23 @@ jobs:
           make-suffix: rest-api
           python-version: "${{ env.PYTHON_VERSION }}"
 
-  pandas-etl-transform:
-    name: "Pandas ETL Transform: Lint & Test"
+  uob-export-transform:
+    name: "UOB Export Transform: Lint, Build & Test"
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/python
+      - name: Setup JDK
+        uses: actions/setup-java@v3
         with:
-          make-suffix: pandas-etl
-          python-version: "${{ env.PYTHON_VERSION }}"
+          distribution: temurin
+          java-version: 17.0.5
+          cache: sbt
+      - name: Lint
+        run: make lint-uob-export
+      - name: Build
+        run: make test-uob-export
+      - name: Test
+        run: make test-uob-export
 
   dbt-transform:
     name: "DBT Transform: Lint"
