@@ -16,4 +16,4 @@ RUN sbt assembly
 
 # build release container spark runtime +fat jar
 FROM apache/spark:3.4.0 AS release
-COPY --from=build /root/target/scala-*/uob_export-assembly*.jar /opt/spark/work-dir/uob_export.jar
+COPY --from=build /root/target/scala-*/uob_export-assembly*.jar /uob_export.jar
