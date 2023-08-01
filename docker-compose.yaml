@@ -66,14 +66,14 @@ services:
         }
       # uses kubernetes cluster at access $KUBE_API_SERVER_HOST:$KUBE_API_SERVER_PORT
       # as spark cluster manager
-      AIRFLOW_CONN_SPARK_SQL_DEFAULT: |
+      AIRFLOW_CONN_SPARK_DEFAULT: |
         {
           "conn_type": "spark",
-          "host": "${KUBE_API_SERVER_HOST}",
-          "port": ${KUBE_API_SERVER_PORT},
+          "host": "k8s://https://${KUBE_API_SERVER_HOST}",
+          "port": "${KUBE_API_SERVER_PORT}",
           "extra": {
-            "deploy-mode":  "cluster",
-          },
+            "deploy-mode":  "cluster"
+          }
         }
       AIRFLOW_CONN_RCLONE_DEFAULT: |
         {
