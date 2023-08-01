@@ -24,6 +24,8 @@ lazy val root = (project in file("."))
     name := "uob_export",
     libraryDependencies ++= commonDeps,
     libraryDependencies += hadoopGCP,
+    libraryDependencies += hadoopAWS,
+    libraryDependencies += awsJavaSDK,
   )
 
 lazy val it = (project in file("it"))

@@ -16,5 +16,5 @@ object Dependencies {
   lazy val hadoopAWS = "org.apache.hadoop" % "hadoop-aws" % "3.3.4"
   lazy val awsJavaSDK = "com.amazonaws" % "aws-java-sdk-bundle" % "1.12.505"
 
-  lazy val hadoopGCP = "com.google.cloud.bigdataoss" % "gcs-connector" % "hadoop3-2.2.16" classifier "shaded"
+  lazy val hadoopGCP = "com.google.cloud.bigdataoss" % "gcs-connector" % "hadoop3-2.2.16"
 }
