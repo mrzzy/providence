@@ -15,7 +15,7 @@ from pendulum.date import Date
 from pendulum.datetime import DateTime
 from airflow.decorators import task, dag
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
-from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
+from airflow.providers.cncf.kubernetes.operators.pod import (
     KubernetesPodOperator,
 )
 

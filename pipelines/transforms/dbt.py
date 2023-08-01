@@ -6,7 +6,7 @@
 from textwrap import dedent
 from airflow.datasets import Dataset
 from airflow.decorators import dag
-from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
+from airflow.providers.cncf.kubernetes.operators.pod import (
     KubernetesPodOperator,
 )
 from pendulum import datetime

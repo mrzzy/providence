@@ -12,7 +12,7 @@ from airflow.models import BaseOperator
 from airflow.datasets import Dataset
 from airflow.decorators import dag, task
 from airflow.hooks.base import BaseHook
-from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
+from airflow.providers.cncf.kubernetes.operators.pod import (
     KubernetesPodOperator,
 )
 from pendulum import datetime
@@ -43,7 +43,7 @@ def ingest_simplygo_dag(
 ):
     dedent(
         f"""Ingests SimplyGo data into a cloud storage bucket.
-args
+
     Parameters:
     - `bucket`: Name of a existing cloud storage bucket to ingest data.
     - `simplygo_src_tag`: Tag specifying the version of the SimplyGo Source container to use.

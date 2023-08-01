@@ -11,7 +11,7 @@ from typing import Dict, Iterable
 
 import pytest
 from unittest import mock
-from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import os
+from airflow.providers.cncf.kubernetes.operators.pod import os
 from airflow.models import Connection, DagBag
 
 DAGS_DIR = Path(__file__).parent
