@@ -11,10 +11,14 @@ ThisBuild / organization := "co.mrzzy"
 ThisBuild / organizationName := "mrzzy"
 ThisBuild / crossScalaVersions := Seq("2.12.17")
 
-// spark-excel both bundles the scala library causing conflicts
-// use the 'last' merge strategy resolve conflicts using our version of the scala library.
+// use merge strategy resolve conflicts with different versions of wfileslasses
 ThisBuild / assemblyMergeStrategy := {
-  case PathList("scala", xs @ _*) => MergeStrategy.last
+  case PathList("scala", _*)                    => MergeStrategy.last
+  case PathList("org", "apache", "commons", _*) => MergeStrategy.last
+  case "mozilla/public-suffix-list.txt"         => MergeStrategy.last
+  case "library.properties"                     => MergeStrategy.last
+  case "META-INF/versions/9/module-info.class"  => MergeStrategy.discard
+  case "META-INF/io.netty.versions.properties"  => MergeStrategy.discard
   case x =>
     val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
     oldStrategy(x)
@@ -26,7 +30,7 @@ lazy val root = (project in file("."))
     libraryDependencies ++= commonDeps,
     libraryDependencies += hadoopGCP,
     libraryDependencies += hadoopAWS,
-    libraryDependencies += awsJavaSDK,
+    libraryDependencies += awsJavaSDK
   )
 
 lazy val it = (project in file("it"))
@@ -37,5 +41,5 @@ lazy val it = (project in file("it"))
     libraryDependencies ++= commonDeps,
     libraryDependencies += testContainers % Test,
     libraryDependencies += hadoopAWS % Test,
-    libraryDependencies += awsJavaSDK % Test,
+    libraryDependencies += awsJavaSDK % Test
   )
