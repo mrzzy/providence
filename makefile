@@ -61,7 +61,7 @@ endef
 
 $(eval $(call UOB_EXPORT_RULE,fmt,sbt scalafmt))
 $(eval $(call UOB_EXPORT_RULE,lint,sbt scalafmtCheck))
-$(eval $(call UOB_EXPORT_RULE,build,sbt package))
+$(eval $(call UOB_EXPORT_RULE,build,sbt compile))
 $(eval $(call UOB_EXPORT_RULE,test,sbt test it/test))
 
 # DBT transform

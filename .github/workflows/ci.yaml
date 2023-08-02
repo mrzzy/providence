@@ -51,7 +51,7 @@ jobs:
       - name: Lint
         run: make lint-uob-export
       - name: Build
-        run: make test-uob-export
+        run: make build-uob-export
       - name: Test
         run: make test-uob-export
 
