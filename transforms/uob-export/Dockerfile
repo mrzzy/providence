@@ -7,6 +7,7 @@
 # build container
 FROM sbtscala/scala-sbt:eclipse-temurin-jammy-17.0.5_8_1.9.0_2.13.10 AS build
 # copy build specification
+COPY .jvmopts /root/
 COPY build.sbt /root/
 COPY project /root/project
 # install dependencies in separate layer for caching
