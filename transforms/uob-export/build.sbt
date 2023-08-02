@@ -22,6 +22,7 @@ ThisBuild / assemblyMergeStrategy := { case _ =>
 lazy val root = (project in file("."))
   .settings(
     name := "uob_export",
+    assembly / mainClass := Some("co.mrzzy.providence.uob_export.UOBExport"),
     libraryDependencies ++= commonDeps,
     libraryDependencies += hadoopGCP,
     libraryDependencies += hadoopAWS,
