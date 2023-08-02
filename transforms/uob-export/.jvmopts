@@ -12,3 +12,4 @@
 --add-exports=java.base/sun.security.action=ALL-UNNAMED
 --add-exports=java.base/sun.util.calendar=ALL-UNNAMED
 --add-exports=java.security.jgss/sun.security.krb5=ALL-UNNAMED
+-Xmx5g
