@@ -13,7 +13,7 @@ object Dependencies {
     .exclude("org.apache.poi", "poi-ooxml")
     .exclude("org.apache.poi", "poi-ooxml-lite")
     .exclude("org.apache.xmlbeans", "xmlbeans")
-    .exclude("com.norbitltd", "spoiwo_2.13")
+    .exclude("com.norbitltd", "spoiwo_2.12")
     .exclude("com.github.pjfanning", "excel-streaming-reader")
     .exclude("com.github.pjfanning", "poi-shared-strings")
     .exclude("commons-io", "commons-io")
@@ -24,12 +24,12 @@ object Dependencies {
     .exclude("com.github.virtuald", "curvesapi")
     .exclude("commons-codec", "commons-codec")
     .exclude("org.apache.commons", "commons-math3")
-    .exclude("org.scala-lang.modules", "scala-collection-compat_2.13")
+    .exclude("org.scala-lang.modules", "scala-collection-compat_2.12")
     .exclude("org.apache.logging.log4j", "log4j-core")
     .exclude("org.scala-lang", "scala-library")
-    .exclude("org.apache.spark", "spark-core_2.13")
-    .exclude("org.apache.spark", "spark-sql_2.13")
-    .exclude("org.apache.spark", "spark-hive_2.13")
+    .exclude("org.apache.spark", "spark-core_2.12")
+    .exclude("org.apache.spark", "spark-sql_2.12")
+    .exclude("org.apache.spark", "spark-hive_2.12")
 
   val commonDeps = Seq(
     spark % "provided",

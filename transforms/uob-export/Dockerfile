@@ -5,7 +5,7 @@
 #
 
 # build container
-FROM sbtscala/scala-sbt:eclipse-temurin-jammy-17.0.5_8_1.9.0_2.13.10 AS build
+FROM sbtscala/scala-sbt:eclipse-temurin-jammy-11.0.17_8_1.9.3_2.12.18 AS build
 # copy build specification
 COPY .jvmopts /root/
 COPY build.sbt /root/
@@ -19,5 +19,5 @@ COPY src /root/src
 RUN sbt assembly
 
 # build release container spark runtime +fat jar
-FROM apache/spark:3.4.0 AS release
+FROM apache/spark:3.4.0-scala2.12-java11-python3-ubuntu AS release
 COPY --from=build /root/target/scala-*/uob_export-assembly*.jar /uob_export.jar

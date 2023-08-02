@@ -5,11 +5,10 @@
  */
 import Dependencies._
 
-ThisBuild / scalaVersion := "2.13.10"
+ThisBuild / scalaVersion := "2.12.18"
 ThisBuild / version := "0.1.0-SNAPSHOT"
 ThisBuild / organization := "co.mrzzy"
 ThisBuild / organizationName := "mrzzy"
-ThisBuild / crossScalaVersions := Seq("2.12.17")
 
 // use merge strategy resolve conflicts with different versions of wfileslasses
 ThisBuild / assemblyMergeStrategy := {
