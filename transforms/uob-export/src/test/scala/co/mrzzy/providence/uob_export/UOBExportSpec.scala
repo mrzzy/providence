@@ -10,7 +10,7 @@ import scala.reflect.io.Directory
 import org.apache.spark.sql.SparkSession
 import java.nio.file.Files
 import org.apache.spark.sql.Row
-import scala.collection.immutable.ArraySeq
+import scala.collection.mutable.ArraySeq
 import java.sql.Date
 
 class UOBExportSpec extends munit.FunSuite {
