@@ -27,7 +27,6 @@ lazy val root = (project in file("."))
   .settings(
     name := "uob_export",
     libraryDependencies ++= commonDeps,
-    libraryDependencies += hadoopGCP,
     libraryDependencies += hadoopAWS,
     libraryDependencies += awsJavaSDK
   )
