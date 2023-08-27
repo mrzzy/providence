@@ -12,10 +12,6 @@ terraform {
   }
 }
 
-provider "aws" {
-  region = var.region
-}
-
 # IAM
 # iam policy to allows holder to list, CRUD objects in S3 buckets
 data "aws_iam_policy_document" "s3_crud" {
