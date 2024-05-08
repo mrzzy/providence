@@ -21,7 +21,7 @@ hpack==4.0.0
 hyperframe==6.0.1
 idna==3.4
 isodate==0.6.1
-Jinja2==3.1.2
+Jinja2==3.1.4
 jmespath==1.0.1
 jsonschema==3.2.0
 leather==0.3.4
