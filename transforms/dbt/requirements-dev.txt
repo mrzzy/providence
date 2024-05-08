@@ -11,7 +11,7 @@ sqlfluff==2.1.2
 tblib==1.7.0
 toml==0.10.2
 tomli==2.0.1
-tqdm==4.65.0
+tqdm==4.66.3
 typer==0.7.0
 diff-cover==7.5.0
 jinja2-simple-tags==0.4.1
