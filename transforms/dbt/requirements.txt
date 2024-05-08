@@ -11,7 +11,7 @@ click==8.1.3
 colorama==0.4.6
 dbt-core==1.4.5
 dbt-extractor==0.4.1
-dbt-postgres==1.4.5
+dbt-postgres==1.7.14
 dbt-redshift==1.4.0
 future==0.18.3
 grpclib==0.4.4
