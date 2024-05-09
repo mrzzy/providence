@@ -72,7 +72,7 @@ kubernetes-asyncio==24.2.3
 lazy-object-proxy==1.9.0
 linkify-it-py==2.0.3
 lockfile==0.12.2
-lxml==4.9.2
+lxml==4.9.4
 Mako==1.2.4
 Markdown==3.4.3
 markdown-it-py==2.2.0
