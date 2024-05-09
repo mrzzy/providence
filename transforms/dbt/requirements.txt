@@ -30,7 +30,7 @@ MarkupSafe==2.1.5
 mashumaro==3.13
 minimal-snowplow-tracker==0.0.2
 msgpack==1.0.8
-multidict==6.0.4
+multidict==6.0.5
 networkx==2.8.8
 packaging==23.1
 parsedatetime==2.4
