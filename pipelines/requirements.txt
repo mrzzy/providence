@@ -70,7 +70,7 @@ jsonschema==4.17.3
 kubernetes==23.6.0
 kubernetes-asyncio==24.2.3
 lazy-object-proxy==1.9.0
-linkify-it-py==2.0.2
+linkify-it-py==2.0.3
 lockfile==0.12.2
 lxml==4.9.2
 Mako==1.2.4
