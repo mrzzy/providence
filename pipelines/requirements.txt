@@ -119,7 +119,7 @@ rich==13.3.5
 rsa==4.9
 s3transfer==0.6.1
 scramp==1.4.5
-setproctitle==1.3.2
+setproctitle==1.3.3
 six==1.16.0
 sniffio==1.3.0
 soupsieve==2.4.1
