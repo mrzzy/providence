@@ -5,7 +5,7 @@ anyio==3.7.1
 apache-airflow==2.9.1
 apache-airflow-providers-amazon==7.4.1
 apache-airflow-providers-cncf-kubernetes==5.3.0
-apache-airflow-providers-common-sql==1.5.1
+apache-airflow-providers-common-sql==1.13.0
 apache-airflow-providers-ftp==3.7.0
 apache-airflow-providers-http==4.4.1
 apache-airflow-providers-imap==3.3.0
