@@ -16,7 +16,7 @@ asgiref==3.8.1
 asn1crypto==1.5.1
 async-timeout==4.0.3
 attrs==22.2.0
-Babel==2.12.1
+Babel==2.15.0
 beautifulsoup4==4.12.3
 blinker==1.6.2
 boto3==1.26.151
