@@ -1,7 +1,7 @@
 -r requirements.txt
 Pygments==2.15.0
 appdirs==1.4.4
-chardet==5.1.0
+chardet==5.2.0
 exceptiongroup==1.1.1
 iniconfig==2.0.0
 pluggy==1.0.0
