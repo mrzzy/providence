@@ -1,4 +1,4 @@
-boto3==1.34.103
+boto3==1.34.104
 botocore==1.34.104
 fsspec==2023.6.0
 jmespath==1.0.1
