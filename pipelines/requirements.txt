@@ -65,7 +65,7 @@ inflection==0.5.1
 itsdangerous==2.2.0
 Jinja2==3.1.4
 jmespath==1.0.1
-jsonpath-ng==1.5.3
+jsonpath-ng==1.6.1
 jsonschema==4.17.3
 kubernetes==23.6.0
 kubernetes-asyncio==24.2.3
