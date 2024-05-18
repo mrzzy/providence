@@ -25,7 +25,7 @@ Jinja2==3.1.4
 jmespath==1.0.1
 jsonschema==3.2.0
 leather==0.4.0
-Logbook==1.5.3
+Logbook==1.7.0.post0
 MarkupSafe==2.1.5
 mashumaro==3.13
 minimal-snowplow-tracker==0.0.2
