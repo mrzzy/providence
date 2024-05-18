@@ -25,21 +25,30 @@ test-$(1): $(2)
 	cd $$< && pytest
 endef
 
-all: deps fmt lint build test
+define RUST_RULES
+fmt-$(1): $(2)
+	cd $$< && cargo fmt
 
-# SimplyGo source
-SIMPLYGO_DIR := sources/simplygo
+lint-$(1): $(2)
+	cd $$< && cargo fmt --check && cargo clippy
 
-define SIMPLYGO_RULE
-$(call PHONY_RULE,$(1),simplygo)
-$(1)-simplygo: $$(SIMPLYGO_DIR)
-	cd $$< && $(2)
+build-$(1): $(2)
+	cd $$< && cargo build
+
+test-$(1): $(2)
+	cd $$< && cargo test
 endef
 
-$(eval $(call SIMPLYGO_RULE,fmt,cargo fmt))
-$(eval $(call SIMPLYGO_RULE,lint,cargo fmt --check && cargo clippy))
-$(eval $(call SIMPLYGO_RULE,build,cargo build))
-$(eval $(call SIMPLYGO_RULE,test,cargo test))
+
+all: deps fmt lint build test
+	
+# Simplygo SDK, source & transform
+$(eval $(call RUST_RULES,simplygo,libs/simplygo))
+
+$(eval $(call RUST_RULES,simplygo-src,sources/simplygo))
+
+$(eval $(call RUST_RULES,simplygo-tfm,transforms/simplygo))
+
 
 # REST API source
 REST_API_DIR := sources/rest-api
@@ -105,15 +114,6 @@ build-ynab: $(YNAB_SINK_DIR)
 $(eval $(call PHONY_RULE,build,ynab))
 test-ynab: $(YNAB_SINK_DIR)
 	cd $< && npm test
-
-# Airflow Pipelines
-# NOTE: run 'airflow db init' before running 'make test-pipeline'
-PIPELINES_DIR := pipelines
-
-$(eval $(call PHONY_RULE,deps,pipelines))
-deps-pipelines: $(PIPELINES_DIR)
-	cd $< && pip install -r requirements-dev.txt
-	airflow db init
 
 $(eval $(call PYTHON_RULES,pipelines,$(PIPELINES_DIR)))
 

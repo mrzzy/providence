@@ -1,0 +1,39 @@
+#
+# Providence
+# Dockerfile
+# SimplyGo Rust
+#
+
+
+ARG TARGET=simplygo_src
+
+# Stage: Build from source
+FROM rust:1.78.0 AS build
+ARG TARGET
+RUN mkdir -p /app
+WORKDIR /app
+# build dependencies in separate layer to cache
+COPY Cargo.toml Cargo.lock /app/
+RUN mkdir src && touch src/lib.rs && cargo build --release \
+  && rm src/lib.rs \
+  # remove marker for library built with empty lib.rs to trigger rebuild of lib.rs
+  # otherwise, cargo will assume lib.rs as empty library with no symbols,
+  # causing linking issues for main.rs
+  && rm target/release/deps/lib${TARGET}*
+COPY src /app/src
+RUN cargo build --release
+
+# Stage: Binary only production image
+FROM debian:bookworm-slim AS release
+ARG TARGET
+# create non root user
+ARG USER=simplygo
+RUN adduser --system simplygo
+# install CA certificates needed by openssl to verify server identity
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends ca-certificates=20230311  \
+  && rm -rf /var/lib/apt/lists/*
+# copy release binary forom build stage
+COPY --from=build /app/target/release/${TARGET} /bin/${TARGET}
+USER simplygo
+ENTRYPOINT [ "/bin/${TARGET}" ]

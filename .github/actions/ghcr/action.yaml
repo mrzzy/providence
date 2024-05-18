@@ -22,6 +22,11 @@ inputs:
   context_dir:
     required: true
     description: Path to the context directory used to build the container.
+  dockerfile:
+    description: "Optional. Path to the Dockerfile used to build the container.
+      If unspecified, defaults to {{ context_dir }}/Dockerfile ."
+  build_args:
+    description: Optional. List of build args to be passed to docker build.
 runs:
   using: composite
   steps:
@@ -46,6 +51,8 @@ runs:
       uses: docker/build-push-action@v4.0.0
       with:
         context: "${{ inputs.context_dir }}"
+        file: "${{ inputs.dockerfile }}"
         tags: ${{ steps.docker-metadata.outputs.tags }}
         labels: ${{ steps.docker-metadata.outputs.labels }}
+        build-args: "${{ inputs.build_args }}"
         push: true

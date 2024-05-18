@@ -8,24 +8,82 @@ on: push
 env:
   CONTAINER_REGISTRY: ghcr.io
   PYTHON_VERSION: 3.10.6
+# add permissions needed to push containers to GHCR with GITHUB_TOKEN
+permissions:
+  contents: read
+  packages: write
 jobs:
-  simplygo-src:
-    name: "SimplyGo Source: Lint, Build & Test"
+  simplygo:
+    name: "SimplyGo SDK"
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "libs/simplygo -> target"
       - name: Lint
         run: make lint-simplygo
       - name: Build
         run: make build-simplygo
       - name: Test
+        run: make test-simplygo
+      - name: Publish
+        if: ${{ github.event_name == 'release' }}
+        run:
+          cargo publish
+
+  simplygo-src:
+    name: "SimplyGo Source"
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "sources/simplygo -> target"
+      - name: Lint
+        run: make lint-simplygo-src
+      - name: Build
+        run: make build-simplygo-src
+      - name: Test
         env:
           SIMPLYGO_SRC_USERNAME: "${{ secrets.SIMPLYGO_SRC_USERNAME }}"
           SIMPLYGO_SRC_PASSWORD: "${{ secrets.SIMPLYGO_SRC_PASSWORD }}"
-          AWS_DEFAULT_REGION: "ap-southeast-1"
-          AWS_ACCESS_KEY_ID: "${{ secrets.AWS_ACCESS_KEY_ID }}"
-          AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
-        run: make test-simplygo
+        run: make test-simplygo-src
+      - name: Publish Container
+        uses: ./.github/actions/ghcr
+        with:
+          username: "${{ github.actor }}"
+          password: "${{ secrets.GITHUB_TOKEN }}"
+          name: "pvd-simplygo-src"
+          context_dir: "sources/simplygo"
+          dockerfile: "infra/Dockerfile.simplygo_rust"
+          build_args: |
+            TARGET=simplygo_src
+
+  simplygo-tfm:
+    name: "SimplyGo Transform"
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "transforms/simplygo -> target"
+      - name: Lint
+        run: make lint-simplygo-tfm
+      - name: Build
+        run: make build-simplygo-tfm
+      - name: Test
+        run: make test-simplygo-tfm
+      - name: Publish Container
+        uses: ./.github/actions/ghcr
+        with:
+          username: "${{ github.actor }}"
+          password: "${{ secrets.GITHUB_TOKEN }}"
+          name: "pvd-simplygo-tfm"
+          context_dir: "transforms/simplygo"
+          dockerfile: "infra/Dockerfile.simplygo_rust"
+          build_args: |
+            TARGET=simplygo_tfm
 
   rest-api-src:
     name: "REST API Source: Lint & Test"
@@ -50,9 +108,6 @@ jobs:
   dbt-transform:
     name: "DBT Transform: Lint"
     runs-on: ubuntu-22.04
-    env:
-      AWS_REDSHIFT_USER: "${{ secrets.AWS_REDSHIFT_USER }}"
-      AWS_REDSHIFT_PASSWORD: "${{ secrets.AWS_REDSHIFT_PASSWORD }}"
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -77,8 +132,6 @@ jobs:
         run: make deps-dbt
       - name: Generate docs
         env:
-          AWS_REDSHIFT_USER: "${{ secrets.AWS_REDSHIFT_USER }}"
-          AWS_REDSHIFT_PASSWORD: "${{ secrets.AWS_REDSHIFT_PASSWORD }}"
           DBT_TARGET: prod
         working-directory: transforms/dbt
         run: |
@@ -131,10 +184,6 @@ jobs:
           - rest-api
     name: "${{ matrix.source }} Source: Publish Container image"
     runs-on: ubuntu-22.04
-    # add permissions needed to push containers to GHCR with GITHUB_TOKEN
-    permissions:
-      contents: read
-      packages: write
     steps:
       - uses: actions/checkout@v3
       - name: Build & Publish
@@ -154,10 +203,6 @@ jobs:
           - dbt
     name: "${{ matrix.transform }} Transform: Publish Container image"
     runs-on: ubuntu-22.04
-    # add permissions needed to push containers to GHCR with GITHUB_TOKEN
-    permissions:
-      contents: read
-      packages: write
     steps:
       - uses: actions/checkout@v3
       - name: Build & Publish
@@ -176,10 +221,6 @@ jobs:
           - ynab
     name: "${{ matrix.sink }} Sink: Publish Container image"
     runs-on: ubuntu-22.04
-    # add permissions needed to push containers to GHCR with GITHUB_TOKEN
-    permissions:
-      contents: read
-      packages: write
     steps:
       - uses: actions/checkout@v3
       - name: Build & Publish
@@ -197,8 +238,6 @@ jobs:
       - sink-container
     name: "End to End Test"
     runs-on: ubuntu-22.04
-    env:
-      KUBECONFIG: /tmp/kubeconfig.yaml
     steps:
       - uses: actions/checkout@v3
       - uses: engineerd/setup-kind@v0.5.0
@@ -214,32 +253,5 @@ jobs:
         env:
           SIMPLYGO_SRC_USERNAME: "${{ secrets.SIMPLYGO_SRC_USERNAME }}"
           SIMPLYGO_SRC_PASSWORD: "${{ secrets.SIMPLYGO_SRC_PASSWORD }}"
-          AWS_DEFAULT_REGION: "ap-southeast-1"
-          AWS_ACCESS_KEY_ID: "${{ secrets.AWS_ACCESS_KEY_ID }}"
-          AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
-          AWS_REDSHIFT_USER: "${{ secrets.AWS_REDSHIFT_USER }}"
-          AWS_REDSHIFT_PASSWORD: "${{ secrets.AWS_REDSHIFT_PASSWORD }}"
           YNAB_ACCESS_TOKEN: "${{ secrets.YNAB_ACCESS_TOKEN }}"
         run: pytest -vvv
-      - name: Export kind cluster logs
-        if: always()
-        run: kind export logs kind_logs
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: kind_logs
-          path: kind_logs
-
-  lint-terraform:
-    name: "Lint Terraform"
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - uses: hashicorp/setup-terraform@v2
-        with:
-          # renovate: datasource=github-releases depName=hashicorp/terraform versioning=hashicorp
-          terraform_version: 1.3.1
-      - name: Setup dependencies
-        run: make deps-terraform
-      - name: Lint
-        run: make lint-terraform
