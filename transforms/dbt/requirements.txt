@@ -24,7 +24,7 @@ isodate==0.6.1
 Jinja2==3.1.4
 jmespath==1.0.1
 jsonschema==3.2.0
-leather==0.3.4
+leather==0.4.0
 Logbook==1.5.3
 MarkupSafe==2.1.5
 mashumaro==3.13
