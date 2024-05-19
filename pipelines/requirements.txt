@@ -86,7 +86,7 @@ mdurl==0.1.2
 multidict==6.0.5
 mypy-boto3-appflow==1.34.0
 mypy-boto3-rds==1.26.144
-mypy-boto3-redshift-data==1.26.109
+mypy-boto3-redshift-data==1.34.0
 oauthlib==3.2.2
 packaging==21.3
 pathspec==0.9.0
