@@ -33,7 +33,7 @@ msgpack==1.0.8
 multidict==6.0.5
 networkx==2.8.8
 packaging==23.2
-parsedatetime==2.4
+parsedatetime==2.6
 pathspec==0.10.3
 psycopg2-binary==2.9.9
 pycparser==2.21
