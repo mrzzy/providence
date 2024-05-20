@@ -3,7 +3,7 @@ botocore==1.34.108
 fsspec==2023.12.2
 jmespath==1.0.1
 numpy==1.26.4
-pandas==2.0.2
+pandas==2.2.2
 python-dateutil==2.8.2
 pytz==2023.3
 s3fs==0.4.2
