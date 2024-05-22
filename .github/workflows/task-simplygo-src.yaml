@@ -4,6 +4,7 @@
 # SimplyGO Source Task
 #
 
+name: "SimplyGo: Scrape Task"
 on:
   workflow_dispatch:
     inputs:

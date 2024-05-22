@@ -56,3 +56,6 @@ runs:
         labels: ${{ steps.docker-metadata.outputs.labels }}
         build-args: "${{ inputs.build_args }}"
         push: true
+        # use github actions cache to cache image layers
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
