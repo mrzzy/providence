@@ -4,7 +4,6 @@
 # SimplyGo Rust
 #
 
-
 ARG TARGET=simplygo_src
 
 # Stage: Build from source
@@ -33,7 +32,9 @@ RUN adduser --system simplygo
 RUN apt-get update \
   && apt-get install -y --no-install-recommends ca-certificates=20230311  \
   && rm -rf /var/lib/apt/lists/*
-# copy release binary forom build stage
+# install rclone for cloud storage support
+COPY --from=rclone/rclone:1.65.2 /usr/local/bin/rclone /bin/rclone
+# copy release binary from build stage
 COPY --from=build /app/target/release/${TARGET} /bin/${TARGET}
 USER simplygo
 ENTRYPOINT [ "/bin/${TARGET}" ]
