@@ -1,10 +1,10 @@
 #
 # Providence
 # Simplygo Workflow
-# SimplyGO Source Task
+# SimplyGO Transform Task
 #
 
-name: "SimplyGo: Scrape Task"
+name: "SimplyGo: Transform Task"
 on:
   workflow_dispatch:
     inputs:
@@ -13,8 +13,8 @@ on:
         required: true
         type: string
       image:
-        description: Fully qualified simplygo-src image tag to use to scrape.
-        default: ghcr.io/mrzzy/pvd-simplygo-src:latest
+        description: Fully qualified simplygo-tfm image tag to use to scrape.
+        default: ghcr.io/mrzzy/pvd-simplygo-tfm:latest
         type: string
 jobs:
   scrape-simplygo:
@@ -28,7 +28,9 @@ jobs:
         RCLONE_B2_KEY: "${{ secrets.RCLONE_B2_KEY }}"
         RCLONE_B2_HARD_DELETE: true
     steps:
-      - name: Scrape SimplyGo with SimplyGo source
-        run: "simplygo_src --trips-from ${{ inputs.trips_on }} --trips-to ${{ inputs.trips_on }} --output-dir /tmp/out"
       - name: Copy scraped data to B2
-        run: "rclone copy --size-only --fast-list /tmp/out :b2:mrzzy-co-data-lake/staging/by=simplygo_src/date=${{ inputs.trips_on }}"
+        run: "rclone copy --size-only --fast-list :b2:mrzzy-co-data-lake/staging/by=simplygo_src/date=${{ inputs.trips_on }} /tmp/raw"
+      - name: Transform SimplyGo Raw Data to CSV
+        run: "simplygo_tfm --input-dir /tmp/raw --output /tmp/out.csv"
+      - name: Copy scraped data to B2
+        run: "rclone copy --size-only --fast-list /tmp/out.csv :b2:mrzzy-co-data-lake/staging/by=simplygo-tfm/date=${{ inputs.trips_on }}/out.csv"
