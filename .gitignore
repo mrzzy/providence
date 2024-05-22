@@ -422,4 +422,4 @@ terraform.rc
 .ionide
 
 # direnv
-/.envrc
+.envrc
