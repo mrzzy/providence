@@ -37,4 +37,3 @@ COPY --from=rclone/rclone:1.65.2 /usr/local/bin/rclone /bin/rclone
 # copy release binary from build stage
 COPY --from=build /app/target/release/${TARGET} /bin/${TARGET}
 USER simplygo
-ENTRYPOINT [ "/bin/${TARGET}" ]
