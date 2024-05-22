@@ -14,7 +14,7 @@ on:
         type: string
       image:
         description: Fully qualified simplygo-src container image to use to scrape.
-        default: ghcr.io/mrzzy/pvd-simplygo-tfm:latest
+        default: ghcr.io/mrzzy/pvd-simplygo-src:latest
         type: string
 jobs:
   scrape-simplygo:
