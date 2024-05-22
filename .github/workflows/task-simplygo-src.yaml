@@ -29,6 +29,6 @@ jobs:
         RCLONE_B2_HARD_DELETE: true
     steps:
       - name: Scrape SimplyGo with SimplyGo source
-        run: "simplygo_src --trips-from ${{ inputs.trips_on }} --trips-to ${{ inputs.trips_on }} --output-dir out"
+        run: "simplygo_src --trips-from ${{ inputs.trips_on }} --trips-to ${{ inputs.trips_on }} --output-dir /tmp/out"
       - name: Copy scraped data to B2
-        run: "rclone copy --size-only --fast-list out b2:mrzzy-co-data-lake/raw/date=${{ inputs.trips_on }}"
+        run: "rclone copy --size-only --fast-list /tmp/out :b2:mrzzy-co-data-lake/raw/date=${{ inputs.trips_on }}"
