@@ -5,7 +5,7 @@ jmespath==1.0.1
 numpy==1.26.4
 pandas==2.2.2
 python-dateutil==2.9.0.post0
-pytz==2023.3
+pytz==2023.4
 s3fs==0.4.2
 s3transfer==0.6.1
 six==1.16.0
