@@ -41,7 +41,7 @@ pyrsistent==0.20.0
 python-dateutil==2.9.0.post0
 python-slugify==8.0.4
 pytimeparse==1.1.8
-pytz==2023.3
+pytz==2023.4
 PyYAML==6.0.1
 requests==2.32.2
 s3transfer==0.6.1
