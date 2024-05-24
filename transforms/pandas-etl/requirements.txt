@@ -7,7 +7,7 @@ pandas==2.2.2
 python-dateutil==2.9.0.post0
 pytz==2023.4
 s3fs==0.4.2
-s3transfer==0.6.1
+s3transfer==0.10.1
 six==1.16.0
 tzdata==2023.3
 urllib3==1.26.18
