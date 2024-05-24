@@ -7,7 +7,7 @@ iniconfig==2.0.0
 pluggy==1.5.0
 pytest==7.4.4
 regex==2023.12.25
-sqlfluff==2.1.2
+sqlfluff==2.3.5
 tblib==1.7.0
 toml==0.10.2
 tomli==2.0.1
