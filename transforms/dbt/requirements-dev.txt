@@ -25,4 +25,4 @@ sqlfluff-templater-dbt==2.0.5
 black==23.3.0
 mypy-extensions==1.0.0
 platformdirs==3.11.0
-shandy-sqlfmt==0.17.1
+shandy-sqlfmt==0.21.3
