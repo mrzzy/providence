@@ -139,6 +139,6 @@ urllib3==1.26.18
 watchtower==2.1.1
 websocket-client==1.5.3
 Werkzeug==2.2.3
-wrapt==1.15.0
+wrapt==1.16.0
 WTForms==3.0.1
 yarl==1.8.2
