@@ -4,7 +4,7 @@
 # Dockerfile
 #
 
-FROM node:18.16.0 AS base
+FROM node:18.20.3 AS base
 
 # create system user for ynab sink
 ARG USER=ynab
