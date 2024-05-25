@@ -137,7 +137,7 @@ uc-micro-py==1.0.3
 unicodecsv==0.14.1
 urllib3==1.26.18
 watchtower==2.1.1
-websocket-client==1.5.3
+websocket-client==1.8.0
 Werkzeug==2.2.3
 wrapt==1.15.0
 WTForms==3.0.1
