@@ -140,5 +140,5 @@ watchtower==2.1.1
 websocket-client==1.8.0
 Werkzeug==2.2.3
 wrapt==1.16.0
-WTForms==3.0.1
+WTForms==3.1.2
 yarl==1.8.2
