@@ -12,8 +12,13 @@ on:
         description: Fully qualified container image tag to run.
         required: true
         type: string
+      entrypoint:
+        description: Entrypoint command to execute to run the container.
+        required: true
+        type: string
       args:
-        description: List of arguments to pass to the container.
+        description: Arguments to pass to the container.
+        default: ""
         type: string
       env:
         description: Map of environment variables in the JSON to set in the container as JSON
@@ -27,10 +32,12 @@ env:
   RCLONE_B2_KEY: "${{ secrets.RCLONE_B2_KEY }}"
   RCLONE_B2_HARD_DELETE: true
 jobs:
-  scrape-simplygo:
+  run-container:
+    name: Run Task Container
     runs-on: ubuntu-latest
     container:
       image: "${{ inputs.image }}"
       env: ${{ fromJSON(inputs.env) }}
     steps:
-      - run: "${{ inputs.args }}"
+      - shell: "${{ inputs.entrypoint }}"
+        run: "${{ inputs.args }}"
