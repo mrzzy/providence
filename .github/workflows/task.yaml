@@ -34,4 +34,4 @@ jobs:
       image: "${{ inputs.image }}"
       env: ${{ fromJSON(inputs.env) }}
     steps:
-      - run: ${{ join(fromJSON(inputs.args), " " }}
+      - run: ${{ join(fromJSON(inputs.args), " ") }}
