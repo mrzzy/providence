@@ -40,5 +40,4 @@ jobs:
       env: ${{ fromJSON(inputs.env) }}
     steps:
       - name: Run Container
-        shell: "${{ inputs.entrypoint }}"
-        run: "${{ inputs.args }}"
+        run: "${{ inputs.entrypoint }} ${{ inputs.args }}"
