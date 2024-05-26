@@ -13,8 +13,7 @@ on:
         required: true
         type: string
       args:
-        description: List of arguments to pass to the container as JSON.
-        default: "[]"
+        description: List of arguments to pass to the container.
         type: string
       env:
         description: Map of environment variables in the JSON to set in the container as JSON
@@ -34,4 +33,4 @@ jobs:
       image: "${{ inputs.image }}"
       env: ${{ fromJSON(inputs.env) }}
     steps:
-      - run: ${{ join(fromJSON(inputs.args), " ") }}
+      - run: "${{ inputs.args }}"
