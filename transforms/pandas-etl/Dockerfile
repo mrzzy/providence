@@ -4,7 +4,7 @@
 # Dockerfile
 #
 
-FROM python:3.10.10-slim
+FROM python:3.12.3-slim
 
 # create system user for pandas_etl source
 ARG USER=pandas-etl
