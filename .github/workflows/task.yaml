@@ -17,23 +17,21 @@ on:
         default: "[]"
         type: string
       env:
-        description: 
-          Map of environment variables in the JSON to set in the container as JSON
+        description: Map of environment variables in the JSON to set in the container as JSON
         default: "{}"
         type: string
-      
+
 env:
-    SIMPLYGO_SRC_USERNAME: "${{ secrets.SIMPLYGO_SRC_USERNAME }}"
-    SIMPLYGO_SRC_PASSWORD: "${{ secrets.SIMPLYGO_SRC_PASSWORD }}"
-    RCLONE_B2_ACCOUNT: "${{ secrets.RCLONE_B2_ACCOUNT }}"
-    RCLONE_B2_KEY: "${{ secrets.RCLONE_B2_KEY }}"
-    RCLONE_B2_HARD_DELETE: true
+  SIMPLYGO_SRC_USERNAME: "${{ secrets.SIMPLYGO_SRC_USERNAME }}"
+  SIMPLYGO_SRC_PASSWORD: "${{ secrets.SIMPLYGO_SRC_PASSWORD }}"
+  RCLONE_B2_ACCOUNT: "${{ secrets.RCLONE_B2_ACCOUNT }}"
+  RCLONE_B2_KEY: "${{ secrets.RCLONE_B2_KEY }}"
+  RCLONE_B2_HARD_DELETE: true
 jobs:
   scrape-simplygo:
     runs-on: ubuntu-latest
     container:
       image: "${{ inputs.image }}"
-      env:
-        ${{ fromJSON(inputs.env) }}
+      env: ${{ fromJSON(inputs.env) }}
     steps:
-      - run: ${{ fromJSON(inputs.args) }}
+      - run: ${{ join(fromJSON(inputs.args), " " }}
