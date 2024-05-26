@@ -12,13 +12,9 @@ on:
         description: Fully qualified container image tag to run.
         required: true
         type: string
-      entrypoint:
-        description: Entrypoint command to execute to run the container.
+      command:
+        description: Command to execute to run the container.
         required: true
-        type: string
-      args:
-        description: Arguments to pass to the container.
-        default: ""
         type: string
       env:
         description: Map of environment variables in the JSON to set in the container as JSON
