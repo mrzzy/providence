@@ -4,7 +4,11 @@
 #
 
 name: Providence CI
-on: push
+on:
+  push:
+    branches-ignore: 
+    # temporary branches created by pipeline github Integration to run tasks on github actions
+    - "workflow-*"
 env:
   CONTAINER_REGISTRY: ghcr.io
   PYTHON_VERSION: 3.10.6
