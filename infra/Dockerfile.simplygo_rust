@@ -21,6 +21,9 @@ RUN mkdir src && touch src/lib.rs && cargo build --release \
   && rm target/release/deps/lib${TARGET}*
 COPY src /app/src
 RUN cargo build --release
+# copy entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["bash", "/entrypoint.sh"]
 
 # Stage: Binary only production image
 FROM debian:bookworm-slim AS release
@@ -36,4 +39,7 @@ RUN apt-get update \
 COPY --from=rclone/rclone:1.66.0 /usr/local/bin/rclone /bin/rclone
 # copy release binary from build stage
 COPY --from=build /app/target/release/${TARGET} /bin/${TARGET}
+# copy entrypoint script from build image
+COPY --from=build /entrypoint.sh /entrypoint.sh
 USER simplygo
+ENTRYPOINT ["bash", "/entrypoint.sh"]
