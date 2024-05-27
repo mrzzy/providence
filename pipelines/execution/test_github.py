@@ -9,7 +9,7 @@ from prefect.testing.utilities import prefect_test_harness
 from prefect_github import GitHubCredentials
 import pytest
 
-from github import run_container, run_workflow
+from execution.github import run_container, run_workflow
 
 
 @pytest.mark.asyncio
