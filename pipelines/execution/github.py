@@ -201,7 +201,7 @@ async def run_container(image: str, command: str, env: dict[str, str]={}):
     Args:
         image: Fully qualified container image tag to run.
         command: Command to run in the container.
-        env: Dict of environments to set in the container's runtime environment.
+        env: Dict of environment variables to set in the container's runtime environment.
     """
     status = await run_workflow(
         owner="mrzzy",
