@@ -118,3 +118,7 @@ test-ynab: $(YNAB_SINK_DIR)
 # Prefect Pipelines
 PIPELINES_DIR := pipelines
 $(eval $(call PYTHON_RULES,pipelines,$(PIPELINES_DIR)))
+
+$(eval $(call PHONY_RULE,deps,pipelines))
+deps-pipelines: $(PIPELINES_DIR)
+	cd $< && pip install -r requirements-dev.txt
