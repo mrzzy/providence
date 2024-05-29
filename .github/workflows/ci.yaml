@@ -190,6 +190,16 @@ jobs:
           name: "pvd-pipeline"
           context_dir: "pipelines"
           dockerfile: "infra/Dockerfile.pipeline"
+      - name: Authenticate with Prefect Cloud
+        if: ${{ github.event_name == 'release' }}
+        uses: PrefectHQ/actions-prefect-auth@v1
+        with:
+          prefect-api-key: ${{ secrets.PREFECT_API_KEY }}
+          prefect-workspace: mrzzy/default
+      - name: Deploy Pipelines
+        if: ${{ github.event_name == 'release' }}
+        working-directory: pipelines
+        run: python deploy.py
 
   src-container:
     strategy:
