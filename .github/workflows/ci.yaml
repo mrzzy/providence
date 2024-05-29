@@ -12,9 +12,10 @@ on:
 env:
   CONTAINER_REGISTRY: ghcr.io
   PYTHON_VERSION: 3.10.6
-# add permissions needed to push containers to GHCR with GITHUB_TOKEN
+# add permissions needed to push containers to GHCR with GITHUB_TOKEN & test 
+# pipelines github integration.
 permissions:
-  contents: read
+  contents: write
   packages: write
 jobs:
   simplygo:
@@ -170,11 +171,14 @@ jobs:
         run: make test-ynab
 
   pipelines:
-    name: "Airflow Pipelines: Lint & Test"
+    name: "Pipelines: Lint & Test"
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/python
+        # needed for github workflow integration tests
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
           make-suffix: pipelines
           python-version: "${{ env.PYTHON_VERSION }}"
