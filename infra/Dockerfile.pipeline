@@ -1,0 +1,16 @@
+#
+# Providence
+# Prefect Pipeline
+# Dockerfile
+#
+
+FROM prefecthq/prefect:2.19.2-python3.10
+RUN mkdir /src
+WORKDIR /src
+
+# install pip module requirements
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt
+
+# copy source code
+COPY . /src
