@@ -15,6 +15,7 @@ env:
 # add permissions needed to push containers to GHCR with GITHUB_TOKEN & test 
 # pipelines github integration.
 permissions:
+  actions: write
   contents: write
   packages: write
 jobs:
