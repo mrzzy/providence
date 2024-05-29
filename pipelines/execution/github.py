@@ -178,7 +178,7 @@ async def run_workflow(
     Args:
         owner: User or Organisation that owns the github workflow.
         repo: Name of the repository that the workflow resides in.
-        ref: Fully qualified git commit reference that containers the workflow to run 
+        ref: Fully qualified git commit reference that containers the workflow to run
             eg. 'heads/main'.
         workflow_id: Id specifying the workflow to run.
         inputs: Dict of inputs
@@ -195,7 +195,7 @@ async def run_workflow(
 
 
 @task
-async def run_container(image: str, command: str, env: dict[str, str]={}):
+async def run_container(image: str, command: str, env: dict[str, str] = {}):
     """Run Container Task with args & env on Pipeline Task Github Actions workflow.
 
     Args:

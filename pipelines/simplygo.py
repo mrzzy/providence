@@ -9,13 +9,14 @@ from prefect import flow, get_run_logger
 from prefect.tasks import exponential_backoff
 from execution.github import run_container
 
+
 @flow(
     retries=3,
     retry_delay_seconds=30,
 )
 async def ingest_simplygo(trips_on: date):
     """Ingest SimplyGo Trips data on the given date.
-    
+
     Args:
         trips_on: Date on which trips should be ingested
     """

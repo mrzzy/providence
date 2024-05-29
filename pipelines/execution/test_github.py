@@ -20,5 +20,5 @@ async def test_github_run_container(prefect):
     )
     await run_container(
         image="ghcr.io/mrzzy/pvd-simplygo-src@sha256:171e4966196a20b1c8f9081791e042a98fb8958565943fc52d018b768b398f41",
-        command="bash entrypoint.sh 2024-05-01"
+        command="bash entrypoint.sh 2024-05-01",
     )
