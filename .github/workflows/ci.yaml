@@ -182,6 +182,14 @@ jobs:
         with:
           make-suffix: pipelines
           python-version: "${{ env.PYTHON_VERSION }}"
+      - name: Publish Container
+        uses: ./.github/actions/ghcr
+        with:
+          username: "${{ github.actor }}"
+          password: "${{ secrets.GITHUB_TOKEN }}"
+          name: "pvd-pipeline"
+          context_dir: "pipelines"
+          dockerfile: "infra/Dockerfile.pipeline"
 
   src-container:
     strategy:
