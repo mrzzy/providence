@@ -115,25 +115,6 @@ $(eval $(call PHONY_RULE,build,ynab))
 test-ynab: $(YNAB_SINK_DIR)
 	cd $< && npm test
 
+# Prefect Pipelines
+PIPELINES_DIR := pipelines
 $(eval $(call PYTHON_RULES,pipelines,$(PIPELINES_DIR)))
-
-fmt-pipelines: fmt-pipelines-sql
-
-fmt-pipelines-sql: $(PIPELINES_DIR)
-	cd $< && sqlfmt .
-
-lint-pipelines: lint-pipelines-sql
-
-lint-pipelines-sql: $(PIPELINES_DIR)
-	cd $< && sqlfmt --check .
-
-# Terraform module
-TERRAFORM_DIR:=infra/terraform
-$(eval $(call PHONY_RULE,deps,terraform))
-deps-terraform: $(TERRAFORM_DIR)
-	cd $< && terraform init
-
-$(eval $(call PHONY_RULE,lint,terraform))
-lint-terraform: $(TERRAFORM_DIR)
-	cd $< && terraform fmt -check
-	cd $< && terraform validate
