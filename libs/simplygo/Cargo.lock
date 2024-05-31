@@ -2233,7 +2233,7 @@ checksum = "fa42c91313f1d05da9b26f267f931cf178d4aba455b4c4622dd7355eb80c6640"
 
 [[package]]
 name = "simplygo"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "assert_cmd",
  "assert_fs",

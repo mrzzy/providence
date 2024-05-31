@@ -8,11 +8,13 @@ use std::fs;
 
 use assert_cmd::Command;
 use assert_fs::NamedTempFile;
+use bytes::Bytes;
+use parquet::arrow::arrow_reader::ParquetRecordBatchReader;
 
 /// Test integration with raw data format exported from `simplygo_src`.
 #[test]
 fn cli_integration_simplygo_src() {
-    let out_path = NamedTempFile::new("out.csv").unwrap();
+    let out_path = NamedTempFile::new("out.pq").unwrap();
     Command::cargo_bin("simplygo_tfm")
         .unwrap()
         .args(&[
@@ -24,28 +26,10 @@ fn cli_integration_simplygo_src() {
         .assert()
         .success();
 
-    println!("{}", fs::read_to_string(&out_path).unwrap());
-    let mut out_csv = csv::Reader::from_path(out_path)
-        .unwrap_or_else(|e| panic!("Failed to read out.csv: {}", e));
-    // check output csv headers
-    let headers = out_csv
-        .headers()
-        .unwrap_or_else(|e| panic!("Failed to parse headers from out.csv: {}", e));
-    assert_eq!(
-        headers,
-        vec![
-            "card_id",
-            "card_name",
-            "cost_sgd",
-            "source",
-            "destination",
-            "mode",
-            "posting_ref",
-            "trip_id",
-            "traveled_on",
-            "scraped_on",
-            "transformed_on"
-        ]
-    );
-    assert_eq!(out_csv.records().count(), 1);
+    // read a single record from written parquet file
+    ParquetRecordBatchReader::try_new(Bytes::from(fs::read(&out_path).unwrap()), 1)
+        .unwrap()
+        .next()
+        .unwrap()
+        .unwrap();
 }

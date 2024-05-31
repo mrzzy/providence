@@ -4,7 +4,7 @@
 */
 
 use std::{
-    fs::{self, File},
+    fs::{self, create_dir_all, File},
     path::PathBuf,
 };
 
@@ -22,8 +22,8 @@ struct Cli {
     #[arg(long)]
     input_dir: PathBuf,
 
-    /// Path of the output CSV to output extracted trip data.
-    #[arg(long, default_value = "out.csv")]
+    /// Path of the output parquet file to write extracted trip data.
+    #[arg(long, default_value = "out.pq")]
     output: PathBuf,
 }
 
@@ -50,8 +50,9 @@ fn main() {
     let cards: Vec<Card> = serde_json::from_reader(cards_json)
         .unwrap_or_else(|e| panic!("Failed to parse cards.json: {}", e));
 
-    let mut out_csv = csv::Writer::from_path(args.output)
-        .unwrap_or_else(|e| panic!("Failed to open output csv for writing: {}", e));
+    // write cards to output parquet
+    let mut out = File::create(args.output)
+        .unwrap_or_else(|e| panic!("Failed to open output file for writing: {}", e));
     cards.iter().for_each(|card| {
         // extract trip data from scraped html for each card
         let html = fs::read_to_string(args.input_dir.join(&card.id).with_extension("html"))
@@ -61,11 +62,6 @@ fn main() {
         let trips = parse_trips(&card.id, &html);
         // flatten trip into cardinality: 1 trip leg = 1 row
         let records = flatten_records(card, &trips, &scraped_on, &transformed_on);
-        // write record to output csv
-        records.into_iter().for_each(|r| {
-            out_csv
-                .serialize(r)
-                .unwrap_or_else(|e| panic!("Failed to write record to output CSV: {}", e))
-        });
+        write_parquet(&records, &mut out);
     });
 }
