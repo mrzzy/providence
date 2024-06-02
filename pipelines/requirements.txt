@@ -93,5 +93,5 @@ uvicorn==0.28.1
 websocket-client==1.8.0
 websockets==12.0
 graphql-core==3.2.3
-prefect-github==0.2.5
+prefect-shell==0.2.5
 sgqlc==16.3
