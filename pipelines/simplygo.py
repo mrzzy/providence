@@ -4,9 +4,10 @@
 # SimplyGo Flows
 #
 
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 import subprocess
+from typing import Optional
 from prefect import flow, task, get_run_logger
 from prefect.blocks.system import Secret
 from prefect.tasks import exponential_backoff
@@ -69,7 +70,7 @@ async def transform_simplygo(raw_path: str) -> str:
 
 
 @flow
-async def ingest_simplygo(trips_on: date):
+async def ingest_simplygo(trips_on: Optional[date] = None):
     """Ingest SimplyGo Trips data on the given date.
 
     Args:
@@ -77,5 +78,7 @@ async def ingest_simplygo(trips_on: date):
     """
     log = get_run_logger()
 
-    raw_path = await scrape_simplygo(trips_on)
+    raw_path = await scrape_simplygo(
+        datetime.utcnow().date() if trips_on is None else trips_on
+    )
     pq_path = await transform_simplygo(raw_path)
