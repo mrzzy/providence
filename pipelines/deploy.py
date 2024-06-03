@@ -11,7 +11,7 @@ from prefect.deployments.runner import DeploymentImage
 from simplygo import ingest_simplygo
 
 
-async def deploy_pipelines(work_pool: str = "pft-managed"):
+async def deploy_pipelines(work_pool: str = "azure-container-instances"):
     """Deploy pipelines to Prefect."""
     await deploy(
         await ingest_simplygo.to_deployment(name="pvd-ingest-simplygo"),
