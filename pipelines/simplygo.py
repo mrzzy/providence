@@ -16,8 +16,7 @@ from prefect_aws import S3Bucket
 lake = S3Bucket.load("pvd-data-lake")
 
 
-# @task(retries=3, retry_delay_seconds=exponential_backoff(10))
-@task
+@task(retries=3, retry_delay_seconds=exponential_backoff(10))
 async def scrape_simplygo(trips_on: date) -> str:
     """Scrape SimplyGo with simplygo_src for the given 'trips_on'.
     Returns path in data lake where scraped data is stored.
@@ -68,8 +67,6 @@ async def transform_simplygo(raw_path: str) -> str:
 
     return lake_path
 
-
-# @flow( retries=3, retry_delay_seconds=30)
 @flow
 async def ingest_simplygo(trips_on: date):
     """Ingest SimplyGo Trips data on the given date.
