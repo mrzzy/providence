@@ -12,9 +12,11 @@ on:
 env:
   CONTAINER_REGISTRY: ghcr.io
   PYTHON_VERSION: 3.10.6
-# add permissions needed to push containers to GHCR with GITHUB_TOKEN
+# add permissions needed to push containers to GHCR with GITHUB_TOKEN & test 
+# pipelines github integration.
 permissions:
-  contents: read
+  actions: write
+  contents: write
   packages: write
 jobs:
   simplygo:
@@ -170,14 +172,35 @@ jobs:
         run: make test-ynab
 
   pipelines:
-    name: "Airflow Pipelines: Lint & Test"
+    name: "Pipelines: Lint & Test"
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/python
+        # needed for github workflow integration tests
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
           make-suffix: pipelines
           python-version: "${{ env.PYTHON_VERSION }}"
+      - name: Publish Container
+        uses: ./.github/actions/ghcr
+        with:
+          username: "${{ github.actor }}"
+          password: "${{ secrets.GITHUB_TOKEN }}"
+          name: "pvd-pipeline"
+          context_dir: "pipelines"
+          dockerfile: "infra/Dockerfile.pipeline"
+      - name: Authenticate with Prefect Cloud
+        if: ${{ github.event_name == 'release' }}
+        uses: PrefectHQ/actions-prefect-auth@v1
+        with:
+          prefect-api-key: ${{ secrets.PREFECT_API_KEY }}
+          prefect-workspace: mrzzy/default
+      - name: Deploy Pipelines
+        if: ${{ github.event_name == 'release' }}
+        working-directory: pipelines
+        run: python deploy.py
 
   src-container:
     strategy:

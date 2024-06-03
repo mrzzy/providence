@@ -7,13 +7,13 @@
 use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 use serde::{Deserialize, Serialize};
 /// Modes of Public Transport.
-#[derive(Eq, PartialEq, Debug, Serialize)]
+#[derive(Eq, PartialEq, Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum Mode {
     Rail,
     Bus,
 }
 /// Leg of a Public Transport Trip made on SimplyGo
-#[derive(Debug, Eq, PartialEq, Serialize)]
+#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Leg {
     /// time when this leg of the trip begins in the Asia/Singapore time zone.
     pub begin_at: NaiveTime,
@@ -29,7 +29,7 @@ pub struct Leg {
     pub mode: Mode,
 }
 /// Public Transport Trip made on SimplyGo
-#[derive(Debug, Eq, PartialEq, Serialize)]
+#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Trip {
     /// Reference no. if the the trip was "Posted" ie. charged on the bank account.
     /// If the trip has not be posted this field will be None.
@@ -50,7 +50,7 @@ pub struct Card {
     pub name: String,
 }
 /// Record embeds the raw data produced by SimplyGo source.
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Record {
     /// Timestamp when the data was scraped in Asia/Singapore timezone.
     #[serde(with = "dt_microsec_fmt")]
@@ -68,12 +68,22 @@ pub struct Record {
 /// from the nanosecond resolution that NaiveDateTime maintains internally.
 pub mod dt_microsec_fmt {
     use chrono::NaiveDateTime;
-    use serde::Serializer;
+    use serde::{de, Deserialize, Deserializer, Serializer};
+
+    const DT_FORMAT: &str = "%Y-%m-%dT%H:%M:%S%.6f";
 
     pub fn serialize<S>(timestamp: &NaiveDateTime, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
-        serializer.serialize_str(&timestamp.format("%Y-%m-%dT%H:%M:%S%.6f").to_string())
+        serializer.serialize_str(&timestamp.format(DT_FORMAT).to_string())
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<NaiveDateTime, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let date_str = String::deserialize(deserializer)?;
+        Ok(NaiveDateTime::parse_from_str(&date_str, DT_FORMAT).map_err(de::Error::custom)?)
     }
 }

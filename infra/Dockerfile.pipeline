@@ -1,0 +1,20 @@
+#
+# Providence
+# Prefect Pipeline
+# Dockerfile
+#
+
+FROM prefecthq/prefect:2.19.2-python3.10
+RUN mkdir /src
+WORKDIR /src
+
+# install pip module requirements
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt
+
+# install simplygo_src & simplygo_tfm binaries
+COPY --from=ghcr.io/mrzzy/pvd-simplygo-src:latest /bin/simplygo_src /bin/simplygo_src
+COPY --from=ghcr.io/mrzzy/pvd-simplygo-tfm:latest /bin/simplygo_tfm /bin/simplygo_tfm
+
+# copy pipeline source code
+COPY . /src

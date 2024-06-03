@@ -29,11 +29,11 @@ env:
   RCLONE_B2_HARD_DELETE: true
 jobs:
   run-container:
-    name: Run Task Container
+    name: "Run ${{ inputs.image }}"
     runs-on: ubuntu-latest
     container:
       image: "${{ inputs.image }}"
       env: ${{ fromJSON(inputs.env) }}
     steps:
-      - name: Run Container
+      - name: "Run ${{ inputs.entrypoint }} ${{ inputs.args }}"
         run: "${{ inputs.entrypoint }} ${{ inputs.args }}"
