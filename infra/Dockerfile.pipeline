@@ -12,5 +12,9 @@ WORKDIR /src
 COPY requirements.txt /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt
 
-# copy source code
+# install simplygo_src & simplygo_tfm binaries
+COPY --from=ghcr.io/mrzzy/pvd-simplygo-src:latest /bin/simplygo_src /bin/simplygo_src
+COPY --from=ghcr.io/mrzzy/pvd-simplygo-tfm:latest /bin/simplygo_tfm /bin/simplygo_tfm
+
+# copy pipeline source code
 COPY . /src
