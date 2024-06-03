@@ -54,7 +54,7 @@ orjson==3.10.3
 packaging==24.0
 pathspec==0.12.1
 pendulum==2.1.2
-prefect==2.19.2
+prefect==2.19.3
 pyasn1==0.6.0
 pyasn1_modules==0.4.0
 pycparser==2.22
