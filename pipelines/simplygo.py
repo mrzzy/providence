@@ -67,6 +67,7 @@ async def transform_simplygo(raw_path: str) -> str:
 
     return lake_path
 
+
 @flow
 async def ingest_simplygo(trips_on: date):
     """Ingest SimplyGo Trips data on the given date.
