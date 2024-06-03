@@ -10,6 +10,7 @@
 
 
 import os
+from prefect.blocks.system import Secret
 import pytest
 from prefect.testing.utilities import prefect_test_harness
 from prefect_aws import AwsClientParameters, AwsCredentials, S3Bucket
@@ -18,7 +19,7 @@ from prefect_aws import AwsClientParameters, AwsCredentials, S3Bucket
 @pytest.fixture(scope="session")
 def prefect():
     with prefect_test_harness():
-        # setup credentials
+        # setup credential blocks
         S3Bucket(
             bucket_name=os.environ["PVD_LAKE_BUCKET"],
             credentials=AwsCredentials(
@@ -29,4 +30,12 @@ def prefect():
                 ),
             ),
         ).save("pvd-data-lake", overwrite=True)
+
+        Secret(value=os.environ["SIMPLYGO_SRC_USERNAME"]).save(
+            "simplygo-src-username", overwrite=True
+        )
+        Secret(value=os.environ["SIMPLYGO_SRC_PASSWORD"]).save(
+            "simplygo-src-password", overwrite=True
+        )
+
         yield

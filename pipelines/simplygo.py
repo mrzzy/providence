@@ -8,6 +8,7 @@ from datetime import date
 from pathlib import Path
 import subprocess
 from prefect import flow, task, get_run_logger
+from prefect.blocks.system import Secret
 from prefect.tasks import exponential_backoff
 from prefect_shell import ShellOperation
 from prefect_aws import S3Bucket
@@ -28,11 +29,17 @@ async def scrape_simplygo(trips_on: date) -> str:
     trips_on_iso = trips_on.isoformat()
 
     local_path = "/tmp/out"
+    username = await Secret.load("simplygo-src-username")
+    password = await Secret.load("simplygo-src-password")
     output = await ShellOperation(
+        env={
+            "SIMPLYGO_SRC_USERNAME": username.get(),
+            "SIMPLYGO_SRC_PASSWORD": password.get(),
+        },
         commands=[
             f"simplygo_src --trips-from {trips_on_iso} --trips-to {trips_on_iso} "
             f"--output-dir {local_path}"
-        ]
+        ],
     ).run()
 
     lake_path = f"raw/by=simplygo_src/date={trips_on_iso}"
