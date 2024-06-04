@@ -89,7 +89,7 @@ typing_extensions==4.12.1
 tzlocal==5.2
 ujson==5.10.0
 urllib3==2.2.1
-uvicorn==0.28.1
+uvicorn==0.30.1
 websocket-client==1.8.0
 websockets==12.0
 prefect-shell==0.2.5
