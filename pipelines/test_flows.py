@@ -14,12 +14,12 @@
 import os
 from datetime import date
 
+from pydantic import SecretStr
 import pytest
 from prefect import flow
 from prefect.blocks.system import Secret
 from prefect.testing.utilities import prefect_test_harness
 from prefect_aws import AwsClientParameters, AwsCredentials, S3Bucket
-from pydantic import SecretStr
 
 from simplygo import ingest_simplygo
 from ynab import ingest_ynab
@@ -29,18 +29,16 @@ from ynab import ingest_ynab
 def prefect():
     with prefect_test_harness():
         # setup credential blocks
-        # NOTE: S3 Bucket block not created due to due to https://github.com/PrefectHQ/prefect/issues/13349
-        # TODO(mrzzy): revert once issue has been resolved
-        # S3Bucket(
-        #     bucket_name=os.environ["PVD_LAKE_BUCKET"],
-        #     credentials=AwsCredentials(
-        #         aws_access_key_id=os.environ["B2_ACCOUNT_ID"],
-        #         aws_secret_access_key=SecretStr(os.environ["B2_APP_KEY"]),
-        #         aws_client_parameters=AwsClientParameters(
-        #             endpoint_url="s3.us-west-004.backblazeb2.com",
-        #         ),
-        #     ),
-        # ).save("pvd-data-lake", overwrite=True)
+        S3Bucket(
+            bucket_name=os.environ["PVD_LAKE_BUCKET"],
+            credentials=AwsCredentials(
+                aws_access_key_id=os.environ["B2_ACCOUNT_ID"],
+                aws_secret_access_key=SecretStr(os.environ["B2_APP_KEY"]),
+                aws_client_parameters=AwsClientParameters(
+                    endpoint_url="s3.us-west-004.backblazeb2.com",
+                ),
+            ),
+        ).save("pvd-data-lake", overwrite=True)
 
         Secret(value=os.environ["SIMPLYGO_SRC_USERNAME"]).save(
             "simplygo-src-username", overwrite=True
