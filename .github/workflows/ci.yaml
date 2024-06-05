@@ -172,14 +172,15 @@ jobs:
         run: make test-ynab
 
   pipelines:
-    name: "Pipelines: Lint & Test"
+    name: "Pipelines: Lint, Test & Publish"
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/python
-        # needed for github workflow integration tests
         env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          B2_ACCOUNT_ID: ${{ secrets.B2_ACCOUNT_ID }}
+          B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
+          PVD_LAKE_BUCKET: mrzzy-co-data-lake
         with:
           make-suffix: pipelines
           python-version: "${{ env.PYTHON_VERSION }}"
