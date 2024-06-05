@@ -14,7 +14,6 @@
 import os
 from datetime import date
 
-from pydantic import SecretStr
 import pytest
 from prefect import flow
 from prefect.blocks.system import Secret
@@ -33,7 +32,7 @@ def prefect():
             bucket_name=os.environ["PVD_LAKE_BUCKET"],
             credentials=AwsCredentials(
                 aws_access_key_id=os.environ["B2_ACCOUNT_ID"],
-                aws_secret_access_key=SecretStr(os.environ["B2_APP_KEY"]),
+                aws_secret_access_key=os.environ["B2_APP_KEY"],
                 aws_client_parameters=AwsClientParameters(
                     endpoint_url="s3.us-west-004.backblazeb2.com",
                 ),
