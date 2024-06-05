@@ -174,13 +174,15 @@ jobs:
   pipelines:
     name: "Pipelines: Lint, Test & Publish"
     runs-on: ubuntu-22.04
+    env:
+      B2_ACCOUNT_ID: ${{ secrets.B2_ACCOUNT_ID }}
+      B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
+      PVD_LAKE_BUCKET: mrzzy-co-data-lake
+      YNAB_BUDGET_ID: f3f15316-e48c-4235-8d5d-1aa3191b3b8c
+      PREFECT_WORK_POOL: azure-container-instances
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/python
-        env:
-          B2_ACCOUNT_ID: ${{ secrets.B2_ACCOUNT_ID }}
-          B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
-          PVD_LAKE_BUCKET: mrzzy-co-data-lake
         with:
           make-suffix: pipelines
           python-version: "${{ env.PYTHON_VERSION }}"
