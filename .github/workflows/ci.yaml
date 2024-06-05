@@ -180,7 +180,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Authenticate with Prefect Cloud
-        if: ${{ github.event_name == 'release' }}
         uses: PrefectHQ/actions-prefect-auth@v1
         with:
           prefect-api-key: ${{ secrets.PREFECT_API_KEY }}
