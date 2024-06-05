@@ -179,11 +179,6 @@ jobs:
       YNAB_BUDGET_ID: f3f15316-e48c-4235-8d5d-1aa3191b3b8c
     steps:
       - uses: actions/checkout@v3
-      - name: Authenticate with Prefect Cloud
-        uses: PrefectHQ/actions-prefect-auth@v1
-        with:
-          prefect-api-key: ${{ secrets.PREFECT_API_KEY }}
-          prefect-workspace: mrzzy/default
       - uses: ./.github/actions/python
         env:
           B2_ACCOUNT_ID: ${{ secrets.B2_ACCOUNT_ID }}
@@ -191,6 +186,9 @@ jobs:
           SIMPLYGO_SRC_USERNAME: ${{ secrets.SIMPLYGO_SRC_USERNAME }}
           SIMPLYGO_SRC_PASSWORD: ${{ secrets.SIMPLYGO_SRC_PASSWORD }}
           YNAB_ACCESS_TOKEN: ${{ secrets.YNAB_ACCESS_TOKEN }}
+          # hack to workaround: https://github.com/PrefectHQ/prefect/issues/13349
+          # by directing prefect to retrieve blocks from prefect cloud instead.
+          PREFECT_API_KEY: ${{ secrets.PREFECT_API_KEY }}
         with:
           make-suffix: pipelines
           python-version: "${{ env.PYTHON_VERSION }}"
@@ -202,6 +200,11 @@ jobs:
           name: "pvd-pipeline"
           context_dir: "pipelines"
           dockerfile: "infra/Dockerfile.pipeline"
+      - name: Authenticate with Prefect Cloud
+        uses: PrefectHQ/actions-prefect-auth@v1
+        with:
+          prefect-api-key: ${{ secrets.PREFECT_API_KEY }}
+          prefect-workspace: mrzzy/default
       - name: Deploy Pipelines
         if: ${{ github.event_name == 'release' }}
         working-directory: pipelines
