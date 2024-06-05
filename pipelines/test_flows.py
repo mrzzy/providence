@@ -7,7 +7,7 @@
 # - B2_ACCOUNT_ID: B2 account id.
 # - B2_APP_KEY: B2 application key credentials
 # - PVD_LAKE_BUCKET: Name of the B2 bucket to use as data lake.
-# - YNAB_BUDGET_ID: Id of the budget to 
+# - YNAB_BUDGET_ID: Id of the budget to retrieve from YNAB API.
 
 import os
 from datetime import date
