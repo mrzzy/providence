@@ -5,7 +5,7 @@
 #
 # Usage: Expects the following environment variables to be set:
 # - YNAB_BUDGET_ID: Id of the budget to retrieve from YNAB API.
-# - PREFECT_WORK_POOL: Name of the work pool to execute tasks on. 
+# - PREFECT_WORK_POOL: Name of the work pool to execute tasks on.
 
 import asyncio
 import os
@@ -32,6 +32,7 @@ async def deploy_pipelines():
         image="ghcr.io/mrzzy/pvd-pipeline:latest",
         build=False,
     )
+
 
 if __name__ == "__main__":
     asyncio.run(deploy_pipelines())
