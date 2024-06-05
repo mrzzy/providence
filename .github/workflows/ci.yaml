@@ -179,6 +179,12 @@ jobs:
       YNAB_BUDGET_ID: f3f15316-e48c-4235-8d5d-1aa3191b3b8c
     steps:
       - uses: actions/checkout@v3
+      - name: Authenticate with Prefect Cloud
+        if: ${{ github.event_name == 'release' }}
+        uses: PrefectHQ/actions-prefect-auth@v1
+        with:
+          prefect-api-key: ${{ secrets.PREFECT_API_KEY }}
+          prefect-workspace: mrzzy/default
       - uses: ./.github/actions/python
         env:
           B2_ACCOUNT_ID: ${{ secrets.B2_ACCOUNT_ID }}
@@ -197,12 +203,6 @@ jobs:
           name: "pvd-pipeline"
           context_dir: "pipelines"
           dockerfile: "infra/Dockerfile.pipeline"
-      - name: Authenticate with Prefect Cloud
-        if: ${{ github.event_name == 'release' }}
-        uses: PrefectHQ/actions-prefect-auth@v1
-        with:
-          prefect-api-key: ${{ secrets.PREFECT_API_KEY }}
-          prefect-workspace: mrzzy/default
       - name: Deploy Pipelines
         if: ${{ github.event_name == 'release' }}
         working-directory: pipelines
