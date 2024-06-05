@@ -17,7 +17,6 @@ from prefect.tasks import exponential_backoff
 from prefect_aws import S3Bucket
 
 YNAB_API_RATE_LIMIT = "ynab-api"
-lake = S3Bucket.load("pvd-data-lake")
 
 
 @task(retries=3, retry_delay_seconds=exponential_backoff(10))
@@ -41,6 +40,7 @@ async def get_ynab(
 
     log.info("Attempting to retrieve last server_knowlege")
     knowledge = None
+    lake = await S3Bucket.load("pvd-data-lake")
     if knowledge_path is not None:
         with BytesIO() as buf:
             try:

@@ -16,7 +16,6 @@ from prefect_shell import ShellOperation
 from prefect_aws import S3Bucket
 
 SIMPLYGO_RATE_LIMIT = "simplygo"
-lake = S3Bucket.load("pvd-data-lake")
 
 
 @task(retries=3, retry_delay_seconds=exponential_backoff(10))
@@ -45,6 +44,7 @@ async def scrape_simplygo(trips_on: date) -> str:
 
     lake_path = f"raw/by=simplygo_src/date={trips_on_iso}"
     log.info(f"Writing scrapped data to: {lake_path}")
+    lake = await S3Bucket.load("pvd-data-lake")
     await lake.put_directory(local_path, to_path=lake_path)
 
     return lake_path
@@ -58,6 +58,7 @@ async def transform_simplygo(raw_path: str) -> str:
 
     log.info(f"Transforming trips data from: {raw_path}")
     in_path, out_path = "/tmp/in", "/tmp/out.pq"
+    lake = await S3Bucket.load("pvd-data-lake")
     await lake.get_directory(from_path=raw_path, local_path=in_path)
     output = await ShellOperation(
         commands=[f"simplygo_tfm --input-dir {in_path} --output {out_path}"]
