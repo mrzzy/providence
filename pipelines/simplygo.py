@@ -1,7 +1,7 @@
 #
 # Providence
-# Prefect Flows
-# SimplyGo Flows
+# Pipelines
+# SimplyGo Flow
 #
 
 from datetime import date, datetime
@@ -10,27 +10,28 @@ import subprocess
 from typing import Optional
 from prefect import flow, task, get_run_logger
 from prefect.blocks.system import Secret
+from prefect.concurrency.asyncio import rate_limit
 from prefect.tasks import exponential_backoff
 from prefect_shell import ShellOperation
 from prefect_aws import S3Bucket
 
+SIMPLYGO_RATE_LIMIT = "simplygo"
 lake = S3Bucket.load("pvd-data-lake")
 
 
 @task(retries=3, retry_delay_seconds=exponential_backoff(10))
+# TODO(mrzzy): add rate limit
 async def scrape_simplygo(trips_on: date) -> str:
     """Scrape SimplyGo with simplygo_src for the given 'trips_on'.
     Returns path in data lake where scraped data is stored.
     """
 
     log = get_run_logger()
-
     log.info(f"Scraping trips data on: {trips_on.isoformat()}")
-    trips_on_iso = trips_on.isoformat()
-
-    local_path = "/tmp/out"
+    trips_on_iso, local_path = trips_on.isoformat(), "/tmp/out"
     username = await Secret.load("simplygo-src-username")
     password = await Secret.load("simplygo-src-password")
+    await rate_limit(SIMPLYGO_RATE_LIMIT)
     output = await ShellOperation(
         env={
             "SIMPLYGO_SRC_USERNAME": username.get(),
@@ -76,8 +77,6 @@ async def ingest_simplygo(trips_on: Optional[date] = None):
     Args:
         trips_on: Date on which trips should be ingested
     """
-    log = get_run_logger()
-
     raw_path = await scrape_simplygo(
         datetime.utcnow().date() if trips_on is None else trips_on
     )
