@@ -22,11 +22,17 @@ async def deploy_pipelines():
         await ingest_simplygo.to_deployment(
             name="pvd-ingest-simplygo",
             cron="@daily",
+            parameters={
+                "bucket": os.environ["PVD_LAKE_BUCKET"],
+            },
         ),
         await ingest_ynab.to_deployment(
             name="pvd-ingest-ynab",
             cron="@daily",
-            parameters={"budget_id": os.environ["YNAB_BUDGET_ID"]},
+            parameters={
+                "bucket": os.environ["PVD_LAKE_BUCKET"],
+                "budget_id": os.environ["YNAB_BUDGET_ID"],
+            },
         ),
         work_pool_name=os.environ["PREFECT_WORK_POOL"],
         image="ghcr.io/mrzzy/pvd-pipeline:latest",

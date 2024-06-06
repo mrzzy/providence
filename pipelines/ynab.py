@@ -14,14 +14,17 @@ from prefect import flow, get_run_logger, task
 from prefect.blocks.system import Secret
 from prefect.concurrency.asyncio import rate_limit
 from prefect.tasks import exponential_backoff
-from prefect_aws import S3Bucket
+
+from b2 import b2_bucket
 
 YNAB_API_RATE_LIMIT = "ynab-api"
 
 
 @task(retries=3, retry_delay_seconds=exponential_backoff(10))
 async def get_ynab(
-    budget_id: str, knowledge_path: str = "raw/by=ynab-pipeline/server_knowlege"
+    bucket: str,
+    budget_id: str,
+    knowledge_path: str = "raw/by=ynab-pipeline/server_knowlege",
 ) -> str:
     """Get incremental YNAB budget data from YNAB API.
 
@@ -29,6 +32,7 @@ async def get_ynab(
     read form given path if it exists.
 
     Args:
+        bucket: Name of bucket to stage ingested data.
         budget_id: Id of the budget to retrieve.
         knowledge_path: Optional. Path of the server knowledge returned by YNAB API
             in the previous request to perform a delta request. If set to None or
@@ -40,48 +44,53 @@ async def get_ynab(
 
     log.info("Attempting to retrieve last server_knowlege")
     knowledge = None
-    lake = await S3Bucket.load("pvd-data-lake")
-    if knowledge_path is not None:
-        with BytesIO() as buf:
-            try:
-                await lake.download_object_to_file_object(knowledge_path, buf)
-                knowledge = buf.getvalue().decode()
-            except ClientError as e:
-                log.warning(
-                    f"Could not retrieve server_knowlege, defaulting to full request: {e}"
-                )
+    async with b2_bucket(bucket) as lake:
+        if knowledge_path is not None:
+            with BytesIO() as buf:
+                try:
+                    await lake.download_fileobj(Key=knowledge_path, Fileobj=buf)  # type: ignore
+                    knowledge = buf.getvalue().decode()
+                except ClientError as e:
+                    log.warning(
+                        f"Could not retrieve server_knowlege, defaulting to full request: {e}"
+                    )
 
-    log.info("Performing GET request against YNAB API")
-    token = await Secret.load("ynab-access-token")
-    async with AsyncClient(
-        base_url="https://api.ynab.com/v1",
-        headers={"Authorization": f"Bearer {token.get()}"},
-    ) as ynab:
-        await rate_limit(YNAB_API_RATE_LIMIT)
-        response = await ynab.get(
-            f"/budgets/{budget_id}",
-            params={} if knowledge is None else {"last_knowledge_of_server": knowledge},
+        log.info("Performing GET request against YNAB API")
+        token = await Secret.load("ynab-access-token")
+        async with AsyncClient(
+            base_url="https://api.ynab.com/v1",
+            headers={"Authorization": f"Bearer {token.get()}"},
+        ) as ynab:
+            await rate_limit(YNAB_API_RATE_LIMIT)
+            response = await ynab.get(
+                f"/budgets/{budget_id}",
+                params=(
+                    {} if knowledge is None else {"last_knowledge_of_server": knowledge}
+                ),
+            )
+            response.raise_for_status()
+
+        lake_path = (
+            f"raw/by=ynab-get-ynab/date={datetime.utcnow().date().isoformat()}.json"
         )
-        response.raise_for_status()
+        log.info(f"Uploading retrieved data to: {lake_path}")
+        await lake.upload_fileobj(Fileobj=BytesIO(response.content), Key=lake_path)  # type: ignore
 
-    lake_path = f"raw/by=ynab-get-ynab/date={datetime.utcnow().date().isoformat()}.json"
-    log.info(f"Uploading retrieved data to: {lake_path}")
-    await lake.upload_from_file_object(BytesIO(response.content), to_path=lake_path)
-
-    log.info(f"Uploading server_knowlege to: {knowledge_path}")
-    await lake.upload_from_file_object(
-        BytesIO(str(response.json()["data"]["server_knowledge"]).encode()),
-        to_path=knowledge_path,
-    )
+        log.info(f"Uploading server_knowlege to: {knowledge_path}")
+        await lake.upload_fileobj(
+            Fileobj=BytesIO(str(response.json()["data"]["server_knowledge"]).encode()),
+            Key=knowledge_path,
+        )  # type: ignore
 
     return lake_path
 
 
 @flow
-async def ingest_ynab(budget_id: str):
-    """Ingest SimplyGo Trips data on the given date.
+async def ingest_ynab(bucket: str, budget_id: str):
+    """Ingest YNAB budget data for the budget with the given id.
 
     Args:
-        trips_on: Date on which trips should be ingested
+        bucket: Name of bucket to stage ingested data.
+        budget_id: Id of the budget to retrieve.
     """
-    json_path = await get_ynab(budget_id)
+    json_path = await get_ynab(bucket, budget_id)
