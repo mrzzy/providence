@@ -24,7 +24,7 @@ YNAB_API_RATE_LIMIT = "ynab-api"
 async def get_ynab(
     bucket: str,
     budget_id: str,
-    knowledge_path: str = "raw/by=ynab-pipeline/server_knowlege",
+    knowledge_path: str = "raw/by=ynab/server_knowlege",
 ) -> str:
     """Get incremental YNAB budget data from YNAB API.
 
@@ -70,7 +70,7 @@ async def get_ynab(
             )
             response.raise_for_status()
 
-        lake_path = f"staging/by=ynab-get-ynab/date={datetime.now(timezone.utc).date().isoformat()}.json"
+        lake_path = f"staging/by=ynab/date={datetime.now(timezone.utc).date().isoformat()}.json"
         log.info(f"Uploading retrieved data to: {lake_path}")
         await lake.upload_fileobj(Fileobj=BytesIO(response.content), Key=lake_path)  # type: ignore
 

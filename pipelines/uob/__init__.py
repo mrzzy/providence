@@ -26,7 +26,7 @@ async def transform_uob(bucket: str, export_path: str) -> str:
 
     log = get_run_logger()
     log.info(f"Transforming UOB export: {export_path}")
-    out_path = f"staging/by=uob-pipeline/{Path(export_path).stem}.pq"
+    out_path = f"staging/by=uob/{Path(export_path).stem}.pq"
     async with b2_bucket(bucket) as lake:
         with BytesIO() as export:
             await lake.download_fileobj(Key=export_path, Fileobj=export)  # type: ignore
