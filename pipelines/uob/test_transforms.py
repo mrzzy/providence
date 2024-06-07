@@ -1,14 +1,14 @@
 #
 # Providence
-# Transforms
-# Transformations
+# UOB Transforms
+# Unit Tests
 #
 
 import pandas as pd
 from pandas.io.common import Path
 from pandas.testing import assert_frame_equal
 
-from transforms import extract_uob, promote_header
+from uob.transforms import extract_uob, promote_header
 
 RESOURCES_DIR = Path(__file__).parent / "resources"
 

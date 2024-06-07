@@ -59,15 +59,6 @@ deps-rest-api: $(REST_API_DIR)
 
 $(eval $(call PYTHON_RULES,rest-api,$(REST_API_DIR)))
 
-# Pandas ETL transform
-PANDAS_ETL_DIR := transforms/pandas-etl
-
-$(eval $(call PHONY_RULE,deps,pandas-etl))
-deps-pandas-etl: $(PANDAS_ETL_DIR)
-	cd $< && pip install -r requirements-dev.txt
-
-$(eval $(call PYTHON_RULES,pandas-etl,$(PANDAS_ETL_DIR)))
-
 # DBT transform
 DBT_DIR := transforms/dbt
 DBT_TARGET := dev
