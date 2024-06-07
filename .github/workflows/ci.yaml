@@ -196,12 +196,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: simplygo-src-bin
-          path: /bin/simplygo_src
+          path: /usr/local/bin/simplygo_src
       - name: Download simplygo-tfm binary Artifact
         uses: actions/download-artifact@v4
         with:
           name: simplygo-tfm-bin
-          path: /bin/simplygo_tfm
+          path: /usr/local/bin/simplygo_tfm
       - uses: ./.github/actions/python
         env:
           B2_ACCOUNT_ID: ${{ secrets.B2_ACCOUNT_ID }}
