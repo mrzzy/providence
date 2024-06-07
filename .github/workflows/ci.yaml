@@ -101,16 +101,6 @@ jobs:
           name: simplygo-tfm-bin
           path: transforms/simplygo/target/debug/simplygo_tfm
 
-  rest-api-src:
-    name: "REST API Source: Lint & Test"
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/python
-        with:
-          make-suffix: rest-api
-          python-version: "${{ env.PYTHON_VERSION }}"
-
   dbt-transform:
     name: "DBT Transform: Lint"
     runs-on: ubuntu-22.04
@@ -226,22 +216,3 @@ jobs:
         env:
           PREFECT_WORK_POOL: azure-container-instances
         run: python deploy.py
-
-  src-container:
-    strategy:
-      fail-fast: false
-      matrix:
-        source:
-          - simplygo
-          - rest-api
-    name: "${{ matrix.source }} Source: Publish Container image"
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Build & Publish
-        uses: ./.github/actions/ghcr
-        with:
-          username: "${{ github.actor }}"
-          password: "${{ secrets.GITHUB_TOKEN }}"
-          name: "pvd-${{ matrix.source }}-src"
-          context_dir: "sources/${{ matrix.source }}"
