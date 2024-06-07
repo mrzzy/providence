@@ -202,6 +202,8 @@ jobs:
         with:
           name: simplygo-tfm-bin
           path: /usr/local/bin/
+      - name: Make simplygo binaries executable
+        run: chmod u+x /usr/local/bin/simplygo_src /usr/local/bin/simplygo_tfm
       - uses: ./.github/actions/python
         env:
           B2_ACCOUNT_ID: ${{ secrets.B2_ACCOUNT_ID }}
