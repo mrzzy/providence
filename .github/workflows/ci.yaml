@@ -23,7 +23,7 @@ jobs:
     name: "SimplyGo SDK"
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: "libs/simplygo -> target"
@@ -42,7 +42,7 @@ jobs:
     name: "SimplyGo Source"
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: "sources/simplygo -> target"
@@ -75,7 +75,7 @@ jobs:
     name: "SimplyGo Transform"
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: "transforms/simplygo -> target"
@@ -105,7 +105,7 @@ jobs:
     name: "DBT Transform: Lint"
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
           python-version: "${{ env.PYTHON_VERSION }}"
@@ -120,7 +120,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
           python-version: "${{ env.PYTHON_VERSION }}"
@@ -151,7 +151,7 @@ jobs:
     name: "YNAB Sink: Lint, Build & Test"
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup dependencies
         run: make deps-ynab
       - name: Lint
@@ -171,7 +171,7 @@ jobs:
       PVD_LAKE_BUCKET: mrzzy-co-data-lake
       YNAB_BUDGET_ID: f3f15316-e48c-4235-8d5d-1aa3191b3b8c
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Download simplygo-src binary Artifact
         uses: actions/download-artifact@v4
         with:
