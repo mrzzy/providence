@@ -49,7 +49,10 @@ async def upload_path(bucket: Bucket, path: Path, key: str):
             continue
 
         uploads.append(
-            bucket.upload_file(Filename=str(subpath.resolve()), Key=f"{key}/{subpath.relative_to(path)}")
+            bucket.upload_file(
+                Filename=str(subpath.resolve()),
+                Key=f"{key}/{subpath.relative_to(path)}",
+            )
         )  # type: ignore
 
     # wait for all uploads to complete

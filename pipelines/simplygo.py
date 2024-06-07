@@ -69,7 +69,7 @@ async def transform_simplygo(bucket: str, raw_path: str) -> str:
 
         lake_path = raw_path.replace("raw", "staging").replace("src", "tfm") + "/out.pq"
         log.info(f"Writing transformed data to: {lake_path}")
-        await lake.upload_file(Filename=out_path, Key=lake_path) # type: ignore
+        await lake.upload_file(Filename=out_path, Key=lake_path)  # type: ignore
 
     return lake_path
 
@@ -84,7 +84,6 @@ async def ingest_simplygo(bucket: str, trips_on: Optional[date] = None):
             unspecified, uses todays date in the UTC timezone.
     """
     raw_path = await scrape_simplygo(
-        bucket,
-        datetime.utcnow().date() if trips_on is None else trips_on
+        bucket, datetime.utcnow().date() if trips_on is None else trips_on
     )
     pq_path = await transform_simplygo(bucket, raw_path)
