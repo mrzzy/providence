@@ -46,4 +46,4 @@ async def ingest_uob(bucket: str, export_path: str):
         bucket: Name of bucket to stage ingested data.
         export_path: Path of the UOB XLSX export to ingest
     """
-    pq_path = await transform_uob(bucket, export_path)
+    await transform_uob(bucket, export_path)
