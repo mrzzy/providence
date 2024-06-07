@@ -13,26 +13,32 @@ from pathlib import Path
 from prefect import deploy
 from prefect.deployments.runner import DeploymentImage
 from simplygo import ingest_simplygo
+from uob import ingest_uob
 from ynab import ingest_ynab
 
 
 async def deploy_pipelines():
     """Deploy pipelines to Prefect."""
+    params = {
+        "bucket": os.environ["PVD_LAKE_BUCKET"],
+    }
     await deploy(
         await ingest_simplygo.to_deployment(
             name="pvd-ingest-simplygo",
             cron="@daily",
-            parameters={
-                "bucket": os.environ["PVD_LAKE_BUCKET"],
-            },
+            parameters=params,
         ),
         await ingest_ynab.to_deployment(
             name="pvd-ingest-ynab",
             cron="@daily",
-            parameters={
-                "bucket": os.environ["PVD_LAKE_BUCKET"],
+            parameters=params
+            | {
                 "budget_id": os.environ["YNAB_BUDGET_ID"],
             },
+        ),
+        await ingest_uob.to_deployment(
+            name="pvd-ingest-uob",
+            parameters=params,
         ),
         work_pool_name=os.environ["PREFECT_WORK_POOL"],
         image="ghcr.io/mrzzy/pvd-pipeline:latest",
