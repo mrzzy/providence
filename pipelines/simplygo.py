@@ -86,4 +86,4 @@ async def ingest_simplygo(bucket: str, trips_on: Optional[date] = None):
     raw_path = await scrape_simplygo(
         bucket, datetime.now(timezone.utc).date() if trips_on is None else trips_on
     )
-    pq_path = await transform_simplygo(bucket, raw_path)
+    await transform_simplygo(bucket, raw_path)

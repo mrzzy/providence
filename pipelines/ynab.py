@@ -91,4 +91,4 @@ async def ingest_ynab(bucket: str, budget_id: str):
         bucket: Name of bucket to stage ingested data.
         budget_id: Id of the budget to retrieve.
     """
-    json_path = await get_ynab(bucket, budget_id)
+    await get_ynab(bucket, budget_id)
