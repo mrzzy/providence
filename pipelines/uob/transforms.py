@@ -1,10 +1,10 @@
 #
-# Transforms
-# Transformations
+# Providence
+# Pipelines
+# UOB Transforms
 #
 
-from typing import Dict, Callable
-
+from datetime import date
 from pandas import DataFrame
 from pandas.api.types import pandas_dtype
 
@@ -12,7 +12,7 @@ from pandas.api.types import pandas_dtype
 def promote_header(df: DataFrame) -> DataFrame:
     """Promote the first row as Dataframe Header"""
     df.columns = df.iloc[0]
-    df = df[1:]
+    df = df[1:]  # type: ignore
     df.columns.name = None
     return df
 
@@ -28,7 +28,7 @@ def extract_uob(df: DataFrame) -> DataFrame:
     meta_df["Currency"] = df.iloc[3, 2]
 
     # Extract transactions section
-    transactions_df = promote_header(df[6:])
+    transactions_df = promote_header(df[6:])  # type: ignore
     # broadcast metadata dataframe into transforms
     transactions_df[meta_df.columns[1:]] = meta_df.iloc[0, 1:]
     # reset index based on transactions rows
