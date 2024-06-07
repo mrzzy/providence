@@ -111,16 +111,6 @@ jobs:
           make-suffix: rest-api
           python-version: "${{ env.PYTHON_VERSION }}"
 
-  pandas-etl-transform:
-    name: "Pandas ETL Transform: Lint & Test"
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/python
-        with:
-          make-suffix: pandas-etl
-          python-version: "${{ env.PYTHON_VERSION }}"
-
   dbt-transform:
     name: "DBT Transform: Lint"
     runs-on: ubuntu-22.04
