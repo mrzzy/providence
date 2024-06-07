@@ -4,7 +4,7 @@
 # SimplyGo Flow
 #
 
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 import subprocess
 from typing import Optional
@@ -13,22 +13,22 @@ from prefect.blocks.system import Secret
 from prefect.concurrency.asyncio import rate_limit
 from prefect.tasks import exponential_backoff
 from prefect_shell import ShellOperation
-from prefect_aws import S3Bucket
+
+from b2 import b2_bucket, download_path, upload_path
 
 SIMPLYGO_RATE_LIMIT = "simplygo"
-lake = S3Bucket.load("pvd-data-lake")
 
 
-@task(retries=3, retry_delay_seconds=exponential_backoff(10))
-# TODO(mrzzy): add rate limit
-async def scrape_simplygo(trips_on: date) -> str:
+# @task(retries=3, retry_delay_seconds=exponential_backoff(10))
+@task
+async def scrape_simplygo(bucket: str, trips_on: date) -> str:
     """Scrape SimplyGo with simplygo_src for the given 'trips_on'.
-    Returns path in data lake where scraped data is stored.
+    Returns path in bucket where scraped data is stored.
     """
 
     log = get_run_logger()
     log.info(f"Scraping trips data on: {trips_on.isoformat()}")
-    trips_on_iso, local_path = trips_on.isoformat(), "/tmp/out"
+    trips_on_iso, local_path = trips_on.isoformat(), Path("/tmp/out")
     username = await Secret.load("simplygo-src-username")
     password = await Secret.load("simplygo-src-password")
     await rate_limit(SIMPLYGO_RATE_LIMIT)
@@ -44,40 +44,46 @@ async def scrape_simplygo(trips_on: date) -> str:
     ).run()
 
     lake_path = f"raw/by=simplygo_src/date={trips_on_iso}"
-    log.info(f"Writing scrapped data to: {lake_path}")
-    await lake.put_directory(local_path, to_path=lake_path)
+    async with b2_bucket(bucket) as lake:
+        log.info(f"Writing scrapped data to: {lake_path}")
+        await upload_path(lake, local_path, lake_path)
 
     return lake_path
 
 
 @task
-async def transform_simplygo(raw_path: str) -> str:
+async def transform_simplygo(bucket: str, raw_path: str) -> str:
     """Transform raw SimplyGo data at given path with with simplygo_tfm.
-    Returns path in data lake where transformed data is stored."""
+    Returns path in the bucket where transformed data is stored."""
     log = get_run_logger()
 
     log.info(f"Transforming trips data from: {raw_path}")
     in_path, out_path = "/tmp/in", "/tmp/out.pq"
-    await lake.get_directory(from_path=raw_path, local_path=in_path)
-    output = await ShellOperation(
-        commands=[f"simplygo_tfm --input-dir {in_path} --output {out_path}"]
-    ).run()
 
-    lake_path = raw_path.replace("raw", "staging").replace("src", "tfm") + "/out.pq"
-    log.info(f"Writing transformed data to: {lake_path}")
-    await lake.upload_from_path(out_path, to_path=lake_path)
+    async with b2_bucket(bucket) as lake:
+        await download_path(lake, raw_path, Path(in_path))
+
+        output = await ShellOperation(
+            commands=[f"simplygo_tfm --input-dir {in_path} --output {out_path}"]
+        ).run()
+
+        lake_path = raw_path.replace("raw", "staging").replace("src", "tfm") + "/out.pq"
+        log.info(f"Writing transformed data to: {lake_path}")
+        await lake.upload_file(Filename=out_path, Key=lake_path)  # type: ignore
 
     return lake_path
 
 
 @flow
-async def ingest_simplygo(trips_on: Optional[date] = None):
+async def ingest_simplygo(bucket: str, trips_on: Optional[date] = None):
     """Ingest SimplyGo Trips data on the given date.
 
     Args:
-        trips_on: Date on which trips should be ingested
+        bucket: Name of bucket to stage ingested data.
+        trips_on: Optional. Date on which trips should be ingested. If
+            unspecified, uses todays date in the UTC timezone.
     """
     raw_path = await scrape_simplygo(
-        datetime.utcnow().date() if trips_on is None else trips_on
+        bucket, datetime.now(timezone.utc).date() if trips_on is None else trips_on
     )
-    pq_path = await transform_simplygo(raw_path)
+    await transform_simplygo(bucket, raw_path)

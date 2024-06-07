@@ -35,7 +35,7 @@ httpx==0.27.0
 humanize==4.9.0
 hyperframe==6.0.1
 idna==3.7
-importlib_resources==6.4.0
+importlib_resources==6.1.3
 itsdangerous==2.2.0
 Jinja2==3.1.4
 jinja2-humanize-extension==0.4.0
@@ -59,7 +59,7 @@ pyasn1==0.6.0
 pyasn1_modules==0.4.0
 pycparser==2.22
 pydantic==2.7.2
-pydantic_core==2.18.4
+pydantic_core==2.18.3
 Pygments==2.18.0
 python-dateutil==2.9.0.post0
 python-multipart==0.0.9
@@ -89,12 +89,10 @@ typing_extensions==4.12.1
 tzlocal==5.2
 ujson==5.10.0
 urllib3==2.2.1
-uvicorn==0.30.1
+uvicorn==0.28.1
 websocket-client==1.8.0
 websockets==12.0
 prefect-shell==0.2.5
-boto3==1.34.118
-botocore==1.34.118
 jmespath==1.0.1
 mypy-boto3-s3==1.34.105
 mypy-boto3-secretsmanager==1.34.109
@@ -102,3 +100,15 @@ prefect-aws==0.4.17
 pyparsing==3.1.2
 s3transfer==0.10.1
 tenacity==8.3.0
+aioboto3==13.0.1
+aiobotocore==2.13.0
+aiofiles==23.2.1
+aiohttp==3.9.5
+aioitertools==0.11.0
+aiosignal==1.3.1
+boto3==1.34.106
+botocore==1.34.106
+frozenlist==1.4.1
+multidict==6.0.5
+wrapt==1.16.0
+yarl==1.9.4

@@ -65,6 +65,11 @@ jobs:
           dockerfile: "infra/Dockerfile.simplygo_rust"
           build_args: |
             TARGET=simplygo_src
+      - name: Upload simplygo_src binary as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: simplygo-src-bin
+          path: sources/simplygo/target/debug/simplygo_src
 
   simplygo-tfm:
     name: "SimplyGo Transform"
@@ -90,6 +95,11 @@ jobs:
           dockerfile: "infra/Dockerfile.simplygo_rust"
           build_args: |
             TARGET=simplygo_tfm
+      - name: Upload simplygo_tfm binary as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: simplygo-tfm-bin
+          path: transforms/simplygo/target/debug/simplygo_tfm
 
   rest-api-src:
     name: "REST API Source: Lint & Test"
@@ -174,13 +184,36 @@ jobs:
   pipelines:
     name: "Pipelines: Lint, Test & Publish"
     runs-on: ubuntu-22.04
+    needs:
+      - simplygo-src
+      - simplygo-tfm
+    env:
+      PVD_LAKE_BUCKET: mrzzy-co-data-lake
+      YNAB_BUDGET_ID: f3f15316-e48c-4235-8d5d-1aa3191b3b8c
     steps:
       - uses: actions/checkout@v3
+      - name: Download simplygo-src binary Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: simplygo-src-bin
+          path: /usr/local/bin/
+      - name: Download simplygo-tfm binary Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: simplygo-tfm-bin
+          path: /usr/local/bin/
+      - name: Make simplygo binaries executable
+        run: chmod u+x /usr/local/bin/simplygo_src /usr/local/bin/simplygo_tfm
       - uses: ./.github/actions/python
         env:
           B2_ACCOUNT_ID: ${{ secrets.B2_ACCOUNT_ID }}
           B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
-          PVD_LAKE_BUCKET: mrzzy-co-data-lake
+          SIMPLYGO_SRC_USERNAME: ${{ secrets.SIMPLYGO_SRC_USERNAME }}
+          SIMPLYGO_SRC_PASSWORD: ${{ secrets.SIMPLYGO_SRC_PASSWORD }}
+          YNAB_ACCESS_TOKEN: ${{ secrets.YNAB_ACCESS_TOKEN }}
+          # hack to workaround: https://github.com/PrefectHQ/prefect/issues/13349
+          # by directing prefect to retrieve blocks from prefect cloud instead.
+          PREFECT_API_KEY: ${{ secrets.PREFECT_API_KEY }}
         with:
           make-suffix: pipelines
           python-version: "${{ env.PYTHON_VERSION }}"
@@ -193,7 +226,6 @@ jobs:
           context_dir: "pipelines"
           dockerfile: "infra/Dockerfile.pipeline"
       - name: Authenticate with Prefect Cloud
-        if: ${{ github.event_name == 'release' }}
         uses: PrefectHQ/actions-prefect-auth@v1
         with:
           prefect-api-key: ${{ secrets.PREFECT_API_KEY }}
@@ -201,6 +233,8 @@ jobs:
       - name: Deploy Pipelines
         if: ${{ github.event_name == 'release' }}
         working-directory: pipelines
+        env:
+          PREFECT_WORK_POOL: azure-container-instances
         run: python deploy.py
 
   src-container:
