@@ -4,7 +4,7 @@
 # YNAB Flow
 #
 
-from datetime import datetime
+from datetime import datetime, timezone
 from io import BytesIO, StringIO
 from typing import Optional
 
@@ -70,9 +70,7 @@ async def get_ynab(
             )
             response.raise_for_status()
 
-        lake_path = (
-            f"raw/by=ynab-get-ynab/date={datetime.utcnow().date().isoformat()}.json"
-        )
+        lake_path = f"raw/by=ynab-get-ynab/date={datetime.now(timezone.utc).date().isoformat()}.json"
         log.info(f"Uploading retrieved data to: {lake_path}")
         await lake.upload_fileobj(Fileobj=BytesIO(response.content), Key=lake_path)  # type: ignore
 

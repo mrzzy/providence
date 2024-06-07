@@ -4,7 +4,7 @@
 # SimplyGo Flow
 #
 
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 import subprocess
 from typing import Optional
@@ -84,6 +84,6 @@ async def ingest_simplygo(bucket: str, trips_on: Optional[date] = None):
             unspecified, uses todays date in the UTC timezone.
     """
     raw_path = await scrape_simplygo(
-        bucket, datetime.utcnow().date() if trips_on is None else trips_on
+        bucket, datetime.now(timezone.utc).date() if trips_on is None else trips_on
     )
     pq_path = await transform_simplygo(bucket, raw_path)
