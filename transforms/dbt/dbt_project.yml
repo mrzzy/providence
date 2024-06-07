@@ -8,14 +8,14 @@
 # and underscores. A good package name should reflect your organization's
 # name or the intended use of these models
 name: 'providence'
-version: '1.0.0'
+version: '0.1.0'
 config-version: 2
 
 vars:
   # schema to source external data
   external_schema: "lake"
   # schema to source native data & write dbt model objects
-  schema: "public"
+  schema: "main"
 
 # This setting configures which "profile" dbt uses for this project.
 profile: 'providence'
