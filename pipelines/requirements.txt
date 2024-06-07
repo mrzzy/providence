@@ -16,7 +16,7 @@ cloudpickle==3.0.0
 colorama==0.4.6
 coolname==2.2.0
 croniter==2.0.5
-cryptography==42.0.7
+cryptography==42.0.8
 dateparser==1.2.0
 dnspython==2.6.1
 docker==6.1.3
