@@ -71,7 +71,7 @@ async def get_ynab(
             response.raise_for_status()
 
         lake_path = (
-            f"staging/by=ynab/date={datetime.now(timezone.utc).date().isoformat()}.json"
+            f"staging/by=ynab/date={datetime.now(timezone.utc).date().isoformat()}/budget.json"
         )
         log.info(f"Uploading retrieved data to: {lake_path}")
         await lake.upload_fileobj(Fileobj=BytesIO(response.content), Key=lake_path)  # type: ignore
