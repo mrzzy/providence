@@ -27,4 +27,4 @@ select
     coalesce(
         cast(_pandas_etl_transformed_on as timestamp), {{ timestamp_min() }}
     ) as processed_on
-from {{ source("uob", "source_uob") }}
+from {{ source("uob", "uob") }}

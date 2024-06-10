@@ -4,7 +4,7 @@
 -- DBT Staging: Simplygo Cards
 --
 select
-    cast(c.id as varchar) as "id",
-    cast(c.name as varchar) as "name",
-    cast(s.scraped_on as timestamp) as scraped_on
+    cast(s.card_id as varchar) as "id",
+    cast(s.card_name as varchar) as "name",
+    {{ scraped_on("s") }} as scraped_on
 from {{ source("simplygo", "simplygo_tfm") }} as s

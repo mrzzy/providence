@@ -28,11 +28,7 @@ models:
     - name: posting_ref
       description: Posting reference assigned by SimplyGo once the Trip Leg is billed.
     - name: traveled_on
-      description: Date on which the Trip Leg was made.
-      tests:
-        - not_null
-    - name: begin_at
-      description: Time at which the Trip Leg was made in Asia/Singapore timezone.
+      description: Timestamp when the Trip Leg was made.
       tests:
         - not_null
     - name: cost_sgd
