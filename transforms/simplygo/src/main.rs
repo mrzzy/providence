@@ -4,7 +4,7 @@
 */
 
 use std::{
-    fs::{self, create_dir_all, File},
+    fs::{self, File},
     path::PathBuf,
 };
 
@@ -62,6 +62,10 @@ fn main() {
         let trips = parse_trips(&card.id, &html);
         // flatten trip into cardinality: 1 trip leg = 1 row
         let records = flatten_records(card, &trips, &scraped_on, &transformed_on);
-        write_parquet(&records, &mut out);
+        // only write to parquet if with nonzero batch of records to write
+        // writing empty records will create a malformed parquet file
+        if records.len() > 1 {
+            write_parquet(&records, &mut out);
+        }
     });
 }
