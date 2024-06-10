@@ -211,7 +211,7 @@ jobs:
           prefect-api-key: ${{ secrets.PREFECT_API_KEY }}
           prefect-workspace: mrzzy/default
       - name: Deploy Pipelines
-        if: ${{ github.event_name == 'release' }}
+        if: ${{ github.ref == 'refs/heads/main' }}
         working-directory: pipelines
         env:
           PREFECT_WORK_POOL: azure-container-instances
