@@ -64,7 +64,7 @@ fn main() {
         let records = flatten_records(card, &trips, &scraped_on, &transformed_on);
         // only write to parquet if with nonzero batch of records to write
         // writing empty records will create a malformed parquet file
-        if records.len() > 1 {
+        if records.len() > 0 {
             write_parquet(&records, &mut out);
         }
     });
