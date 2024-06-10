@@ -46,11 +46,8 @@ models:
       # staging models backed by native redshift tables.
       native:
         +materialized: view
-      # staging models backed by data lake queried via redshift spectrum.
-      # redshift spectrum only supports a limited no. of SQL features.
-      # writes the spectrum staging models as tables to have full SQL functions
-      # in downstream transformations.
-      spectrum:
+      # staging models backed by external files in data lake (cloud storage bucket)
+      external:
         +materialized: table
     intermediate:
       # adhoc transforms
