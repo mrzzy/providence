@@ -1,0 +1,38 @@
+#
+# Providence
+# DBT Source
+# SimplyGo
+#
+
+version: 2
+
+sources:
+  - name: simplygo
+    description: Public transport data scraped from SimplyGo on Data Lake
+    meta:
+      external_location: "s3://{{ var('lake_bucket') }}/staging/by={{ name }}/**/*.pq"
+    tables:
+      - name: simplygo_tfm
+        description: "Public transport trip data scraped from SimplyGo expressed
+          at the granulaity of 1 row = 1 leg of the Trip."
+        columns:
+          - name: card_id
+            description: SimplyGo assigned ID of the Card used to pay for this trip leg.
+          - name: card_name
+            description: User assigned Name of the Card used to pay for this trip leg.
+          - name: cost_sgd
+            description: "Cost of this trip leg in SGD. If a concession
+              pass or travel card is used, cost_sgd will be set to 'Pass Usage'."
+          - name: scraped_on
+            description: Timestamp when the data was scraped in Asia/Singapore timezone.
+          - name: source
+            description: Source location of this trip leg.
+          - name: destination
+            description: Destination location of this trip leg.
+          - name: trip_id
+            description: Identifier that uniquely identifies which trip the trip leg belongs to
+          - name: mode
+            description: Mode of transport used.
+          - name: posting_ref
+          - name: 'Reference no. if the the trip was "Posted" ie. charged on the bank account.
+              If the trip has not be posted this field will be None.'

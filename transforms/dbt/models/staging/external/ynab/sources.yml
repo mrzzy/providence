@@ -1,16 +1,16 @@
 #
 # Providence
-# Transforms
-# Staging Models Config
-# DBT Staging: YNAB Source
+# DBT Source
+# YNAB Source
 #
 
 version: 2
 
 sources:
   - name: ynab
-    description: YNAB accounting software data export on AWS S3 data lake.
-    schema: "{{ var('external_schema') }}"
+    description: YNAB accounting software budget export on Data Lake
+    meta:
+      external_location: "s3://{{ var('lake_bucket') }}/staging/by={{ name }}/*.json"
     tables:
       - name: source_ynab
         description: YNAB accounting software data export.
@@ -51,11 +51,3 @@ sources:
             description: List of transactions
           - name: _ynab_src_scraped_on
             description: Timestamp when the data was scraped in UTC timezone.
-        freshness:
-          warn_after:
-            count: 1
-            period: day
-          error_after:
-            count: 2
-            period: day
-        loaded_at_field: "cast(_ynab_src_scraped_on as timestamp)"

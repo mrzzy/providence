@@ -9,7 +9,6 @@ version: 2
 sources:
   - name: uob
     description: UOB Bank statement export stored on AWS S3 data lake.
-    schema: "{{ var('external_schema') }}"
     tables:
       - name: source_uob
         description: UOB Bank statement export.
@@ -36,6 +35,7 @@ sources:
             description: >
               Timestamp when the bank transactions were extracted from the
               UOB Excel export in the UTC timezone.
+        
         freshness:
           warn_after:
             count: 7
