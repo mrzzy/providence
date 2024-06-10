@@ -6,21 +6,19 @@
 
 providence:
   outputs:
-    dev: &redshift
-      dbname: dev
-      host: main.132307318913.ap-southeast-1.redshift-serverless.amazonaws.com
-      user: "{{ env_var('AWS_REDSHIFT_USER') }}"
-      password: "{{ env_var('AWS_REDSHIFT_PASSWORD') }}"
-      port: 5439
-      schema: public
-      threads: 16
-      type: redshift
-      # longer timeout since redshift-serverless needs some time to start up
-      connect_timeout: 30
-    e2e:
-      <<: *redshift
-      dbname: "{{ env_var('AWS_REDSHIFT_DB') }}"
+    # development: in-memory transient duckdb
+    dev: &duckdb
+      type: duckdb
+      extensions:
+        - httpfs
+        - parquet
+      settings:
+        s3_region: ""
+        s3_endpoint: "https://s3.us-west-004.backblazeb2.com"
+        s3_access_key_id: "{{ env_var('B2_ACCOUNT_ID') }}"
+        s3_secret_access_key: "{{ env_var('B2_APP_KEY') }}"
+    # production: Motherduck data warehouse
     prod:
-      <<: *redshift
-      dbname: mrzzy
+      <<: *duckdb
+      path: "md:pvd"
   target: "{{ env_var('DBT_TARGET', 'dev') }}"
