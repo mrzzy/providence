@@ -3,8 +3,9 @@
 -- Transforms
 -- DBT Staging: UOB Bank Account Transaction
 --
+{% set date_fmt = "%d %b %Y" %}
 select
-    cast("transaction date" as date) as transacted_on,  -- noqa: RF05
+    strptime("transaction date", '{{ date_fmt }}') as transacted_on,  -- noqa: RF05
     -- replace newlines in transaction description with spaces
     replace(
         cast("transaction description" as varchar),  -- noqa: RF05
@@ -18,13 +19,6 @@ select
     cast("account type" as varchar) as "name",  -- noqa: RF05
     cast(currency as varchar) as currency_code,
     -- split_part() is 1-indexed
-    cast(
-        split_part("statement period", ' To ', 1) as date  -- noqa: RF05
-    ) as statement_begin,
-    cast(
-        split_part("statement period", ' To ', 2) as date  -- noqa: RF05
-    ) as statement_end,
-    coalesce(
-        cast(_pandas_etl_transformed_on as timestamp), {{ timestamp_min() }}
-    ) as processed_on
-from {{ source("uob", "uob") }}
+    strptime(split_part("statement period", ' To ', 1), '{{ date_fmt }}')  as statement_begin, -- noqa: RF05
+    strptime(split_part("statement period", ' To ', 2), '{{ date_fmt }}') as statement_end -- noqa: RF05
+from {{ source("uob", "uob") }}k

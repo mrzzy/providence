@@ -59,12 +59,6 @@ models:
           from which the Bank Account information was derived.
         tests:
           - not_null
-      - name: processed_on
-        description: Timestamp when the data was last extracted from UOB bank statement export.
-        tests:
-          - not_null
     tests:
       - dbt_utils.expression_is_true:
           expression: "statement_begin <= statement_end"
-      - dbt_utils.expression_is_true:
-          expression: "statement_end <= processed_on"
