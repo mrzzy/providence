@@ -33,6 +33,8 @@ async def transform_uob(bucket: str, export_path: str) -> str:
             df = pd.read_excel(export)
         with BytesIO() as out_pq:
             extract_uob(df).to_parquet(out_pq)
+            # seek buffer to start of parquet file
+            out_pq.seek(0)
             await lake.upload_fileobj(Key=out_path, Fileobj=out_pq)  # type: ignore
 
     return out_path
