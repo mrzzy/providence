@@ -18,5 +18,5 @@ from
             -- ynab expresses amounts in milliunits: 1000 milliunits = $1
             cast(t.amount as decimal(13, 2)) / 1000 as amount
         from
-            {{ source("ynab", "source_ynab") }} as s, s.data.budget.subtransactions as t
+            {{ source("ynab", "ynab") }} as s, s.data.budget.subtransactions as t
     ) as t

@@ -10,7 +10,7 @@ sources:
   - name: simplygo
     description: Public transport data scraped from SimplyGo on Data Lake
     meta:
-      # external_location: "s3://{{ env_var('PVD_LAKE_BUCKET', 'mrzzy-co-data-lake') }}/staging/by={name}/**/*.pq"
+      external_location: read_parquet("s3://{{ env_var('PVD_LAKE_BUCKET', 'mrzzy-co-data-lake') }}/staging/by=simplygo_tfm/**/*.pq")
     tables:
       - name: simplygo_tfm
         description: "Public transport trip data scraped from SimplyGo expressed

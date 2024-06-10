@@ -29,6 +29,6 @@ select
     end as goal_type,
     cast(c.goal_target as decimal(13, 2)) / 1000 as goal_amount
 from
-    {{ source("ynab", "source_ynab") }} as s,
+    {{ source("ynab", "ynab") }} as s,
     s.data.budget.months as m,
     m.categories as c

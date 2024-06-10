@@ -12,4 +12,4 @@ select
     coalesce(
         cast(s._rest_api_src_scraped_on as timestamp), {{ timestamp_min() }}
     ) as scraped_on
-from {{ source("ynab", "source_ynab") }} as s
+from {{ source("ynab", "ynab") }} as s

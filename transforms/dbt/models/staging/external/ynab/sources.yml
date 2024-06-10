@@ -10,9 +10,9 @@ sources:
   - name: ynab
     description: YNAB accounting software budget export on Data Lake
     meta:
-      external_location: "s3://{{ env_var('PVD_LAKE_BUCKET', 'mrzzy-co-data-lake') }}/staging/by={name}/*.json"
+      external_location: read_json("s3://{{ env_var('PVD_LAKE_BUCKET', 'mrzzy-co-data-lake') }}/staging/by=ynab/*.json")
     tables:
-      - name: source_ynab
+      - name: ynab
         description: YNAB accounting software data export.
         columns:
           - name: id
@@ -49,5 +49,3 @@ sources:
             description: List of subtransactions
           - name: transactions
             description: List of transactions
-          - name: _ynab_src_scraped_on
-            description: Timestamp when the data was scraped in UTC timezone.
