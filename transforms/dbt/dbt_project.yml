@@ -14,9 +14,6 @@ config-version: 2
 vars:
   # schema to source native data & write dbt model objects
   schema: "main"
-  # name of the data lake bucket storing external data files referenced in
-  # data sources.
-  lake_bucket: "{{ env_var('PVD_LAKE_BUCKET', 'mrzzy-co-data-lake') }}"
 
 # This setting configures which "profile" dbt uses for this project.
 profile: 'providence'
