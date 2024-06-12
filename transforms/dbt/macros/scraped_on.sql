@@ -7,6 +7,6 @@
 -- relation: YNAB data source.
 {% macro scraped_on(relation) -%}
 coalesce(
-    cast({{ relation }}._rest_api_src_scraped_on as timestamp), {{ timestamp_min() }}
+    cast({{ relation }}."date" as timestamp), {{ timestamp_min() }}
 )
 {%- endmacro %}

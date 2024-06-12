@@ -10,42 +10,14 @@ sources:
   - name: ynab
     description: YNAB accounting software budget export on Data Lake
     meta:
-      external_location: read_json("s3://{{ env_var('PVD_LAKE_BUCKET', 'mrzzy-co-data-lake') }}/staging/by=ynab/*.json")
+      external_location: read_json("s3://{{ env_var('PVD_LAKE_BUCKET', 'mrzzy-co-data-lake') }}/staging/by=ynab/**/*.json")
     tables:
       - name: ynab
-        description: YNAB accounting software data export.
+        description: YNAB Budget JSON export
         columns:
-          - name: id
-            description: YNAB assigned budget id.
-          - name: name
-            description: Name of the budget
-          - name: accounts
-            description: List of Budget accounts.
-          - name: categories
-            description: List of Budget categories.
-          - name: category_groups
-            description: List of Budget category groupings.
-          - name: currency_format
-            description: Budget currency format configuration.
-          - name: date_format
-            description: Budget date format configuration.
-          - name: first_month
-            description: The first year-month the budget accounted for.
-          - name: last_modified_on
-            description: Timestamp the was Budget last modified on.
-          - name: last_month
-            description: The last year-month the budget accounted for.
-          - name: months
-            description: List of Monthly Budget allocation data.
-          - name: payee_locations
-            description: List of Payee location coordinates
-          - name: payees
-            description: List of Payee information
-          - name: scheduled_subtransactions
-            description: List of scheduled transactions
-          - name: scheduled_transactions
-            description: List of scheduled subtransactions
-          - name: subtransactions
-            description: List of subtransactions
-          - name: transactions
-            description: List of transactions
+          - name: data
+            description: YNAB budget data as composite field.
+          - name: by
+            description: Data source that retrieved the data.
+          - name: date
+            description: Date the data source was retrieved from YNAB.
