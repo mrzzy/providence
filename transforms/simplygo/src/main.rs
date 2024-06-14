@@ -54,7 +54,7 @@ fn main() {
 
     // write cards to output parquet
     let mut out = BufWriter::new(
-        File::create(args.output.to_path_buf())
+        File::create(&args.output)
             .unwrap_or_else(|e| panic!("Failed to open output file for writing: {}", e)),
     );
     let n_written: usize = cards
@@ -70,7 +70,7 @@ fn main() {
             let records = flatten_records(card, &trips, &scraped_on, &transformed_on);
             // only write to parquet if with nonzero batch of records to write
             // writing empty records will create a malformed parquet file
-            if records.len() > 0 {
+            if !records.is_empty() {
                 write_parquet(&records, &mut out);
             }
             records.len()
@@ -80,7 +80,7 @@ fn main() {
     out.flush()
         .unwrap_or_else(|e| panic!("Failed to write to file: {}", e));
     // remove output file if no records are written
-    if n_written <= 0 {
+    if n_written == 0 {
         println!("Warning: No trip records written.");
         fs::remove_file(args.output)
             .unwrap_or_else(|e| println!("Failed to remove empty output file: {}", e));
