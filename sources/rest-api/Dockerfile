@@ -4,7 +4,7 @@
 # Dockerfile
 #
 
-FROM python:3.12.3-slim
+FROM python:3.12.4-slim
 
 # create system user for rest-api source
 ARG USER=api
