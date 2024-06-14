@@ -5,6 +5,8 @@
 
 use std::{
     fs::{self, File},
+    io::prelude::*,
+    io::BufWriter,
     path::PathBuf,
 };
 
@@ -51,8 +53,10 @@ fn main() {
         .unwrap_or_else(|e| panic!("Failed to parse cards.json: {}", e));
 
     // write cards to output parquet
-    let mut out = File::create(args.output)
-        .unwrap_or_else(|e| panic!("Failed to open output file for writing: {}", e));
+    let mut out = BufWriter::new(
+        File::create(args.output)
+            .unwrap_or_else(|e| panic!("Failed to open output file for writing: {}", e)),
+    );
     cards.iter().for_each(|card| {
         // extract trip data from scraped html for each card
         let html = fs::read_to_string(args.input_dir.join(&card.id).with_extension("html"))
@@ -68,4 +72,7 @@ fn main() {
             write_parquet(&records, &mut out);
         }
     });
+    // flush buffered writer
+    out.flush()
+        .unwrap_or_else(|e| panic!("Failed to write to file: {}", e));
 }
