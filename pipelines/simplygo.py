@@ -5,6 +5,7 @@
 #
 
 from datetime import date, datetime, timedelta, timezone
+from os import path
 from pathlib import Path
 import subprocess
 from typing import Optional
@@ -52,7 +53,7 @@ async def scrape_simplygo(bucket: str, trips_on: date, window: timedelta) -> str
 
 
 @task
-async def transform_simplygo(bucket: str, raw_path: str) -> str:
+async def transform_simplygo(bucket: str, raw_path: str) -> Optional[str]:
     """Transform raw SimplyGo data at given path with with simplygo_tfm.
     Returns path in the bucket where transformed data is stored."""
     log = get_run_logger()
@@ -66,6 +67,10 @@ async def transform_simplygo(bucket: str, raw_path: str) -> str:
         output = await ShellOperation(
             commands=[f"simplygo_tfm --input-dir {in_path} --output {out_path}"]
         ).run()
+
+        if not path.exists(out_path):
+            # output file not created: no records were transformed
+            return None
 
         lake_path = raw_path.replace("raw", "staging").replace("src", "tfm") + "/out.pq"
         log.info(f"Writing transformed data to: {lake_path}")
