@@ -43,7 +43,7 @@ with
 
     -- enrich budget account with uob bank account info.
     map_uob_account as (
-        select * from {{ ref("stg_map_budget_account") }} where vendor = 'UOB'
+        select * from {{ ref("map_budget_account") }} where vendor = 'UOB'
     )
 
 select
