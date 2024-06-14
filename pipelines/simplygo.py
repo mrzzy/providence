@@ -4,7 +4,7 @@
 # SimplyGo Flow
 #
 
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 import subprocess
 from typing import Optional
@@ -19,15 +19,15 @@ from b2 import b2_bucket, download_path, upload_path
 SIMPLYGO_RATE_LIMIT = "simplygo"
 
 
-# @task(retries=3, retry_delay_seconds=exponential_backoff(10))
-@task
-async def scrape_simplygo(bucket: str, trips_on: date) -> str:
-    """Scrape SimplyGo with simplygo_src for the given 'trips_on'.
+@task(retries=3, retry_delay_seconds=exponential_backoff(10))
+async def scrape_simplygo(bucket: str, trips_on: date, window: timedelta) -> str:
+    """Scrape SimplyGo with simplygo_src for the given 'trips_on' date & 'window' length
     Returns path in bucket where scraped data is stored.
     """
 
     log = get_run_logger()
     log.info(f"Scraping trips data on: {trips_on.isoformat()}")
+    trips_to_iso = (trips_on + window).isoformat()
     trips_on_iso, local_path = trips_on.isoformat(), Path("/tmp/out")
     username = await Secret.load("simplygo-src-username")
     password = await Secret.load("simplygo-src-password")
@@ -38,7 +38,7 @@ async def scrape_simplygo(bucket: str, trips_on: date) -> str:
             "SIMPLYGO_SRC_PASSWORD": password.get(),
         },
         commands=[
-            f"simplygo_src --trips-from {trips_on_iso} --trips-to {trips_on_iso} "
+            f"simplygo_src --trips-from {trips_on_iso} --trips-to {trips_to_iso} "
             f"--output-dir {local_path}"
         ],
     ).run()
@@ -75,15 +75,25 @@ async def transform_simplygo(bucket: str, raw_path: str) -> str:
 
 
 @flow
-async def ingest_simplygo(bucket: str, trips_on: Optional[date] = None):
-    """Ingest SimplyGo Trips data on the given date.
+async def ingest_simplygo(
+    bucket: str, trips_on: Optional[date] = None, window: timedelta = timedelta(days=3)
+):
+    """Ingest SimplyGo Trips data up to the given 'trips_on' date.
+
+    Flow ingests a look back time window of data from 'trips_on' to account
+    for late arriving data. According to the simplygo website, trip records
+    "may take up to 3 days to be reflected in your account".
 
     Args:
         bucket: Name of bucket to stage ingested data.
-        trips_on: Optional. Date on which trips should be ingested. If
+        trips_on: Optional. Cut off date on which trips prior should be ingested.
             unspecified, uses todays date in the UTC timezone.
+        window: Optional. Length of the look back window after 'trips_on' date
+            in which trips should be ingested.
     """
     raw_path = await scrape_simplygo(
-        bucket, datetime.now(timezone.utc).date() if trips_on is None else trips_on
+        bucket=bucket,
+        trips_on=datetime.now(timezone.utc).date() if trips_on is None else trips_on,
+        window=window,
     )
     await transform_simplygo(bucket, raw_path)
