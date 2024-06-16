@@ -28,14 +28,14 @@ with
     ),
 
     unique_uob_accounts as (
-        select account_no, "name", processed_on
+        select account_no, "name", scraped_on
         from
             (
                 {{
                     deduplicate(
                         relation=ref("stg_uob_statement"),
                         partition_by="account_no",
-                        order_by="processed_on desc",
+                        order_by="scraped_on desc",
                     )
                 }}
             )
@@ -51,7 +51,7 @@ select
     m.vendor,
     m.vendor_id,
     v.name as vendor_type,
-    greatest(b.scraped_on, v.processed_on) as updated_at
+    greatest(b.scraped_on, v.scraped_on) as updated_at
 from unique_ynab_accounts as b
 left join map_uob_account as m on m.budget_account_id = b.id
 left join unique_uob_accounts as v on v.account_no = m.vendor_id
