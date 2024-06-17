@@ -10,7 +10,7 @@ import pandas as pd
 from prefect import task, flow, get_run_logger
 
 from b2 import b2_bucket
-from uob.transforms import extract_uob
+from uob.transforms import extract_uob, parse_scraped_on
 
 
 @task
@@ -24,9 +24,13 @@ async def transform_uob(bucket: str, export_path: str) -> str:
         Path within the bucket the transformed Parquet file is written.
     """
 
+    # parse scraped on date from uob export filename
+    path = Path(export_path)
+    scraped_date = parse_scraped_on(path.name).isoformat()
+
     log = get_run_logger()
     log.info(f"Transforming UOB export: {export_path}")
-    out_path = f"staging/by=uob/{Path(export_path).stem}.pq"
+    out_path = f"staging/by=uob/date={scraped_date}/{path.stem}.pq"
     async with b2_bucket(bucket) as lake:
         with BytesIO() as export:
             await lake.download_fileobj(Key=export_path, Fileobj=export)  # type: ignore

@@ -7,8 +7,9 @@
 import pandas as pd
 from pandas.io.common import Path
 from pandas.testing import assert_frame_equal
+from datetime import date
 
-from uob.transforms import extract_uob, promote_header
+from uob.transforms import extract_uob, parse_scraped_on, promote_header
 
 RESOURCES_DIR = Path(__file__).parent / "resources"
 
@@ -56,3 +57,15 @@ def test_transform_uob():
         },
     )
     assert expected_df.equals(actual_df)
+
+
+def test_parse_uob():
+    cases = [
+        ["ACC_TXN_History_05062024124137.xls", date(2024, 6, 5)],
+        ["ACC_TXN_History_05062024355224.xls", date(2024, 6, 5)],
+        ["ACC_TXN_History_05062024.xls", date(2024, 6, 5)],
+        ["ACC_TXN_History_05072022.xls", date(2022, 7, 5)],
+    ]
+
+    for filename, expected in cases:
+        assert parse_scraped_on(filename) == expected

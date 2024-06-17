@@ -4,9 +4,14 @@
 # UOB Transforms
 #
 
+import re
 from datetime import date
 from pandas import DataFrame
 from pandas.api.types import pandas_dtype
+
+EXPORT_PATTERN = re.compile(
+    r"ACC_TXN_History_(?P<day>\d{2})(?P<month>\d{2})(?P<year>\d{4})\d*\."
+)
 
 
 def promote_header(df: DataFrame) -> DataFrame:
@@ -48,4 +53,22 @@ def extract_uob(df: DataFrame) -> DataFrame:
             "Statement Period": pandas_dtype("O"),
             "Currency": pandas_dtype("O"),
         }
+    )
+
+
+def parse_scraped_on(filename: str) -> date:
+    """Parse scraped on date from the given UOB export filename.
+
+    Args:
+        filename:
+            UOB export filename to parse date from in the format:
+                'ACC_TXN_History_<DDMMYYYY>*.xls'.
+    Returns:
+        Scraped on date parsed from the given filename.
+    """
+    match = EXPORT_PATTERN.match(filename)
+    if match is None:
+        raise ValueError("Filename did not match expected pattern.")
+    return date(
+        int(match.group("year")), int(match.group("month")), int(match.group("day"))
     )
