@@ -141,3 +141,4 @@ msgpack==1.0.8
 mashumaro==3.13
 more-itertools==10.2.0
 importlib-metadata==6.11.0
+prefect-dbt==0.5.0
