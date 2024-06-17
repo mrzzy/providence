@@ -41,8 +41,6 @@ models:
     # https://www.getdbt.com/blog/using-redshift-s-late-binding-views-with-dbt/
     bind: false
     staging:
-      native:
-        +materialized: table
       # staging models backed by external files in data lake (cloud storage bucket)
       external:
         +materialized: table
