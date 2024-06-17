@@ -19,12 +19,13 @@ select
     null as flag_color,
     '0b849f31-3e30-4a00-8b49-053a8365133f' as split_payee_id,
     t.billing_ref as split_memo,
+    -- ynab only supports import id up to 36 characters
+    left(sha256('pvd' || t.id), 36) as import_id,
+    t.source || ' -> ' || t.destination as memo,
     -- group trips billed together in the same split_id under the same split
     -- transaction
-    'pvd' || t.id as import_id,
-    t.source || ' -> ' || t.destination as memo,
     -- warning: do not change, as it will break the left join below
     'public_transport:' || t.billing_ref as split_id
 from {{ ref("fact_public_transport_trip_leg") }} as t
 left join {{ ref("fact_accounting_transaction") }} as a on a.description = t.billing_ref
-where t.is_billed and a.id is null
+where t.is_billed and t.account_id is not null and a.id is null

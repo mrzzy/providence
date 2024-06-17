@@ -9,9 +9,10 @@ version: 2
 sources:
   - name: uob
     description: UOB Bank statement export stored on AWS S3 data lake.
-    schema: "{{ var('external_schema') }}"
+    meta:
+      external_location: read_parquet("s3://{{ env_var('PVD_LAKE_BUCKET', 'mrzzy-co-data-lake') }}/staging/by=uob/**/*.pq")
     tables:
-      - name: source_uob
+      - name: uob
         description: UOB Bank statement export.
         columns:
           - name: transaction date
@@ -32,15 +33,3 @@ sources:
             description: Date range in which the bank statement covers.
           - name: currency
             description: Bank account currency.
-          - name: _pandas_etl_transformed_on
-            description: >
-              Timestamp when the bank transactions were extracted from the
-              UOB Excel export in the UTC timezone.
-        freshness:
-          warn_after:
-            count: 7
-            period: day
-          error_after:
-            count: 8
-            period: day
-        loaded_at_field: "cast(_pandas_etl_transformed_on as timestamp)"

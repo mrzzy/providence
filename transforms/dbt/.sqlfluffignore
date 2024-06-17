@@ -2,3 +2,4 @@ dbt_packages/
 target/
 macros/
 venv/
+.venv/

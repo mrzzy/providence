@@ -1,0 +1,23 @@
+#
+# Providence
+# DBT Source
+# YNAB Source
+#
+
+version: 2
+
+sources:
+  - name: ynab
+    description: YNAB accounting software budget export on Data Lake
+    meta:
+      external_location: read_json("s3://{{ env_var('PVD_LAKE_BUCKET', 'mrzzy-co-data-lake') }}/staging/by=ynab/**/*.json")
+    tables:
+      - name: ynab
+        description: YNAB Budget JSON export
+        columns:
+          - name: data
+            description: YNAB budget data as composite field.
+          - name: by
+            description: Data source that retrieved the data.
+          - name: date
+            description: Date the data source was retrieved from YNAB.

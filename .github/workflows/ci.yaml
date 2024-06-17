@@ -102,8 +102,11 @@ jobs:
           path: transforms/simplygo/target/debug/simplygo_tfm
 
   dbt-transform:
-    name: "DBT Transform: Lint"
+    name: "DBT Transform"
     runs-on: ubuntu-22.04
+    env:
+      B2_ACCOUNT_ID: ${{ secrets.B2_ACCOUNT_ID }}
+      B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -113,10 +116,16 @@ jobs:
         run: make deps-dbt
       - name: Lint
         run: make lint-dbt
+      - name: Build
+        run: make build-dbt
 
   dbt-docs:
     name: "DBT Docs"
     runs-on: ubuntu-22.04
+    env:
+      B2_ACCOUNT_ID: ${{ secrets.B2_ACCOUNT_ID }}
+      B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
+      motherduck_token: ${{ secrets.motherduck_token }}
     permissions:
       contents: write
     steps:

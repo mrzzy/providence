@@ -5,14 +5,14 @@
 --
 with
     expected_balances as (
-        select account_id, balance, processed_on
+        select account_id, balance, scraped_on
         from
             (
                 {{
                     deduplicate(
                         relation=ref("int_unique_enriched_bank_statement"),
                         partition_by="account_id",
-                        order_by="processed_on desc",
+                        order_by="scraped_on desc",
                         n_row_col="_n_row_account",
                     )
                 }}
@@ -27,5 +27,5 @@ with
 
 select e.balance as expected, a.balance as actual
 from expected_balances as e
-left join actual_balances as a on a.account_id = e.account_id
+left join actual_balances as a on e.account_id = a.account_id
 where a.balance != a.balance

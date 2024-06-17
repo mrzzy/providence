@@ -25,7 +25,7 @@ pub struct Record<'a> {
     destination: &'a str,
     mode: String,
     posting_ref: &'a str,
-    // Identifier that uniquely identifies which trip the trip leg belongs to
+    /// Identifier that uniquely identifies which trip the trip leg belongs to
     trip_id: String,
     /// Timestamp when the trip leg was performed in the Asia/Singapore timezone.
     traveled_on: String,

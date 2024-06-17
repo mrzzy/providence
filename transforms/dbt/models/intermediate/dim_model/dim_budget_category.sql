@@ -49,4 +49,4 @@ select
     coalesce(g.name like 'Expenses%', false) as is_expense,
     c.expired_at is null as is_current
 from category_scd as c
-left join unique_groups as g on g.id = c.category_group_id
+left join unique_groups as g on c.category_group_id = g.id

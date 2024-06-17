@@ -172,7 +172,6 @@ models:
       - name: account_id
         description: ID of the Account the Trip is billed to.
         tests:
-          - not_null
           - relationships:
               to: ref("dim_account")
               field: id

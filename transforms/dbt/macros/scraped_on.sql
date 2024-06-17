@@ -6,7 +6,5 @@
 -- Templates the scraped_on column for data derived from the YNAB data source.
 -- relation: YNAB data source.
 {% macro scraped_on(relation) -%}
-coalesce(
-    cast({{ relation }}._rest_api_src_scraped_on as timestamp), {{ timestamp_min() }}
-)
+    coalesce(cast({{ relation }}."date" as timestamp), {{ timestamp_min() }})
 {%- endmacro %}

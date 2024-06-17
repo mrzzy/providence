@@ -42,7 +42,7 @@ with
         select
             year_month,
             'Income' as src,
-            'Savings' as amount,
+            'Savings' as dest,
             greatest(total_income - total_spending, 0) as amount
         from statistics
     ),

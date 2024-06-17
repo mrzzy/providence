@@ -35,3 +35,50 @@ seeds:
         description: Whether transactions made this YNAB Payee is considered passive income.
         tests:
           - not_null
+
+  - name: map_budget_account
+    description:
+      Manually crafted mapping between YNAB Budget Account & a Vendor Account.
+    config:
+      column_types:
+        budget_account_id: varchar
+        vendor: varchar
+        vendor_id: varchar
+    columns:
+      - name: budget_account_id
+        description: YNAB Budget Account ID to associate with the Vendor Account.
+        tests:
+          - not_null
+          - relationships:
+              to: ref("stg_ynab_account")
+              field: id
+      - name: vendor
+        description: Name of the Vendor hosting the Vendor Account.
+        tests:
+          - not_null
+      - name: vendor_id
+        description: Vendor assigned ID to the Account associated with the YNAB Budget Account.
+        tests:
+          - not_null
+
+  - name: map_bank_card
+    description:
+      Manually crafted mapping between a SimplyGo Bank Card & a Vendor Account.
+    config:
+      column_types:
+        bank_card_id: varchar
+        vendor: varchar
+        vendor_id: varchar
+    columns:
+      - name: bank_card_id
+        description: Bank Card ID to associate with the Vendor Account.
+        tests:
+          - not_null
+      - name: vendor
+        description: Name of the Vendor hosting the Vendor Account.
+        tests:
+          - not_null
+      - name: vendor_id
+        description: Vendor assigned ID to the Account to associate with the Bank Card.
+        tests:
+          - not_null

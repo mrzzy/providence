@@ -7,14 +7,14 @@
 -- tally with account balance
 with
     initial_balances as (
-        select account_id, statement_begin, balance, processed_on
+        select account_id, statement_begin, balance, scraped_on
         from
             (
                 {{
                     deduplicate(
                         relation=ref("int_unique_enriched_bank_statement"),
                         partition_by="account_id",
-                        order_by="processed_on asc",
+                        order_by="scraped_on asc",
                         n_row_col="_n_row_account",
                     )
                 }}
@@ -27,7 +27,7 @@ with
             statement_begin as date_id,
             account_id,
             'Initial Balance' as description,
-            processed_on as updated_at,
+            scraped_on as updated_at,
             balance as amount
         from initial_balances
     )
@@ -41,6 +41,6 @@ select
     transacted_on as date_id,
     account_id,
     description,
-    processed_on as updated_at,
+    scraped_on as updated_at,
     deposit - withdrawal as amount
 from {{ ref("int_unique_enriched_bank_statement") }}

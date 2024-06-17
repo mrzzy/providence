@@ -20,7 +20,7 @@ with
                 deduplicate(
                     relation="keyed_statement",
                     partition_by="id",
-                    order_by="processed_on desc",
+                    order_by="scraped_on desc",
                 )
             }}
         )
