@@ -25,3 +25,4 @@ from
             cast(t.data.matched_transaction_id as varchar) as matched_transaction_id
         from {{ ynab_unnest("data.budget.transactions") }} as t
     ) as t
+    {{ dev_limit() }}

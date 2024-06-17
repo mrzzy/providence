@@ -17,4 +17,4 @@ select
     cast(s.mode as varchar) as transport_mode,
     cast(s.card_id as varchar) as card_id,
     {{ scraped_on("s") }} as scraped_on
-from {{ source("simplygo", "simplygo_tfm") }} as s
+from {{ source("simplygo", "simplygo_tfm") }} as s {{ dev_limit() }}
