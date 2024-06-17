@@ -4,6 +4,7 @@
 # YNAB Flow
 #
 
+import asyncio
 from datetime import datetime, timezone
 from io import BytesIO, StringIO
 from typing import Optional
@@ -72,13 +73,15 @@ async def get_ynab(
 
         lake_path = f"staging/by=ynab/date={datetime.now(timezone.utc).date().isoformat()}/budget.json"
         log.info(f"Uploading retrieved data to: {lake_path}")
-        await lake.upload_fileobj(Fileobj=BytesIO(response.content), Key=lake_path)  # type: ignore
+        upload_data = lake.upload_fileobj(Fileobj=BytesIO(response.content), Key=lake_path)  # type: ignore
 
         log.info(f"Uploading server_knowlege to: {knowledge_path}")
-        await lake.upload_fileobj(
+        upload_knowledge = lake.upload_fileobj(
             Fileobj=BytesIO(str(response.json()["data"]["server_knowledge"]).encode()),
             Key=knowledge_path,
         )  # type: ignore
+
+        await asyncio.gather(upload_data, upload_knowledge)  # type: ignore
 
     return lake_path
 
