@@ -125,6 +125,7 @@ jobs:
     env:
       B2_ACCOUNT_ID: ${{ secrets.B2_ACCOUNT_ID }}
       B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
+      motherduck_token: ${{ secrets.motherduck_token }}
     permissions:
       contents: write
     steps:
