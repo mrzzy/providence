@@ -17,6 +17,5 @@ from
             {{ scraped_on("t") }} as scraped_on,
             -- ynab expresses amounts in milliunits: 1000 milliunits = $1
             cast(t.data.amount as decimal(13, 2)) / 1000 as amount
-        from
-            {{ ynab_unnest("data.budget.subtransactions") }} as t
+        from {{ ynab_unnest("data.budget.subtransactions") }} as t
     ) as t

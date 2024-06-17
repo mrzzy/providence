@@ -10,7 +10,7 @@ with
             m.data.month,
             m.budget_id,
             m."date"
-            from {{ ynab_unnest("data.budget.months") }} as m
+        from {{ ynab_unnest("data.budget.months") }} as m
     )
 select
     cast(c.id as varchar) as "id",

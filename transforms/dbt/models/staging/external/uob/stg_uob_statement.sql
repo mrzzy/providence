@@ -19,7 +19,11 @@ select
     cast(s."account type" as varchar) as "name",  -- noqa: RF05
     cast(s.currency as varchar) as currency_code,
     -- split_part() is 1-indexed
-    strptime(split_part(s."statement period", ' To ', 1), '{{ date_fmt }}')  as statement_begin, -- noqa: RF05
-    strptime(split_part(s."statement period", ' To ', 2), '{{ date_fmt }}') as statement_end, -- noqa: RF05
+    strptime(
+        split_part(s."statement period", ' To ', 1), '{{ date_fmt }}'
+    ) as statement_begin,  -- noqa: RF05
+    strptime(
+        split_part(s."statement period", ' To ', 2), '{{ date_fmt }}'
+    ) as statement_end,  -- noqa: RF05
     {{ scraped_on("s") }} as scraped_on
 from {{ source("uob", "uob") }} s

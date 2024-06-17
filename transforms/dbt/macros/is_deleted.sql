@@ -8,5 +8,5 @@
 -- Assume transactions that we can no longer scrape in newer requests as deleted
 -- relation: containing scraped_on column to derive is_deleted from.
 {% macro is_deleted(relation) -%}
-datediff('day', {{ relation }}.scraped_on, current_date) > 2
+    datediff('day', {{ relation }}.scraped_on, current_date) > 2
 {%- endmacro %}
