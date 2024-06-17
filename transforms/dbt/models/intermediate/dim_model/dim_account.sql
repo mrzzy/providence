@@ -53,5 +53,5 @@ select
     v.name as vendor_type,
     greatest(b.scraped_on, v.scraped_on) as updated_at
 from unique_ynab_accounts as b
-left join map_uob_account as m on m.budget_account_id = b.id
-left join unique_uob_accounts as v on v.account_no = m.vendor_id
+left join map_uob_account as m on b.id = m.budget_account_id
+left join unique_uob_accounts as v on m.vendor_id = v.account_no

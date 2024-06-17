@@ -27,5 +27,5 @@ with
 
 select e.balance as expected, a.balance as actual
 from expected_balances as e
-left join actual_balances as a on a.account_id = e.account_id
+left join actual_balances as a on e.account_id = a.account_id
 where a.balance != a.balance

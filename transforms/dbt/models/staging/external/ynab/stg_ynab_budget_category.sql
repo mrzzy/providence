@@ -6,12 +6,13 @@
 with
     categories as (
         select
-            unnest(m.data.categories, recursive := true) as category,
             m.data.month,
             m.budget_id,
-            m."date"
+            m."date",
+            unnest(m.data.categories, recursive := true) as category
         from {{ ynab_unnest("data.budget.months") }} as m
     )
+
 select
     cast(c.id as varchar) as "id",
     cast(c.name as varchar) as "name",

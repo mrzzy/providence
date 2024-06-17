@@ -7,7 +7,7 @@
 with
     trip_legs_duplicated as (
         select
-            trip_id as id,
+            trip_id as "id",
             {{
                 dbt_utils.star(
                     ref("stg_simplygo_trip_leg"),
