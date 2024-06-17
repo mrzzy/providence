@@ -26,3 +26,6 @@ providence:
       <<: *duckdb
       path: "md:pvd"
   target: "{{ env_var('DBT_TARGET', 'dev') }}"
+
+config:
+  send_anonymous_usage_stats: false
