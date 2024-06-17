@@ -19,7 +19,7 @@ with
             deduplicate(
                 relation="keyed_statement",
                 partition_by="id",
-                order_by="processed_on desc",
+                order_by="scraped_on desc",
             )
         }}
     )
@@ -31,6 +31,6 @@ select
     s.statement_end as end_date_id,
     a.id as account_id,
     s.balance,
-    s.processed_on as updated_at
+    s.scraped_on as updated_at
 from unique_statement as s
 left join {{ ref("dim_account") }} as a on a.vendor_id = s.account_no
