@@ -18,6 +18,9 @@ providence:
         s3_endpoint: "s3.us-west-004.backblazeb2.com"
         s3_access_key_id: "{{ env_var('B2_ACCOUNT_ID') }}"
         s3_secret_access_key: "{{ env_var('B2_APP_KEY') }}"
+    dev_persist:
+      <<: *duckdb
+      path: "dev.db"
     # production: Motherduck data warehouse
     prod:
       <<: *duckdb
