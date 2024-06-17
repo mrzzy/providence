@@ -102,7 +102,7 @@ jobs:
           path: transforms/simplygo/target/debug/simplygo_tfm
 
   dbt-transform:
-    name: "DBT Transform: Lint"
+    name: "DBT Transform"
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
@@ -113,6 +113,8 @@ jobs:
         run: make deps-dbt
       - name: Lint
         run: make lint-dbt
+      - name: Build
+        run: make build-dbt
 
   dbt-docs:
     name: "DBT Docs"
