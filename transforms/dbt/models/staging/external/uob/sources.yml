@@ -10,7 +10,7 @@ sources:
   - name: uob
     description: UOB Bank statement export stored on AWS S3 data lake.
     meta:
-      external_location: read_parquet("s3://{{ env_var('PVD_LAKE_BUCKET', 'mrzzy-co-data-lake') }}/staging/by=uob/*.pq")
+      external_location: read_parquet("s3://{{ env_var('PVD_LAKE_BUCKET', 'mrzzy-co-data-lake') }}/staging/by=uob/**/*.pq")
     tables:
       - name: uob
         description: UOB Bank statement export.
