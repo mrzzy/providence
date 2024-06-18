@@ -13,6 +13,7 @@ from pathlib import Path
 from prefect import deploy
 from prefect.deployments.runner import DeploymentImage
 from flows import ingest_simplygo, ingest_uob, ingest_ynab
+from flows.dbt import transform_dbt
 
 
 async def deploy_pipelines():
@@ -38,6 +39,7 @@ async def deploy_pipelines():
             name="pvd-ingest-uob",
             parameters=params,
         ),
+        await transform_dbt.to_deployment(name="pvd-transform-dbt"),
         work_pool_name=os.environ["PREFECT_WORK_POOL"],
         image="ghcr.io/mrzzy/pvd-pipeline:latest",
         build=False,

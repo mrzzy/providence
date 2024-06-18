@@ -14,9 +14,11 @@
 
 import os
 
+from anyio import Path
 import pytest
 from prefect.blocks.system import Secret
 from prefect.testing.utilities import prefect_test_harness
+from prefect_dbt import DbtCliProfile, TargetConfigs
 
 
 @pytest.fixture(scope="session")
@@ -33,6 +35,27 @@ def prefect():
         )
         Secret(value=os.environ["YNAB_ACCESS_TOKEN"]).save(
             "ynab-access-token", overwrite=True
+        )
+        dbt_cli_profile = DbtCliProfile(
+            name="providence",
+            target="dev",
+            target_configs=TargetConfigs(
+                type="duckdb",
+                schema="main",
+                extras={
+                    "extensions": ["httpfs", "parquet", "icu"],
+                    "settings": {
+                        "s3_region": "",
+                        "s3_endpoint": "s3.us-west-004.backblazeb2.com",
+                        "s3_access_key_id": os.environ["B2_ACCOUNT_ID"],
+                        "s3_secret_access_key": os.environ["B2_APP_KEY"],
+                    },
+                },
+            ),
+        ).save("dbt-profile")
+        # point dbt project folder
+        os.environ["DBT_PROJECT_DIR"] = str(
+            Path(__file__).parent.parent / "transforms" / "dbt"
         )
 
         yield
