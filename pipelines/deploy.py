@@ -12,9 +12,7 @@ import os
 from pathlib import Path
 from prefect import deploy
 from prefect.deployments.runner import DeploymentImage
-from simplygo import ingest_simplygo
-from uob import ingest_uob
-from ynab import ingest_ynab
+from flows import ingest_simplygo, ingest_uob, ingest_ynab
 
 
 async def deploy_pipelines():
