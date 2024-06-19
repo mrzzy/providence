@@ -13,6 +13,10 @@ from pathlib import Path
 from prefect import deploy
 from prefect.deployments.runner import DeploymentImage
 from flows import pipeline
+from flows.dbt import transform_dbt
+from flows.simplygo import ingest_simplygo
+from flows.uob import ingest_uob
+from flows.ynab import ingest_ynab
 
 
 async def deploy_pipelines():
@@ -29,6 +33,19 @@ async def deploy_pipelines():
                 "budget_id": os.environ["YNAB_BUDGET_ID"],
             },
         ),
+        await ingest_simplygo.to_deployment(
+            name="pvd-ingest-simplygo",
+            parameters=params,
+        ),
+        await ingest_ynab.to_deployment(
+            name="pvd-ingest-ynab",
+            parameters=params
+            | {
+                "budget_id": os.environ["YNAB_BUDGET_ID"],
+            },
+        ),
+        await ingest_uob.to_deployment(name="pvd-ingest-uob", parameters=params),
+        await transform_dbt.to_deployment(name="pvd-transform-dbt", parameters=params),
         work_pool_name=os.environ["PREFECT_WORK_POOL"],
         image="ghcr.io/mrzzy/pvd-pipeline:latest",
         build=False,
