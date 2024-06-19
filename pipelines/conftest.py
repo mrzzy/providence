@@ -36,7 +36,7 @@ def prefect():
         Secret(value=os.environ["YNAB_ACCESS_TOKEN"]).save(
             "ynab-access-token", overwrite=True
         )
-        dbt_cli_profile = DbtCliProfile(
+        DbtCliProfile(
             name="providence",
             target="dev",
             target_configs=TargetConfigs(

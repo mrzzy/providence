@@ -17,7 +17,7 @@ async def build_dbt(selector: str = "*"):
     """Build DBT models with the given node selector."""
     async with concurrency(DBT_CONCURRENCY, occupy=1):
         log = get_run_logger()
-        log.info(f"Building DBT models")
+        log.info("Building DBT models")
         await run_dbt_build(
             dbt_cli_profile=await DbtCliProfile.load("dbt-profile"),
             overwrite_profiles=True,

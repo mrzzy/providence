@@ -33,7 +33,7 @@ async def scrape_simplygo(bucket: str, trips_on: date, window: timedelta) -> str
     username = await Secret.load("simplygo-src-username")
     password = await Secret.load("simplygo-src-password")
     await rate_limit(SIMPLYGO_RATE_LIMIT)
-    output = await ShellOperation(
+    await ShellOperation(
         env={
             "SIMPLYGO_SRC_USERNAME": username.get(),
             "SIMPLYGO_SRC_PASSWORD": password.get(),
@@ -64,7 +64,7 @@ async def transform_simplygo(bucket: str, raw_path: str) -> Optional[str]:
     async with b2_bucket(bucket) as lake:
         await download_path(lake, raw_path, Path(in_path))
 
-        output = await ShellOperation(
+        await ShellOperation(
             commands=[f"simplygo_tfm --input-dir {in_path} --output {out_path}"]
         ).run()
 
