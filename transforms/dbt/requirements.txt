@@ -13,7 +13,7 @@ dbt-core==1.8.2
 dbt-duckdb==1.8.1
 dbt-extractor==0.5.1
 dbt-semantic-interfaces==0.5.1
-duckdb==0.10.2
+duckdb==0.10.3
 idna==3.7
 importlib-metadata==6.11.0
 isodate==0.6.1
