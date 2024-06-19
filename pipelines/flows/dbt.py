@@ -13,7 +13,7 @@ DBT_CONCURRENCY = "dbt"
 
 
 @task
-async def build_dbt(selector: str = "*"):
+async def build_dbt(bucket: str, selector: str):
     """Build DBT models with the given node selector."""
     async with concurrency(DBT_CONCURRENCY, occupy=1):
         log = get_run_logger()
@@ -26,11 +26,12 @@ async def build_dbt(selector: str = "*"):
 
 
 @flow
-async def transform_dbt(selector: str = "*"):
+async def transform_dbt(bucket: str, selector: str = "*"):
     """Transform data by building DBT models with the given node selector
 
     Args:
+        bucket: Name of the bucket used as a a data source for DBT models.
         select: DBT node selector specifying the DBT models to build.
             Refer to https://docs.getdbt.com/reference/node-selection/syntax
     """
-    await build_dbt()
+    await build_dbt(bucket, selector)

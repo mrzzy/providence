@@ -13,10 +13,11 @@ from flows import ingest_simplygo, ingest_uob, ingest_ynab, transform_dbt
 
 @pytest.mark.asyncio
 async def test_flows(prefect):
-    await ingest_simplygo(os.environ["PVD_LAKE_BUCKET"], date(2024, 5, 1))
+    bucket = os.environ["PVD_LAKE_BUCKET"]
+    await ingest_simplygo(bucket, date(2024, 5, 1))
     await ingest_ynab(os.environ["PVD_LAKE_BUCKET"], os.environ["YNAB_BUDGET_ID"])
     await ingest_uob(
-        bucket=os.environ["PVD_LAKE_BUCKET"],
+        bucket,
         export_path="raw/by=mrzzy/ACC_TXN_History_05062024124137.xls",
     )
-    await transform_dbt()
+    await transform_dbt(bucket)
