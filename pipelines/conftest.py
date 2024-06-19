@@ -36,6 +36,7 @@ def prefect():
         Secret(value=os.environ["YNAB_ACCESS_TOKEN"]).save(
             "ynab-access-token", overwrite=True
         )
+        Secret(value=os.environ["motherduck_token"]).save("motherduck-token")
         DbtCliProfile(
             name="providence",
             target="dev",
