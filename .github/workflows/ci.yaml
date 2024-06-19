@@ -122,10 +122,6 @@ jobs:
   dbt-docs:
     name: "DBT Docs"
     runs-on: ubuntu-22.04
-    env:
-      B2_ACCOUNT_ID: ${{ secrets.B2_ACCOUNT_ID }}
-      B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
-      motherduck_token: ${{ secrets.motherduck_token }}
     permissions:
       contents: write
     steps:
@@ -138,6 +134,9 @@ jobs:
       - name: Generate docs
         env:
           DBT_TARGET: prod
+          B2_ACCOUNT_ID: ${{ secrets.B2_ACCOUNT_ID }}
+          B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
+          motherduck_token: ${{ secrets.motherduck_token }}
         working-directory: transforms/dbt
         run: |
           set -ex -o pipefail
@@ -203,6 +202,7 @@ jobs:
           # hack to workaround: https://github.com/PrefectHQ/prefect/issues/13349
           # by directing prefect to retrieve blocks from prefect cloud instead.
           PREFECT_API_KEY: ${{ secrets.PREFECT_API_KEY }}
+          motherduck_token: ${{ secrets.motherduck_token }}
         with:
           make-suffix: pipelines
           python-version: "${{ env.PYTHON_VERSION }}"
