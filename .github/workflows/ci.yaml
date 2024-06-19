@@ -212,7 +212,6 @@ jobs:
           username: "${{ github.actor }}"
           password: "${{ secrets.GITHUB_TOKEN }}"
           name: "pvd-pipeline"
-          context_dir: "pipelines"
           dockerfile: "infra/Dockerfile.pipeline"
       - name: Authenticate with Prefect Cloud
         uses: PrefectHQ/actions-prefect-auth@v1
