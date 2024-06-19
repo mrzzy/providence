@@ -24,7 +24,7 @@ async def build_dbt(bucket: str, selector: str):
         # pass args via environment
         old_env = dict(os.environ)
         os.environ["PVD_LAKE_BUCKET"] = bucket
-        os.environ["motherduck_token"] = await Secret.load("motherduck-token")
+        os.environ["motherduck_token"] = (await Secret.load("motherduck-token")).get()
 
         log.info("Building DBT models")
         await run_dbt_build(
