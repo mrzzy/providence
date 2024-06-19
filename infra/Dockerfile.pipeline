@@ -5,16 +5,26 @@
 #
 
 FROM prefecthq/prefect:2.19.5-python3.10
-RUN mkdir /src
+RUN mkdir /src /dbt
 WORKDIR /src
 
 # install pip module requirements
-COPY requirements.txt /tmp/requirements.txt
+COPY pipelines/requirements.txt /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt
+
+# install dbt packages
+ARG DBT_DIR=transforms/dbt
+ENV DBT_PROJECT_DIR=/dbt
+ENV DBT_PROFILES_DIR=/dbt
+COPY ${DBT_DIR}/packages.yml ${DBT_DIR}/package-lock.yml ${DBT_DIR}/dbt_project.yml /${DBT_PROJECT_DIR}/
+RUN cd /dbt && dbt deps
 
 # install simplygo_src & simplygo_tfm binaries
 COPY --from=ghcr.io/mrzzy/pvd-simplygo-src:latest /bin/simplygo_src /bin/simplygo_src
 COPY --from=ghcr.io/mrzzy/pvd-simplygo-tfm:latest /bin/simplygo_tfm /bin/simplygo_tfm
 
+# copy dbt models
+COPY ${DBT_DIR} /${DBT_PROJECT_DIR}
+
 # copy pipeline source code
-COPY . /src
+COPY pipelines /src
