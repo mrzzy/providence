@@ -27,7 +27,7 @@ async def deploy_pipelines():
             parameters={
                 "bucket": os.environ["PVD_LAKE_BUCKET"],
                 "budget_id": os.environ["YNAB_BUDGET_ID"],
-            }
+            },
         ),
         work_pool_name=os.environ["PREFECT_WORK_POOL"],
         image="ghcr.io/mrzzy/pvd-pipeline:latest",

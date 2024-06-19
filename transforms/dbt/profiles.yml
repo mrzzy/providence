@@ -13,6 +13,7 @@ providence:
         - httpfs
         - parquet
         - icu
+        - motherduck
       settings:
         s3_region: ""
         s3_endpoint: "s3.us-west-004.backblazeb2.com"

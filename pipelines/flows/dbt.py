@@ -6,13 +6,14 @@
 
 from prefect import flow, get_run_logger, task
 from prefect.concurrency.asyncio import concurrency
-from prefect_dbt.cli.commands import run_dbt_build
+from prefect.tasks import exponential_backoff
 from prefect_dbt import DbtCliProfile
+from prefect_dbt.cli.commands import run_dbt_build
 
 DBT_CONCURRENCY = "dbt"
 
 
-@task
+@task(retries=3, retry_delay_seconds=exponential_backoff(10))
 async def build_dbt(bucket: str, selector: str):
     """Build DBT models with the given node selector."""
     async with concurrency(DBT_CONCURRENCY, occupy=1):
