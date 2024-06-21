@@ -1,0 +1,46 @@
+slice_name: Saving Rate
+description: null
+certified_by: null
+certification_details: null
+viz_type: big_number
+params:
+  datasource: 22__table
+  viz_type: big_number
+  granularity_sqla: year_month
+  time_grain_sqla: P1M
+  time_range: No filter
+  metric:
+    expressionType: SQL
+    sqlExpression: SUM(cash_amount) / sum(income)
+    column: null
+    aggregate: null
+    datasourceWarning: false
+    hasCustomLabel: true
+    label: Saving Rate
+    optionName: metric_1uhxlp7olov_605w7f7a1vk
+  adhoc_filters: []
+  compare_lag: ''
+  compare_suffix: ''
+  show_timestamp: true
+  show_trend_line: true
+  start_y_axis_at_zero: true
+  color_picker:
+    r: 0
+    g: 122
+    b: 135
+    a: 1
+  header_font_size: 0.6
+  subheader_font_size: 0.125
+  y_axis_format: .1%
+  time_format: smart_date
+  force_timestamp_formatting: false
+  rolling_type: None
+  extra_form_data: {}
+  dashboards:
+  - 2
+  annotation_layers: []
+query_context: null
+cache_timeout: null
+uuid: 5f60d698-f67e-4400-952b-5b579855c939
+version: 1.0.0
+dataset_uuid: 4874b9d9-f7d7-459b-a131-1dc18351c0da

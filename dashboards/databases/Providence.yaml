@@ -1,5 +1,5 @@
-database_name: Development
-sqlalchemy_uri: redshift+psycopg2://mrzzy:XXXXXXXXXX@main.132307318913.ap-southeast-1.redshift-serverless.amazonaws.com:5439/dev?sslmode=verify-ca
+database_name: Providence
+sqlalchemy_uri: duckdb:///md:pvd?motherduck_token=XXXXXXXXXX
 cache_timeout: null
 expose_in_sqllab: true
 allow_run_async: true

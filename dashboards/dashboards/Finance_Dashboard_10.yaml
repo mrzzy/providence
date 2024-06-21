@@ -2,13 +2,16 @@ dashboard_title: Finance Dashboard
 description: null
 css: ''
 slug: null
+certified_by: null
+certification_details: null
+published: false
 uuid: 38baedec-4786-4f02-bb41-52e312bfef8b
 position:
   CHART-O9642AT2:
     children: []
     id: CHART-O9642AT2
     meta:
-      chartId: 2
+      chartId: 84
       height: 33
       sliceName: Net Worth
       uuid: e7814810-40af-4640-a9dd-13a6efb0f253
@@ -22,7 +25,7 @@ position:
     children: []
     id: CHART-explore-10-1
     meta:
-      chartId: 10
+      chartId: 77
       height: 33
       sliceName: Saving Rate
       uuid: 5f60d698-f67e-4400-952b-5b579855c939
@@ -36,7 +39,7 @@ position:
     children: []
     id: CHART-explore-11-1
     meta:
-      chartId: 11
+      chartId: 85
       height: 42
       sliceName: FI Progress
       uuid: d6bf74e5-ee42-4856-bdb2-48ab5ede068e
@@ -50,7 +53,7 @@ position:
     children: []
     id: CHART-explore-12-1
     meta:
-      chartId: 12
+      chartId: 81
       height: 19
       sliceName: Uncleared Balance
       uuid: e79c3fc0-1271-4bfc-98d7-4f72a1b6f2fd
@@ -65,7 +68,7 @@ position:
     children: []
     id: CHART-explore-13-1
     meta:
-      chartId: 13
+      chartId: 82
       height: 12
       sliceName: No. Uncleared
       uuid: 93caf898-14e6-4392-8651-7e27198576ae
@@ -80,7 +83,7 @@ position:
     children: []
     id: CHART-explore-15-1
     meta:
-      chartId: 15
+      chartId: 78
       height: 44
       sliceName: Uncleared Transactions
       uuid: a24c6aaa-54a9-4d6a-a155-7902dde9a72b
@@ -94,7 +97,7 @@ position:
     children: []
     id: CHART-explore-16-1
     meta:
-      chartId: 16
+      chartId: 87
       height: 44
       sliceName: Expenses
       uuid: b2739d14-54bf-4d9f-9a94-67a30f82292f
@@ -108,7 +111,7 @@ position:
     children: []
     id: CHART-explore-3-1
     meta:
-      chartId: 3
+      chartId: 79
       height: 33
       sliceName: Cash
       uuid: ade5ec5f-719d-49a7-8e26-1ede2179b046
@@ -122,7 +125,7 @@ position:
     children: []
     id: CHART-explore-4-1
     meta:
-      chartId: 4
+      chartId: 75
       height: 19
       sliceName: Spending
       uuid: 82794002-e220-4a08-9cbd-8714b724fb28
@@ -137,7 +140,7 @@ position:
     children: []
     id: CHART-explore-5-1
     meta:
-      chartId: 5
+      chartId: 76
       height: 19
       sliceName: Income
       uuid: 3bf662d3-18a9-46a0-9551-8aaa5bada081
@@ -152,7 +155,7 @@ position:
     children: []
     id: CHART-explore-6-1
     meta:
-      chartId: 6
+      chartId: 80
       height: 12
       sliceName: Passive Income
       uuid: 2593866b-cd17-4f9e-8788-7e2295df668d
@@ -167,7 +170,7 @@ position:
     children: []
     id: CHART-explore-7-1
     meta:
-      chartId: 7
+      chartId: 83
       height: 12
       sliceName: Unaccounted Spending
       uuid: a80637b2-1ad9-459f-8d8e-36ed71250e01
@@ -182,7 +185,7 @@ position:
     children: []
     id: CHART-explore-8-1
     meta:
-      chartId: 8
+      chartId: 86
       height: 42
       sliceName: Activity
       uuid: b0df55fc-724e-4761-8126-0f5acc75f826
@@ -196,7 +199,7 @@ position:
     children: []
     id: CHART-explore-9-1
     meta:
-      chartId: 9
+      chartId: 74
       height: 42
       sliceName: Cash Flow
       uuid: 01229a51-d21d-4d20-a0d4-509af2cca7e0
@@ -307,14 +310,12 @@ position:
     - GRID_ID
     type: ROW
 metadata:
-  show_native_filters: true
   color_scheme: presetColors
   refresh_frequency: 0
   expanded_slices: {}
   label_colors: {}
   timed_refresh_immune_slices: []
   cross_filters_enabled: false
-  default_filters: '{}'
   chart_configuration: {}
   shared_label_colors:
     '0': '#6BD3B3'
