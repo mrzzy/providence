@@ -25,14 +25,13 @@ async def deploy_pipelines():
     """Deploy pipelines to Prefect."""
     params = {
         "bucket": os.environ["PVD_LAKE_BUCKET"],
+        "budget_id": os.environ["YNAB_BUDGET_ID"],
     }
     await deploy(
         await pipeline.to_deployment(
             name="pvd-pipeline",
             cron="@daily",
-            parameters={
-                "bucket": os.environ["PVD_LAKE_BUCKET"],
-            },
+            parameters=params,
         ),
         await ingest_simplygo.to_deployment(
             name="pvd-ingest-simplygo",
@@ -40,10 +39,7 @@ async def deploy_pipelines():
         ),
         await ingest_ynab.to_deployment(
             name="pvd-ingest-ynab",
-            parameters=params
-            | {
-                "budget_id": os.environ["YNAB_BUDGET_ID"],
-            },
+            parameters=params,
         ),
         await ingest_uob.to_deployment(name="pvd-ingest-uob", parameters=params),
         await transform_dbt.to_deployment(name="pvd-transform-dbt", parameters=params),
