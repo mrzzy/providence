@@ -33,8 +33,12 @@ async def transform_uob(bucket: str, export_path: Optional[str] = None) -> str:
             # since exports have a numeric date-based suffix
             # the latest export is last in lexical order
             export_path = max(
-                o.key
-                async for o in lake.objects.filter(Prefix="raw/by=mrzzy/ACC_TXN_History_")  # type: ignore
+                [
+                    o.key
+                    async for o in lake.objects.filter(
+                        Prefix="raw/by=mrzzy/ACC_TXN_History_"
+                    )  # type: ignore
+                ]
             )
             if export_path is None:
                 raise FileNotFoundError("No UOB export to import found")
