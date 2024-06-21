@@ -4,12 +4,13 @@
 # SimplyGo Flow
 #
 
+import subprocess
 from datetime import date, datetime, timedelta, timezone
 from os import path
 from pathlib import Path
-import subprocess
 from typing import Optional
-from prefect import flow, task, get_run_logger
+
+from prefect import flow, get_run_logger, task
 from prefect.blocks.system import Secret
 from prefect.concurrency.asyncio import rate_limit
 from prefect.tasks import exponential_backoff

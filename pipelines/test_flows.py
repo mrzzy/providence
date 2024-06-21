@@ -8,7 +8,12 @@ import os
 from datetime import date
 
 import pytest
-from flows import ingest_simplygo, ingest_uob, ingest_ynab, transform_dbt
+
+from dbt_flow import transform_dbt
+from pipeline import pipeline
+from simplygo_flow import ingest_simplygo
+from uob_flow import ingest_uob
+from ynab_flow import ingest_ynab
 
 
 @pytest.mark.asyncio

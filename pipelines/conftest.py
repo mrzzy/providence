@@ -14,8 +14,8 @@
 
 import os
 
-from anyio import Path
 import pytest
+from anyio import Path
 from prefect.blocks.system import Secret
 from prefect.testing.utilities import prefect_test_harness
 from prefect_dbt import DbtCliProfile, TargetConfigs

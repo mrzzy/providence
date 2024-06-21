@@ -9,8 +9,10 @@ import os
 from pathlib import Path
 from tempfile import TemporaryDirectory, tempdir
 from uuid import uuid4
-from jinja2.bccache import Bucket
+
 import pytest
+from jinja2.bccache import Bucket
+
 from b2 import b2_bucket, download_path, upload_path
 
 

@@ -4,10 +4,11 @@
 # Unit Tests
 #
 
+from datetime import date
+
 import pandas as pd
 from pandas.io.common import Path
 from pandas.testing import assert_frame_equal
-from datetime import date
 
 from uob.transforms import extract_uob, parse_scraped_on, promote_header
 

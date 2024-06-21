@@ -5,10 +5,11 @@
 #
 
 import asyncio
-from contextlib import asynccontextmanager
 import os
+from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import AsyncGenerator
+
 import aioboto3
 from mypy_boto3_s3.service_resource import Bucket
 from prefect.blocks.system import Secret

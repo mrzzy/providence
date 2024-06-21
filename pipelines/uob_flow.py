@@ -7,8 +7,9 @@
 from io import BytesIO
 from pathlib import Path
 from typing import Optional
+
 import pandas as pd
-from prefect import task, flow, get_run_logger
+from prefect import flow, get_run_logger, task
 
 from b2 import b2_bucket
 from uob.transforms import extract_uob, parse_scraped_on

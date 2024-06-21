@@ -10,13 +10,15 @@
 import asyncio
 import os
 from pathlib import Path
+
 from prefect import deploy
 from prefect.deployments.runner import DeploymentImage
-from flows import pipeline
-from flows.dbt import transform_dbt
-from flows.simplygo import ingest_simplygo
-from flows.uob import ingest_uob
-from flows.ynab import ingest_ynab
+
+from dbt_flow import transform_dbt
+from pipeline import pipeline
+from simplygo_flow import ingest_simplygo
+from uob_flow import ingest_uob
+from ynab_flow import ingest_ynab
 
 
 async def deploy_pipelines():
