@@ -32,7 +32,6 @@ async def deploy_pipelines():
             cron="@daily",
             parameters={
                 "bucket": os.environ["PVD_LAKE_BUCKET"],
-                "budget_id": os.environ["YNAB_BUDGET_ID"],
             },
         ),
         await ingest_simplygo.to_deployment(
