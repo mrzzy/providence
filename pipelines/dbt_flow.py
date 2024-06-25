@@ -10,8 +10,8 @@ from prefect import flow, get_run_logger, task
 from prefect.blocks.system import Secret
 from prefect.concurrency.asyncio import concurrency
 from prefect.tasks import exponential_backoff
-from prefect_dbt import DbtCliProfile
-from prefect_dbt.cli.commands import run_dbt_build
+from prefect_dbt import DbtCliProfile, DbtCoreOperation
+from prefect_dbt.cli.commands import trigger_dbt_cli_command
 
 DBT_CONCURRENCY = "dbt"
 
@@ -24,19 +24,18 @@ async def build_dbt(bucket: str, selector: str):
 
         # pass args via environment
         old_env = dict(os.environ)
-        os.environ["PVD_LAKE_BUCKET"] = bucket
-        os.environ["motherduck_token"] = (await Secret.load("motherduck-token")).get()
-
         log.info("Building DBT models")
-        await run_dbt_build(
+        await DbtCoreOperation(
+            commands=["dbt build"],
+            extra_command_args=["--select", selector],
+            env={
+                "PVD_LAKE_BUCKET": bucket,
+                "motherduck_token": (await Secret.load("motherduck-token")).get(),
+            },
             dbt_cli_profile=await DbtCliProfile.load("dbt-profile"),
             overwrite_profiles=True,
-            extra_command_args=["--select", selector],
-        )
-
-        # restore environment variables
-        os.environ.clear()
-        os.environ.update(old_env)
+            stream_output=True,
+        ).run()
 
 
 @flow
