@@ -16,7 +16,6 @@ from prefect_dbt.cli.commands import trigger_dbt_cli_command
 DBT_CONCURRENCY = "dbt"
 
 
-@task(retries=3, retry_delay_seconds=exponential_backoff(10))
 async def build_dbt(bucket: str, selector: str):
     """Build DBT models with the given node selector."""
     async with concurrency(DBT_CONCURRENCY, occupy=1):
