@@ -58,6 +58,7 @@ async def get_ynab(
 
         log.info("Performing GET request against YNAB API")
         token = await Secret.load("ynab-access-token")
+        scraped_on = datetime.now(timezone.utc)
         async with AsyncClient(
             base_url="https://api.ynab.com/v1",
             headers={"Authorization": f"Bearer {token.get()}"},
@@ -71,7 +72,11 @@ async def get_ynab(
             )
             response.raise_for_status()
 
-        lake_path = f"staging/by=ynab/date={datetime.now(timezone.utc).date().isoformat()}/budget.json"
+        # namespace file with scraped_on timestamp to allow multiple gets within the same day
+        timestamp = scraped_on.strftime("%Y%m%dT%H%M%SZ")
+        lake_path = (
+            f"staging/by=ynab/date={scraped_on.date().isoformat()}/{timestamp}.json"
+        )
         log.info(f"Uploading retrieved data to: {lake_path}")
         upload_data = lake.upload_fileobj(Fileobj=BytesIO(response.content), Key=lake_path)  # type: ignore
 
