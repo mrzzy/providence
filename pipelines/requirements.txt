@@ -50,7 +50,7 @@ markdown-it-py==3.0.0
 MarkupSafe==2.1.5
 mdurl==0.1.2
 oauthlib==3.2.2
-orjson==3.10.5
+orjson==3.10.6
 packaging==24.0
 pathspec==0.12.1
 pendulum==2.1.2
