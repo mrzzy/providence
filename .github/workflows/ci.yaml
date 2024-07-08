@@ -155,20 +155,6 @@ jobs:
           user_email: "github-actions[bot]@users.noreply.github.com"
           full_commit_message: "doc(transform): update dbt docs for ${{ github.sha }}"
 
-  ynab-sink:
-    name: "YNAB Sink: Lint, Build & Test"
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Setup dependencies
-        run: make deps-ynab
-      - name: Lint
-        run: make lint-ynab
-      - name: Build
-        run: make build-ynab
-      - name: Test
-        run: make test-ynab
-
   pipelines:
     name: "Pipelines: Lint, Test & Publish"
     runs-on: ubuntu-22.04

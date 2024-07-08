@@ -50,15 +50,6 @@ $(eval $(call RUST_RULES,simplygo-src,sources/simplygo))
 $(eval $(call RUST_RULES,simplygo-tfm,transforms/simplygo))
 
 
-# REST API source
-REST_API_DIR := sources/rest-api
-
-$(eval $(call PHONY_RULE,deps,rest-api))
-deps-rest-api: $(REST_API_DIR)
-	cd $< && pip install -r requirements-dev.txt
-
-$(eval $(call PYTHON_RULES,rest-api,$(REST_API_DIR)))
-
 # DBT transform
 DBT_DIR := transforms/dbt
 DBT_TARGET := dev
@@ -81,30 +72,6 @@ lint-dbt: $(DBT_DIR)
 $(eval $(call PHONY_RULE,build,dbt))
 build-dbt: $(DBT_DIR)
 	cd $< && dbt build --target $(DBT_TARGET)
-
-# YNAB Sink
-YNAB_SINK_DIR  := sinks/ynab
-
-$(eval $(call PHONY_RULE,deps,ynab))
-deps-ynab: $(YNAB_SINK_DIR)
-	cd $< && npm install --ignore-scripts
-
-$(eval $(call PHONY_RULE,fmt,ynab))
-fmt-ynab: $(YNAB_SINK_DIR)
-	cd $< && npx prettier -w .
-
-$(eval $(call PHONY_RULE,lint,ynab))
-lint-ynab: $(YNAB_SINK_DIR)
-	cd $< && npx prettier --check .
-	cd $< && npx eslint .
-
-$(eval $(call PHONY_RULE,build,ynab))
-build-ynab: $(YNAB_SINK_DIR)
-	cd $< && npx tsc
-
-$(eval $(call PHONY_RULE,build,ynab))
-test-ynab: $(YNAB_SINK_DIR)
-	cd $< && npm test
 
 # Prefect Pipelines
 PIPELINES_DIR := pipelines
