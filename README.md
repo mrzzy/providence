@@ -31,10 +31,10 @@ flowchart LR
       ynab((YNAB)) &  uob((UOB)) & simplygo((SimplyGO)) -->|sinks| b2
       subgraph b2[B2 Bucket]
           direction LR
-          raw[Raw: JSON, Excel] --> staging[Staging: parquet]
+          raw[Raw: JSON, Excel] -->|transform| tfms[[Transforms on ACI]] --> staging[Staging: parquet]
       end
-      staging -->|load| compute[[Load Job on u]] --> dw[(MotherDuck\n DuckDB)]
-      dw -->|transform| dbt[[DBT on ACI]] --> dw
+      staging -->|load| dbt[[DBT on ACI]] --> dw[(MotherDuck\n DuckDB)]
+      dw -->|transform| dbt
       dw -->|visualise| viz(((Superset)))
    end
 ```
