@@ -1,77 +1,51 @@
 # Providence
 
-Apply Data Engineering to Personal Finance
+Personal Finance Data Pipeline & Dashboard.
 
-## Finance
-
-### Background
-
-I ❤️ [YNAB](https://www.ynab.com/) for personal finance budgeting/accounting, it helps me keep my finances in check. However, I hold a few pet peeves with YNAB:
-
-- YNAB's bank account import feature only supports Banks from the US and manual account reconciliation is not a fun experience.
-- YNAB's limited visualisation features (bar, pie chart & pivot table) does not give a good picture of "state of finances".
-- Keying in a transaction into YNAB each time I take Public Transport can quickly become tedious.
-
-### Features
-
-Providence aims to make personal finance less tedious with automation & less opaque with visualisation:
-
-- **Data Sources** to grab data:
-  - **rest-api-src** pulls Budget/Accounting data from YNAB API.
-  - **simplygo-src** scrapes Public Transport trip data from SimplyGo Portal.
-- **Data Transforms** to reshape data:
-  - **Pandas** to extract transactions from the Excel export I receive from my Bank.
-  - **DBT** to reshape raw data into a Dimensional Model & a Data Mart dedicated for populating the Finance Dashboard.
-- **Data Sinks** to write data:
-  - **ynab-sink** writes transactions back to YNAB, reverse ETL style
-    (eg. Transactions to account for Public Transport trips).
-- **Data Pipelines** Airflow DAGs to orchestrate everything.
+## Features
 
 ![Finance Dashboard Screenshot](assets/finance_dashboard_screenshot.png)
 
-- **Finance Dashboard** visualise the data to give me a picture of where I'm at financially & assist in me in budgeting / accounting.
-  - **Unreconciled Transactions** Lists transactions that in my books but not in my bank account & vice versa. Its a great help when reconciling accounts.
+Providence aims to make personal finance less tedious with automation & less opaque with visualisation:
+
+- **Data Sources** to automatically retrieve raw data from data sources:
+  - **YNAB Source** pulls Budget/Accounting data from YNAB REST API.
+  - **SimplyGo Source** scrapes HTML from [SimplyGo Portal](https://simplygo.transitlink.com.sg/)
+- **Data Transforms** to extract tabular data from raw data files:
+  - **YNAB transform** extracts accounting transactions from JSON budget data.
+  - **SimplyGo transform** extracts public transport trip data from scraped html.
+  - **UOB transform** extract bank statement transactions from Excel export.
+- **Data Model** DBT Dimensional model integrates data from disparate sources together for analysis.
+- **Finance Dashboard** Superset dashboard presets easy to digest metrics on financial health.
+
 
 ## Architecture
-
 ```mermaid
-flowchart TB
-    subgraph AWS
-        subgraph src[Data Sources]
-            ynab((YNAB)) -->|REST| rest-api[REST API Source]
-            simplygo-web((Simplygo)) --> simplygo[Simplygo Source]
-        end
+---
+title: Providence V2
+---
 
-        rest-api & simplygo -->|json| lake[(AWS S3 Lake)]
-        uob((Bank Export)) -->|excel| lake --->|files| ext
-        lake -->|excel| pd{{Pandas}} -->|parquet| lake
-
-        subgraph dw[AWS Redshift Warehouse]
-            ext[External Tables] -->|clean| dbt-models[DBT Models]
-            dbt-models --> dbt{{DBT}} -->|transform| dbt-models
-        end
-
-        dw -->|transactions| ynab-sink[YNAB Sink] -->|REST| ynab
-    end
-    dw -----> fin-dash
-    subgraph GCP
-        subgraph GKE
-            subgraph airflow[Apache Airflow]
-                ynab-pipe[YNAB Pipeline]
-                simplygo-pipe[SimplyGo Pipeline]
-                uob-pipe[UOB Pipeline]
-            end
-            subgraph superset[Apache Superset]
-                fin-dash((Finance\nDashboard))
-            end
-        end
-    end
+flowchart LR
+    subgraph p[Prefect, Grafana]
+      direction TB
+      ynab((YNAB)) &  uob((UOB)) & simplygo((SimplyGO)) -->|sinks| b2
+      subgraph b2[B2 Bucket]
+          direction LR
+          raw[Raw: JSON, Excel] --> staging[Staging: parquet]
+      end
+      staging -->|load| compute[[Load Job on u]] --> dw[(MotherDuck\n DuckDB)]
+      dw -->|transform| dbt[[DBT on ACI]] --> dw
+      dw -->|visualise| viz(((Superset)))
+   end
 ```
 
-- **Data Lake** AWS S3
-- **Data Warehouse** AWS Redshift Serverless
-- **Orchestration** Apache Airflow with Kubernetes Executor.
-- **Business Intellegence** Apache Superset
+V2 architecture redesign focuses on lowering the Total Cost of Ownership (TCO)
+by relying on Serverless Compute and free-tier Managed Services:
+- **Compute** Azure Container Instances (ACI)
+- **Data Lake** Backblaze B2
+- **Data Warehouse** MotherDuck DuckDB
+- **Orchestration** Prefect
+- **Visualisation** Apache Superset
 
 ## Data Model
 
