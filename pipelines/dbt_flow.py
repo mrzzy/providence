@@ -22,7 +22,6 @@ async def build_dbt(bucket: str, selector: str):
         log = get_run_logger()
 
         # pass args via environment
-        old_env = dict(os.environ)
         log.info("Building DBT models")
         await DbtCoreOperation(
             commands=["dbt build"],
