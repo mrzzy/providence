@@ -4,7 +4,7 @@
 # Dockerfile
 #
 
-FROM ghcr.io/dbt-labs/dbt-redshift:1.8.0
+FROM ghcr.io/dbt-labs/dbt-redshift:1.8.1
 
 # create system user for dbt
 ARG USER=dbt
