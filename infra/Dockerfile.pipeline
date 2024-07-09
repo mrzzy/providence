@@ -4,7 +4,7 @@
 # Dockerfile
 #
 
-FROM prefecthq/prefect:2.19.5-python3.10
+FROM prefecthq/prefect:2.19.7-python3.10
 RUN mkdir /src /dbt
 WORKDIR /src
 
