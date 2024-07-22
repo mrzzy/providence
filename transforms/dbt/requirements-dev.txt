@@ -3,5 +3,5 @@ pytest==7.4.4
 rich==13.7.1
 sqlfluff==3.0.7
 sqlfluff_templater_dbt==3.0.7
-black==23.3.0
+black==24.3.0
 shandy-sqlfmt==0.21.4
