@@ -92,7 +92,7 @@ urllib3==2.2.2
 uvicorn==0.28.1
 websocket-client==1.8.0
 websockets==12.0
-prefect-shell==0.2.5
+prefect-shell==0.2.6
 jmespath==1.0.1
 mypy-boto3-s3==1.34.158
 mypy-boto3-secretsmanager==1.34.145
