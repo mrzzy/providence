@@ -66,7 +66,7 @@ python-multipart==0.0.9
 python-slugify==8.0.4
 pytz==2024.1
 pytzdata==2020.1
-PyYAML==6.0.1
+PyYAML==6.0.2
 readchar==4.1.0
 referencing==0.35.1
 regex==2024.5.15
