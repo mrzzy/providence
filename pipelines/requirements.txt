@@ -132,7 +132,7 @@ Babel==2.16.0
 duckdb==0.10.2
 minimal-snowplow-tracker==0.0.2
 dbt-extractor==0.5.1
-dbt-semantic-interfaces==0.5.1
+dbt-semantic-interfaces==0.7.0
 dbt-adapters==1.4.1
 pytimeparse==1.1.8
 sqlparse==0.5.1
