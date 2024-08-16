@@ -138,7 +138,7 @@ pytimeparse==1.1.8
 sqlparse==0.5.0
 Logbook==1.5.3
 msgpack==1.0.8
-mashumaro==3.13
+mashumaro==3.13.1
 more-itertools==10.2.0
 importlib-metadata==6.11.0
 prefect-dbt==0.5.0
