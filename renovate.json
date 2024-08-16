@@ -4,5 +4,5 @@
     "config:base",
     ":automergePatch"
   ],
-  "ignoreDeps": ["botocore", "boto3"]
+  "ignoreDeps": ["botocore", "boto3", "aiobotocore", "aioboto3"]
 }
