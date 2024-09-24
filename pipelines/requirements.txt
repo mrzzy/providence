@@ -129,7 +129,7 @@ networkx==3.3
 parsedatetime==2.6
 zipp==3.19.3
 Babel==2.15.0
-duckdb==0.10.3
+duckdb==1.1.1
 minimal-snowplow-tracker==0.0.2
 dbt-extractor==0.5.1
 dbt-semantic-interfaces==0.5.1
