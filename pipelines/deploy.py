@@ -35,10 +35,7 @@ async def deploy_pipelines():
                 "budget_id": os.environ["YNAB_BUDGET_ID"],
             },
         ),
-        await ingest_simplygo.to_deployment(
-            name="pvd-ingest-simplygo",
-            parameters=params,
-        ),
+        # TODO(mrzzy): reintroduce simplygo flow
         await ingest_ynab.to_deployment(
             name="pvd-ingest-ynab",
             parameters=params
