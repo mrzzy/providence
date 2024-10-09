@@ -82,18 +82,6 @@ jobs:
       YNAB_BUDGET_ID: f3f15316-e48c-4235-8d5d-1aa3191b3b8c
     steps:
       - uses: actions/checkout@v3
-      - name: Download simplygo-src binary Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: simplygo-src-bin
-          path: /usr/local/bin/
-      - name: Download simplygo-tfm binary Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: simplygo-tfm-bin
-          path: /usr/local/bin/
-      - name: Make simplygo binaries executable
-        run: chmod u+x /usr/local/bin/simplygo_src /usr/local/bin/simplygo_tfm
       - uses: ./.github/actions/python
         env:
           B2_ACCOUNT_ID: ${{ secrets.B2_ACCOUNT_ID }}
