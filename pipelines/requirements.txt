@@ -1,7 +1,7 @@
 aiosqlite==0.20.0
 alembic==1.13.2
 annotated-types==0.7.0
-anyio==3.7.1
+anyio==4.6.0
 apprise==1.8.1
 asgi-lifespan==2.1.0
 async-timeout==4.0.3
