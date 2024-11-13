@@ -25,30 +25,18 @@ test-$(1): $(2)
 	cd $$< && pytest
 endef
 
-define RUST_RULES
-fmt-$(1): $(2)
-	cd $$< && cargo fmt
-
-lint-$(1): $(2)
-	cd $$< && cargo fmt --check && cargo clippy
-
-build-$(1): $(2)
-	cd $$< && cargo build
-
-test-$(1): $(2)
-	cd $$< && cargo test
-endef
-
-
 all: deps fmt lint build test
 	
 # Simplygo SDK, source & transform
-$(eval $(call RUST_RULES,simplygo,libs/simplygo))
+SIMPLYGO_SRC:= sources/simplygo
+$(eval $(call PYTHON_RULES,simplygo-src,$(SIMPLYGO_SRC)))
 
-$(eval $(call RUST_RULES,simplygo-src,sources/simplygo))
+$(eval $(call PHONY_RULE,deps,simplygo-src))
+deps-simplygo-src: $(SIMPLYGO_SRC)
+	cd $< && pip install -r requirements-dev.txt
 
-$(eval $(call RUST_RULES,simplygo-tfm,transforms/simplygo))
-
+test-simplygo-src: $(SIMPLYGO_SRC)
+	# do nothing for now
 
 # DBT transform
 DBT_DIR := transforms/dbt
