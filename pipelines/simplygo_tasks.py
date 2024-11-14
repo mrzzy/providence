@@ -94,7 +94,7 @@ def transform_simplygo(
     Raises:
         ValueError: If the transport mode cannot be extracted from the transaction data.
     """
-    mode_re = re.compile(r"CT (?P<mode>\w+) Usage Mtch")
+    mode_re = re.compile(r"CTP (?P<mode>\w+) Usage Mtch")
 
     # fetch user id
     rows = []
@@ -108,6 +108,7 @@ def transform_simplygo(
 
                 # trip leg is a segment if a trip. In Simplygo API, this is now as a 'Trip'.
                 for leg in trip["Trips"]:
+                    print("HERE: ", leg["TransactionType"])
                     match = mode_re.match(leg["TransactionType"])
                     if not match:
                         raise ValueError(

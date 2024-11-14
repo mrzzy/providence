@@ -49,7 +49,7 @@ def test_transform_simplygo_valid_data():
                         "EntryTransactionDate": "2024-11-14T00:00:00Z",
                         "Trips": [
                             {
-                                "TransactionType": "CT Bus Usage Mtch",
+                                "TransactionType": "CTP Bus Usage Mtch",
                                 "Fare": "$1.50",
                                 "EntryLocationName": "Station A",
                                 "ExitLocationName": "Station B",
