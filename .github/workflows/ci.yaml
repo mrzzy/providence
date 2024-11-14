@@ -19,7 +19,35 @@ permissions:
   contents: write
   packages: write
 jobs:
-  # TODO(mrzzy): simplygo-src, simplygo_tfm ci jobs
+  simplygo-src:
+    name: "SimplyGo Source"
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "${{ env.PYTHON_VERSION }}"
+      - name: Setup dependencies
+        run: make deps-simplygo-src
+      - name: Lint
+        run: make lint-simplygo-src
+      - name: Build
+        run: make build-simplygo-src
+      - name: Test
+        env:
+          SIMPLYGO_SRC_USERNAME: "${{ secrets.SIMPLYGO_SRC_USERNAME }}"
+          SIMPLYGO_SRC_PASSWORD: "${{ secrets.SIMPLYGO_SRC_PASSWORD }}"
+        run: make test-simplygo-src
+      - name: Publish Container
+        uses: ./.github/actions/ghcr
+        with:
+          username: "${{ github.actor }}"
+          password: "${{ secrets.GITHUB_TOKEN }}"
+          name: "pvd-simplygo-src"
+          context_dir: "sources/simplygo"
+          build_args: |
+            TARGET=simplygo_src
+
   dbt-transform:
     name: "DBT Transform"
     runs-on: ubuntu-22.04
