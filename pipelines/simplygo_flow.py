@@ -41,8 +41,8 @@ async def scrape_simplygo(
     await rate_limit(SIMPLYGO_RATE_LIMIT)
     # setup simplygo client
     client = simplygo.Ride(
-        user_name=await Secret.load("simplygo-src-username"),
-        user_pass=await Secret.load("simplygo-src-password"),
+        user_name=(await Secret.load("simplygo-src-username")).get(),
+        user_pass=(await Secret.load("simplygo-src-password")).get(),
     )
 
     # fetch simplygo data and write to json
