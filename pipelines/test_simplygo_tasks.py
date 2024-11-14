@@ -4,11 +4,12 @@
 # Tests
 #
 
+import pandas as pd
 from logging import Logger
-from pendulum import date
+from pendulum import date, datetime
 import pytest
 
-from simplygo_tasks import fetch_simplygo
+from simplygo_tasks import fetch_simplygo, transform_simplygo
 
 
 def test_fetch_simplygo(mocker):
@@ -31,3 +32,55 @@ def test_fetch_simplygo(mocker):
         card_id="card123", start_date=trips_from, end_date=trips_to
     )
     assert result == [{"UniqueCode": "card123", "transactions": transactions}]
+
+
+def test_transform_simplygo_valid_data():
+    # Embedded mock data
+    mock_data = [
+        {
+            "UniqueCode": "123456",
+            "Description": "Test Card",
+            "transactions": {
+                "Histories": [
+                    {
+                        "Type": "Journey",
+                        "TokenID": "ABC123",
+                        "EntryLocationId": "E1",
+                        "EntryTransactionDate": "2024-11-14T00:00:00Z",
+                        "Trips": [
+                            {
+                                "TransactionType": "CT Bus Usage Mtch",
+                                "Fare": "$1.50",
+                                "EntryLocationName": "Station A",
+                                "ExitLocationName": "Station B",
+                            }
+                        ],
+                    }
+                ]
+            },
+        }
+    ]
+
+    scraped_on = datetime(2024, 11, 14, 10, 0, 0)
+
+    # Call the function
+    result = transform_simplygo(Logger("test"), mock_data, scraped_on)
+
+    # Check the number of rows in the result
+    assert len(result) == 1, "Expected one row of data"
+
+    # Check if the result contains the expected columns
+    expected_columns = [
+        "card_id",
+        "card_name",
+        "cost_sgd",
+        "scraped_on",
+        "source",
+        "destination",
+        "trip_id",
+        "mode",
+        "posting_ref",
+    ]
+    assert all(
+        col in result.columns for col in expected_columns
+    ), "Missing expected columns"
