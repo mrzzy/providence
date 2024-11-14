@@ -11,11 +11,10 @@ import simplygo
 
 
 def fetch_simplygo(
+    client: simplygo.Ride,
     log: Logger | LoggerAdapter,
     trips_from: date,
     trips_to: date,
-    username: str,
-    password: str,
 ) -> Dict[str, Any]:
     """
     Fetches SimplyGo card transactions within a date range for a specified user.
@@ -24,11 +23,10 @@ def fetch_simplygo(
     for each card within the specified date range.
 
     Args:
+        client: SimplyGo API client to fetch data with.
         log: Logger for recording process info and errors.
         trips_from: Start date for transactions.
         trips_to: End date for transactions.
-        username: SimplyGo username.
-        password: SimplyGo password.
 
     Returns:
         A dictionary containing scraped simplygo data
@@ -36,9 +34,6 @@ def fetch_simplygo(
     Raises:
         RuntimeError: If user info, card info, or transactions cannot be retrieved.
     """
-    # setup simplygo client
-    client = simplygo.Ride(username, password)
-
     # fetch user id
     log.info("Fetching user info from SimplyGo API")
     user_info = client.get_user_info()
@@ -52,7 +47,7 @@ def fetch_simplygo(
     cards = client.get_card_info()
     if not cards:
         raise RuntimeError("Failed to get card info from SimplyGo API")
-    logging.info(f"Got card info from SimplyGo API for {len(cards)} cards.")  # type: ignore
+    log.info(f"Got card info from SimplyGo API for {len(cards)} cards.")  # type: ignore
 
     # fetch transactions (eg. trips) made on each card
     for card in cards:  # type: ignore
@@ -67,5 +62,6 @@ def fetch_simplygo(
             raise RuntimeError(
                 f"Failed to fetch transactions from SimplyGo API for card: {card_id}"
             )
+        card["transactions"] = transactions
         log.info(f"Fetched transactions from SimplyGo API for card: {card_id}")
     return cards  # type: ignore

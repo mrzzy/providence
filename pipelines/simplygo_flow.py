@@ -17,6 +17,7 @@ from prefect.blocks.system import Secret
 from prefect.concurrency.asyncio import rate_limit
 from prefect.tasks import exponential_backoff
 from prefect_shell import ShellOperation
+import simplygo
 
 from b2 import b2_bucket, download_path, upload_path
 from simplygo_tasks import fetch_simplygo
@@ -35,10 +36,16 @@ async def scrape_simplygo(bucket: str, trips_on: date, window: timedelta) -> str
     trips_to = trips_on + window
     local_path = Path("/tmp/out")
     await rate_limit(SIMPLYGO_RATE_LIMIT)
+    # setup simplygo client
+    client = simplygo.Ride(
+        user_name=await Secret.load("simplygo-src-username"),
+        user_pass=await Secret.load("simplygo-src-password"),
+    )
 
     # fetch simplygo data and write to json
     with open(local_path) as f:
         data = fetch_simplygo(
+            client=client,
             log=log,
             trips_from=trips_on,
             trips_to=trips_to,
@@ -54,6 +61,7 @@ async def scrape_simplygo(bucket: str, trips_on: date, window: timedelta) -> str
 
     return lake_path
 
+
 @task
 async def transform_simplygo(bucket: str, raw_path: str) -> Optional[str]:
     """Transform raw SimplyGo data at given path with with simplygo_tfm.
@@ -65,7 +73,6 @@ async def transform_simplygo(bucket: str, raw_path: str) -> Optional[str]:
 
     async with b2_bucket(bucket) as lake:
         await download_path(lake, raw_path, Path(in_path))
-
 
         if not path.exists(out_path):
             # output file not created: no records were transformed
