@@ -108,7 +108,6 @@ def transform_simplygo(
 
                 # trip leg is a segment if a trip. In Simplygo API, this is now as a 'Trip'.
                 for leg in trip["Trips"]:
-                    print("HERE: ", leg["TransactionType"])
                     match = mode_re.match(leg["TransactionType"])
                     if not match:
                         raise ValueError(
@@ -125,6 +124,7 @@ def transform_simplygo(
                             "destination": leg["ExitLocationName"],
                             "trip_id": trip_id,
                             "mode": match["mode"],
+                            "traveled_on": leg["EntryTransactionDate"],
                             # posting ref defaults to empty as a nonpopulated legacy field
                             "posting_ref": "",
                         }

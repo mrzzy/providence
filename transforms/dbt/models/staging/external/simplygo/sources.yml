@@ -36,3 +36,5 @@ sources:
           - name: posting_ref
           - name: 'Reference no. if the the trip was "Posted" ie. charged on the bank account.
               If the trip has not be posted this field will be None.'
+          - name: traveled_on
+            description: Timestamp when the Trip Leg was made in Asia/Singapore timezone.
