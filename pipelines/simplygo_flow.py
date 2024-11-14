@@ -94,9 +94,7 @@ async def transform_simplygo_task(
         df.to_parquet(out_path)
 
         lake_path = (
-            raw_path.replace("raw", "staging")
-            .replace("src", "tfm")
-            .replace("json", "pq")
+            f"staging/by=simplygo_tfm/date={scraped_on.date().isoformat()}/out.pq"
         )
         log.info(f"Writing transformed data to: {lake_path}")
         await lake.upload_file(Filename=out_path, Key=lake_path)  # type: ignore
