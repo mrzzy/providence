@@ -17,6 +17,7 @@ from ynab_flow import ingest_ynab
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_flows(prefect):
     bucket = os.environ["PVD_LAKE_BUCKET"]
     await ingest_simplygo(bucket, date(2024, 5, 1))

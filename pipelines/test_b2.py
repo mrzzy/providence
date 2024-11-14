@@ -17,6 +17,7 @@ from b2 import b2_bucket, download_path, upload_path
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_b2_upload_download_path(prefect):
     with TemporaryDirectory() as src_dir:
         # create test files for upload
