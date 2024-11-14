@@ -117,8 +117,8 @@ def transform_simplygo(
                         {
                             "card_id": card["UniqueCode"],
                             "card_name": card["Description"],
-                            # slice to skip leading '$' in Fare.
-                            "cost_sgd": leg["Fare"][1:],
+                            # remove leading '$' in Fare.
+                            "cost_sgd": leg["Fare"].replace("$", ""),
                             "scraped_on": scraped_on.strftime("%Y-%m-%d %H:%M:%S"),
                             "source": leg["EntryLocationName"],
                             "destination": leg["ExitLocationName"],

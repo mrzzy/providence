@@ -54,6 +54,13 @@ def test_transform_simplygo_valid_data():
                                 "Fare": "$1.50",
                                 "EntryLocationName": "Station A",
                                 "ExitLocationName": "Station B",
+                            },
+                            {
+                                "TransactionType": "CTP Rail Usage Mtch",
+                                "EntryTransactionDate": "2024-11-13T00:00:00Z",
+                                "Fare": "Pass Usage",
+                                "EntryLocationName": "Station C",
+                                "ExitLocationName": "Station D",
                             }
                         ],
                     }
@@ -65,10 +72,10 @@ def test_transform_simplygo_valid_data():
     scraped_on = datetime(2024, 11, 14, 10, 0, 0)
 
     # Call the function
-    result = transform_simplygo(Logger("test"), mock_data, scraped_on)
+    df = transform_simplygo(Logger("test"), mock_data, scraped_on)
 
     # Check the number of rows in the result
-    assert len(result) == 1, "Expected one row of data"
+    assert len(df) == 2, "Expected two rows of data"
 
     # Check if the result contains the expected columns
     expected_columns = [
@@ -83,5 +90,8 @@ def test_transform_simplygo_valid_data():
         "posting_ref",
     ]
     assert all(
-        col in result.columns for col in expected_columns
+        col in df.columns for col in expected_columns
     ), "Missing expected columns"
+
+    # check pass usage is parsed correctly
+    assert df.loc[1, "cost_sgd"] == "Pass Usage"
