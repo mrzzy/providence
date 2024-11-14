@@ -61,7 +61,7 @@ def test_transform_simplygo_valid_data():
                                 "Fare": "Pass Usage",
                                 "EntryLocationName": "Station C",
                                 "ExitLocationName": "Station D",
-                            }
+                            },
                         ],
                     }
                 ]
