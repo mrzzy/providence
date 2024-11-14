@@ -24,20 +24,13 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "${{ env.PYTHON_VERSION }}"
-      - name: Setup dependencies
-        run: make deps-simplygo-src
-      - name: Lint
-        run: make lint-simplygo-src
-      - name: Build
-        run: make build-simplygo-src
-      - name: Test
+      - uses: ./.github/actions/python
         env:
-          SIMPLYGO_SRC_USERNAME: "${{ secrets.SIMPLYGO_SRC_USERNAME }}"
-          SIMPLYGO_SRC_PASSWORD: "${{ secrets.SIMPLYGO_SRC_PASSWORD }}"
-        run: make test-simplygo-src
+          SIMPLYGO_SRC_USERNAME: ${{ secrets.SIMPLYGO_SRC_USERNAME }}
+          SIMPLYGO_SRC_PASSWORD: ${{ secrets.SIMPLYGO_SRC_PASSWORD }}
+        with:
+          make-suffix: simplygo-src
+          python-version: "${{ env.PYTHON_VERSION }}"
       - name: Publish Container
         uses: ./.github/actions/ghcr
         with:
