@@ -6,6 +6,7 @@
 
 from io import BytesIO
 import json
+import os
 import subprocess
 from datetime import date, datetime, timedelta, timezone
 from os import path
@@ -39,6 +40,12 @@ async def scrape_simplygo(
     trips_to = trips_on + window
     local_path = Path("/tmp/out.json")
     await rate_limit(SIMPLYGO_RATE_LIMIT)
+
+    # remove session file if one exists
+    # fixes https://github.com/TheDJVG/SimplyGoPy/issues/1
+    session_path = Path(simplygo.API.SESSION_FILE)
+    if session_path.exists():
+        os.remove(session_path)
     # setup simplygo client
     client = simplygo.Ride(
         user_name=(await Secret.load("simplygo-src-username")).get(),
