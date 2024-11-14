@@ -4,6 +4,8 @@
 # SimplyGo Flow
 #
 
+from io import BytesIO
+import json
 import subprocess
 from datetime import date, datetime, timedelta, timezone
 from os import path
@@ -17,6 +19,7 @@ from prefect.tasks import exponential_backoff
 from prefect_shell import ShellOperation
 
 from b2 import b2_bucket, download_path, upload_path
+from simplygo_tasks import fetch_simplygo
 
 SIMPLYGO_RATE_LIMIT = "simplygo"
 
@@ -29,29 +32,27 @@ async def scrape_simplygo(bucket: str, trips_on: date, window: timedelta) -> str
 
     log = get_run_logger()
     log.info(f"Scraping trips data on: {trips_on.isoformat()}")
-    trips_to_iso = (trips_on + window).isoformat()
-    trips_on_iso, local_path = trips_on.isoformat(), Path("/tmp/out")
-    username = await Secret.load("simplygo-src-username")
-    password = await Secret.load("simplygo-src-password")
+    trips_to = trips_on + window
+    local_path = Path("/tmp/out")
     await rate_limit(SIMPLYGO_RATE_LIMIT)
-    await ShellOperation(
-        env={
-            "SIMPLYGO_SRC_USERNAME": username.get(),
-            "SIMPLYGO_SRC_PASSWORD": password.get(),
-        },
-        commands=[
-            f"simplygo_src --trips-from {trips_on_iso} --trips-to {trips_to_iso} "
-            f"--output-dir {local_path}"
-        ],
-    ).run()
 
-    lake_path = f"raw/by=simplygo_src/date={trips_on_iso}"
+    # fetch simplygo data and write to json
+    with open(local_path) as f:
+        data = fetch_simplygo(
+            log=log,
+            trips_from=trips_on,
+            trips_to=trips_to,
+            username=await Secret.load("simplygo-src-username"),
+            password=await Secret.load("simplygo-src-password"),
+        )
+        json.dump(data, f)
+
+    lake_path = f"raw/by=simplygo_src/date={trips_on.isoformat()}/out.json"
     async with b2_bucket(bucket) as lake:
         log.info(f"Writing scrapped data to: {lake_path}")
         await upload_path(lake, local_path, lake_path)
 
     return lake_path
-
 
 @task
 async def transform_simplygo(bucket: str, raw_path: str) -> Optional[str]:
@@ -60,14 +61,11 @@ async def transform_simplygo(bucket: str, raw_path: str) -> Optional[str]:
     log = get_run_logger()
 
     log.info(f"Transforming trips data from: {raw_path}")
-    in_path, out_path = "/tmp/in", "/tmp/out.pq"
+    in_path, out_path = "/tmp/in.json", "/tmp/out.pq"
 
     async with b2_bucket(bucket) as lake:
         await download_path(lake, raw_path, Path(in_path))
 
-        await ShellOperation(
-            commands=[f"simplygo_tfm --input-dir {in_path} --output {out_path}"]
-        ).run()
 
         if not path.exists(out_path):
             # output file not created: no records were transformed

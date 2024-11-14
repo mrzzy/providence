@@ -27,17 +27,6 @@ endef
 
 all: deps fmt lint build test
 	
-# Simplygo SDK, source & transform
-SIMPLYGO_SRC:= sources/simplygo
-$(eval $(call PYTHON_RULES,simplygo-src,$(SIMPLYGO_SRC)))
-
-$(eval $(call PHONY_RULE,deps,simplygo-src))
-deps-simplygo-src: $(SIMPLYGO_SRC)
-	cd $< && pip install -r requirements-dev.txt
-
-test-simplygo-src: $(SIMPLYGO_SRC)
-	# do nothing for now
-
 # DBT transform
 DBT_DIR := transforms/dbt
 DBT_TARGET := dev

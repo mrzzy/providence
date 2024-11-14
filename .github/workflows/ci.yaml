@@ -19,28 +19,6 @@ permissions:
   contents: write
   packages: write
 jobs:
-  simplygo-src:
-    name: "SimplyGo Source"
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/python
-        env:
-          SIMPLYGO_SRC_USERNAME: ${{ secrets.SIMPLYGO_SRC_USERNAME }}
-          SIMPLYGO_SRC_PASSWORD: ${{ secrets.SIMPLYGO_SRC_PASSWORD }}
-        with:
-          make-suffix: simplygo-src
-          python-version: "${{ env.PYTHON_VERSION }}"
-      - name: Publish Container
-        uses: ./.github/actions/ghcr
-        with:
-          username: "${{ github.actor }}"
-          password: "${{ secrets.GITHUB_TOKEN }}"
-          name: "pvd-simplygo-src"
-          context_dir: "sources/simplygo"
-          build_args: |
-            TARGET=simplygo_src
-
   dbt-transform:
     name: "DBT Transform"
     runs-on: ubuntu-22.04
