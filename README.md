@@ -8,13 +8,10 @@ Personal Finance Data Pipeline & Dashboard.
 
 Providence aims to make personal finance less tedious with automation & less opaque with visualisation:
 
-- **Data Sources** to automatically retrieve raw data from data sources:
-  - **YNAB Source** pulls Budget/Accounting data from YNAB REST API.
-  - **SimplyGo Source** scrapes HTML from [SimplyGo Portal](https://simplygo.transitlink.com.sg/)
-- **Data Transforms** to extract tabular data from raw data files:
-  - **YNAB transform** extracts accounting transactions from JSON budget data.
-  - **SimplyGo transform** extracts public transport trip data from scraped html.
-  - **UOB transform** extract bank statement transactions from Excel export.
+- **Data Pipeline** Extract Load Transform (ELT) pipeline to scrape data from various sources:
+  - **YNAB** extracts accounting transactions from JSON budget data from YNAB API
+  - **SimplyGo** extracts public transport trip data from SimplyGo API
+  - **UOB** extract bank statement transactions from Excel export.
 - **Data Model** DBT Dimensional model integrates data from disparate sources together for analysis.
 - **Finance Dashboard** Superset dashboard presets easy to digest metrics on financial health.
 
