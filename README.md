@@ -23,14 +23,15 @@ title: Providence V2
 ---
 
 flowchart LR
-    subgraph p[Prefect, Grafana]
-      direction TB
+    subgraph p[Prefect]
+      direction LR
       ynab((YNAB)) &  uob((UOB)) & simplygo((SimplyGO)) -->|sinks| b2
       subgraph b2[B2 Bucket]
           direction LR
           raw[Raw: JSON, Excel] -->|transform| tfms[[Transforms on ACI]] --> staging[Staging: parquet]
       end
-      staging -->|load| dbt[[DBT on ACI]] --> dw[(MotherDuck\n DuckDB)]
+      staging -->|load| dbt[[DBT on ACI]] --> dw[(MotherDuck
+ DuckDB)]
       dw -->|transform| dbt
       dw -->|visualise| viz(((Superset)))
    end
