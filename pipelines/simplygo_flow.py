@@ -91,12 +91,15 @@ async def transform_simplygo_task(
 
         # transform simplygo data into staging model format
         df = transform_simplygo(log, data, scraped_on)
-        df.to_parquet(out_path)
+        if df.empty:
+            log.warn("Skipping transformed trips data since its empty")
+            return
 
         lake_path = (
             f"staging/by=simplygo_tfm/date={scraped_on.date().isoformat()}/out.pq"
         )
         log.info(f"Writing transformed data to: {lake_path}")
+        df.to_parquet(out_path)
         await lake.upload_file(Filename=out_path, Key=lake_path)  # type: ignore
 
     return lake_path
