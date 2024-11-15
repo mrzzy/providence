@@ -1,5 +1,6 @@
 -r requirements.txt
 pytest==8.2.2
+pytest-mock==3.14.0
 pytest-asyncio==0.23.8
 black==24.4.2
 iniconfig==2.0.0

@@ -19,7 +19,6 @@ permissions:
   contents: write
   packages: write
 jobs:
-  # TODO(mrzzy): simplygo-src, simplygo_tfm ci jobs
   dbt-transform:
     name: "DBT Transform"
     runs-on: ubuntu-22.04
