@@ -19,10 +19,6 @@ ENV DBT_PROFILES_DIR=/dbt
 COPY ${DBT_DIR}/packages.yml ${DBT_DIR}/package-lock.yml ${DBT_DIR}/dbt_project.yml /${DBT_PROJECT_DIR}/
 RUN dbt deps
 
-# install simplygo_src & simplygo_tfm binaries
-COPY --from=ghcr.io/mrzzy/pvd-simplygo-src:latest /bin/simplygo_src /bin/simplygo_src
-COPY --from=ghcr.io/mrzzy/pvd-simplygo-tfm:latest /bin/simplygo_tfm /bin/simplygo_tfm
-
 # copy dbt models
 COPY ${DBT_DIR} /${DBT_PROJECT_DIR}
 
