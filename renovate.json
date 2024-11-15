@@ -1,8 +1,13 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base",
+    "config:recommended",
     ":automergePatch"
   ],
-  "ignoreDeps": ["botocore", "boto3", "aiobotocore", "aioboto3"]
+  "ignoreDeps": [
+    "botocore",
+    "boto3",
+    "aiobotocore",
+    "aioboto3"
+  ]
 }
