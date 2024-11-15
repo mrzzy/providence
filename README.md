@@ -46,7 +46,7 @@ by relying on Serverless Compute and free-tier Managed Services:
 - **Visualisation** Apache Superset
 
 ## Data Model
-
+The Kimbal / Dimensional data model of fact & dimension tables is designed for easy analytic querying:
 ```mermaid
 ---
 title: Providence Data Model
