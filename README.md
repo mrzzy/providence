@@ -1,10 +1,10 @@
+![Providence Banner](assets/banner.png)
+
 # Providence
 
 Personal Finance Data Pipeline & Dashboard.
 
 ## Features
-
-![Finance Dashboard Screenshot](assets/finance_dashboard_screenshot.png)
 
 Providence aims to make personal finance less tedious with automation & less opaque with visualisation:
 
@@ -15,8 +15,8 @@ Providence aims to make personal finance less tedious with automation & less opa
 - **Data Model** DBT Dimensional model integrates data from disparate sources together for analysis.
 - **Finance Dashboard** Superset dashboard presets easy to digest metrics on financial health.
 
-
 ## Architecture
+
 ```mermaid
 ---
 title: Providence V2
@@ -39,6 +39,7 @@ flowchart LR
 
 V2 architecture redesign focuses on lowering the Total Cost of Ownership (TCO)
 by relying on Serverless Compute and free-tier Managed Services:
+
 - **Compute** Azure Container Instances (ACI)
 - **Data Lake** Backblaze B2
 - **Data Warehouse** MotherDuck DuckDB
@@ -46,7 +47,9 @@ by relying on Serverless Compute and free-tier Managed Services:
 - **Visualisation** Apache Superset
 
 ## Data Model
+
 The Kimbal / Dimensional data model of fact & dimension tables is designed for easy analytic querying:
+
 ```mermaid
 ---
 title: Providence Data Model
