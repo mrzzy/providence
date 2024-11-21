@@ -53,7 +53,7 @@ pathspec==0.12.1
 pendulum==2.1.2
 prefect==2.20.14
 pyasn1==0.6.1
-pyasn1_modules==0.4.0
+pyasn1_modules==0.4.1
 pycparser==2.22
 pydantic_core==2.19.0
 pydantic==1.10.17
