@@ -132,7 +132,7 @@ dbt-semantic-interfaces==0.5.1
 dbt-adapters==1.2.1
 pytimeparse==1.1.8
 sqlparse==0.5.2
-Logbook==1.5.3
+Logbook==1.8.0
 msgpack==1.0.8
 mashumaro==3.13.1
 more-itertools==10.2.0
