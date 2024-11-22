@@ -107,7 +107,7 @@ botocore==1.34.106
 frozenlist==1.4.1
 multidict==6.0.5
 wrapt==1.16.0
-yarl==1.9.4
+yarl==1.9.11
 numpy==1.26.4
 pandas==2.2.3
 tzdata==2024.1
