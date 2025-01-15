@@ -9,7 +9,7 @@ asyncpg==0.29.0
 attrs==23.2.0
 cachetools==5.3.3
 cffi==1.16.0
-click==8.1.7
+click==8.1.8
 cloudpickle==3.0.0
 colorama==0.4.6
 coolname==2.2.0

@@ -4,7 +4,7 @@ attrs==23.2.0
 Babel==2.15.0
 certifi==2024.7.4
 charset-normalizer==3.3.2
-click==8.1.7
+click==8.1.8
 colorama==0.4.6
 daff==1.3.46
 dbt-adapters==1.2.1
