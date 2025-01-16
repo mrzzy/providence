@@ -59,7 +59,7 @@ pydantic_core==2.19.0
 pydantic==1.10.21
 Pygments==2.18.0
 python-dateutil==2.9.0.post0
-python-multipart==0.0.18
+python-multipart==0.0.20
 python-slugify==8.0.4
 pytz==2024.1
 pytzdata==2020.1
