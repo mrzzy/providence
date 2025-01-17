@@ -129,7 +129,7 @@ duckdb==1.1.3
 minimal-snowplow-tracker==0.0.2
 dbt-extractor==0.5.1
 dbt-semantic-interfaces==0.5.1
-dbt-adapters==1.2.1
+dbt-adapters==1.13.1
 pytimeparse==1.1.8
 sqlparse==0.5.3
 Logbook==1.5.3
