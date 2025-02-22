@@ -28,8 +28,8 @@ async def b2_bucket(
         endpoint_url: B2
     """
     async with aioboto3.Session(
-        aws_access_key_id=(await Secret.load("b2-account-id")).get(), # type: ignore
-        aws_secret_access_key=(await Secret.load("b2-app-key")).get(), # type: ignore
+        aws_access_key_id=(await Secret.load("b2-account-id")).get(),  # type: ignore
+        aws_secret_access_key=(await Secret.load("b2-app-key")).get(),  # type: ignore
     ).resource(service_name="s3", endpoint_url=endpoint_url) as s3:
         yield await s3.Bucket(name)
 
