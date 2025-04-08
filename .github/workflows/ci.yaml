@@ -27,7 +27,7 @@ jobs:
       B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "${{ env.PYTHON_VERSION }}"
       - name: Setup dependencies
@@ -44,7 +44,7 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "${{ env.PYTHON_VERSION }}"
       - name: Setup dependencies
