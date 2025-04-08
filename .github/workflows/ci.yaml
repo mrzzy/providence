@@ -26,7 +26,7 @@ jobs:
       B2_ACCOUNT_ID: ${{ secrets.B2_ACCOUNT_ID }}
       B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
           python-version: "${{ env.PYTHON_VERSION }}"
@@ -43,7 +43,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
           python-version: "${{ env.PYTHON_VERSION }}"
@@ -80,7 +80,7 @@ jobs:
       PVD_LAKE_BUCKET: mrzzy-co-data-lake
       YNAB_BUDGET_ID: f3f15316-e48c-4235-8d5d-1aa3191b3b8c
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/python
         env:
           B2_ACCOUNT_ID: ${{ secrets.B2_ACCOUNT_ID }}
