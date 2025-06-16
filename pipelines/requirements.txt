@@ -120,7 +120,7 @@ isodate==0.6.1
 dbt-common==1.15.0
 dbt-duckdb==1.9.2
 leather==0.4.0
-protobuf==5.29.3
+protobuf==5.29.5
 networkx==3.3
 parsedatetime==2.6
 zipp==3.19.3
