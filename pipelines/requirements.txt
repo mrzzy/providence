@@ -137,7 +137,7 @@ msgpack==1.0.8
 mashumaro==3.13.1
 more-itertools==10.2.0
 importlib-metadata==6.11.0
-prefect-dbt==0.5.4
+prefect-dbt==0.7.6
 certifi==2024.8.30
 charset-normalizer==3.4.1
 idna==3.10
