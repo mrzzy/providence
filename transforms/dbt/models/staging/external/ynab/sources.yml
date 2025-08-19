@@ -10,7 +10,7 @@ sources:
   - name: ynab
     description: YNAB accounting software budget export on Data Lake
     meta:
-      external_location: read_json("s3://{{ env_var('PVD_LAKE_BUCKET', 'mrzzy-co-data-lake') }}/staging/by=ynab/**/*.json")
+      external_location: read_json("s3://{{ env_var('PVD_LAKE_BUCKET', 'mrzzy-co-data-lake') }}/staging/by=ynab/**/*.json", union_by_name=true)
     tables:
       - name: ynab
         description: YNAB Budget JSON export
