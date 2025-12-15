@@ -12,7 +12,7 @@ dbt-common==1.15.0
 dbt-core==1.9.2
 dbt-duckdb==1.10.0
 dbt-extractor==0.5.1
-dbt-semantic-interfaces==0.7.4
+dbt-semantic-interfaces==0.10.0
 duckdb==1.4.1
 idna==3.7
 importlib-metadata==6.11.0
