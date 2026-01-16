@@ -33,6 +33,6 @@ testcontainers-compose==0.0.1rc1
 testcontainers-core==0.0.1rc1
 texttable==1.6.7
 tomli==2.0.1
-urllib3==1.26.15
+urllib3==1.26.19
 websocket-client==0.59.0
 wrapt==1.15.0
