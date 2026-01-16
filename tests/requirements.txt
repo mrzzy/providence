@@ -12,7 +12,7 @@ docker-compose==1.29.2
 dockerpty==0.4.1
 docopt==0.6.2
 exceptiongroup==1.1.1
-idna==3.4
+idna==3.7
 iniconfig==2.0.0
 jmespath==1.0.1
 jsonschema==3.2.0
